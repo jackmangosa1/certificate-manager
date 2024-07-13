@@ -12,11 +12,12 @@ if (!rootElement) {
 const root = createRoot(rootElement);
 
 root.render(
-  import.meta.env.DEV ? (
-    <StrictMode>
-      <App />
-    </StrictMode>
-  ) : (
-    <App />
-  )
+  // import.meta.env.DEV ? (
+  //   <StrictMode>
+  //     <App />
+  //   </StrictMode>
+  // ) : (
+  //   <App />
+  // )
+  <App />
 );
