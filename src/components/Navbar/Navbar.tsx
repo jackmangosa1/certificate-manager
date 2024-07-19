@@ -1,10 +1,13 @@
 import './Navbar.css';
+import { Link } from 'react-router-dom';
 
-const Navbar = () => {
+const Navbar = ({ className }: { className: string }) => {
   return (
-    <div className="navbar">
+    <div className={`navbar ${className}`}>
       <div className="left">
-        <h1>DCCS Tuzla</h1>
+        <Link to="/">
+          <h1>DCCS Tuzla</h1>
+        </Link>
       </div>
       <div className="right">
         <p>test</p>

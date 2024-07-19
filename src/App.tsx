@@ -12,7 +12,7 @@ export const App = () => {
   return (
     <Router>
       <Container className="container">
-        <Navbar />
+        <Navbar className="navbar" />
         <div className="main">
           <Sidebar className="sidebar" />
           <Routes>

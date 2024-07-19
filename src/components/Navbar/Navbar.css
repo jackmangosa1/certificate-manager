@@ -9,7 +9,14 @@
   padding: 1rem 0.6rem;
   width: 39.5rem;
   box-shadow: 0px -4px 56px -3px rgba(0, 0, 0, 0.1);
+  flex: 0 0 27rem;
 }
+
+.navbar .left a {
+  text-decoration: none;
+  color: inherit;
+}
+
 .right {
   padding: 0.6rem;
   width: 100%;
