@@ -1,28 +1,25 @@
-/* .main {
-  display: flex;
-  flex: 1;
-}
-.main .navbar .left {
-  width: 27rem;
-}
-.main > .sidebar {
-  width: 27rem;
-}
-
-.main > .content {
-  flex: 1;
-} */
-
 .main {
   display: flex;
-  flex: 1;
 }
 
-.main .navbar .left,
-.main .sidebar {
-  flex: 0 0 27rem; /* Initial width, can be adjusted */
+.content {
+  flex-grow: 1;
+  padding: 1rem;
 }
 
-.main > .content {
-  flex: 1;
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+@media screen and (max-width: 1265px) {
+  .overlay.active {
+    display: block;
+  }
 }
