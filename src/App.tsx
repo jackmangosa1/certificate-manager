@@ -9,7 +9,7 @@ import Example3 from './pages/example-3/Example3';
 import Start from './pages/start/Start';
 import { useState } from 'react';
 
-export const App = () => {
+export const App: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {

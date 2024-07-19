@@ -1,13 +1,12 @@
 import './Navbar.css';
 import { Link } from 'react-router-dom';
 
-const Navbar = ({
-  className,
-  toggleSidebar,
-}: {
+type NavBarProps = {
   className: string;
   toggleSidebar: () => void;
-}) => {
+};
+
+const Navbar: React.FC<NavBarProps> = ({ className, toggleSidebar }) => {
   return (
     <div className={`navbar ${className}`}>
       <div className="left">
