@@ -25,6 +25,6 @@
     "noUnusedParameters": true,
     "outDir": "./dist"
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "src/pages/example-2/Example2/.tsx"],
   "exclude": ["node_modules", "dist"]
 }
