@@ -34,11 +34,14 @@
 @media screen and (max-width: 1265px) {
   .left {
     display: flex;
+    justify-items: center;
     gap: 2rem;
   }
-  .menu-icon {
+  .menu-icon-header {
     display: block;
-    fill: black;
+    fill: white;
+    height: 2.5rem;
+    width: 2.5rem;
   }
   .right {
     background-color: var(--primaryColor);
