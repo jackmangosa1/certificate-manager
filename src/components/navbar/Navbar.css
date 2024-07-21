@@ -9,7 +9,11 @@
   width: 39.5rem;
   box-shadow: 0px -4px 56px -3px rgba(0, 0, 0, 0.1);
   background-color: var(--primaryColor);
+<<<<<<< HEAD:src/components/navbar/Navbar.css
   flex: 0 0 23rem;
+=======
+  flex: 0 0 22rem;
+>>>>>>> 394aaf2 (task3-KAN-44 Add certificate creation form):src/components/Navbar/Navbar.css
 }
 
 .navbar .left a {
