@@ -3,21 +3,34 @@ import React, { useState, useRef, useEffect } from 'react';
 interface CustomDateInputProps {
   id: string;
   label: string;
+  name: string;
+  value: Date | null;
+  onChange: (date: Date | null) => void;
 }
 
-const CustomDateInput: React.FC<CustomDateInputProps> = ({ id, label }) => {
-  const [displayValue, setDisplayValue] = useState('');
+const CustomDateInput: React.FC<CustomDateInputProps> = ({
+  id,
+  label,
+  name,
+  value,
+  onChange,
+}) => {
+  const [displayValue, setDisplayValue] = useState<string>('');
   const [showPicker, setShowPicker] = useState(false);
   const dateInputRef = useRef<HTMLInputElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setDisplayValue(value ? value.toLocaleDateString() : '');
+  }, [value]);
 
   const handleClick = () => {
     setShowPicker(true);
   };
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const date = e.target.value;
-    setDisplayValue(date ? new Date(date).toLocaleDateString() : '');
+    const date = e.target.value ? new Date(e.target.value) : null;
+    onChange(date);
     setShowPicker(false);
   };
 
@@ -57,6 +70,7 @@ const CustomDateInput: React.FC<CustomDateInputProps> = ({ id, label }) => {
             <input
               type="date"
               id={id}
+              name={name}
               ref={dateInputRef}
               onChange={handleDateChange}
               className="hidden-date-input"

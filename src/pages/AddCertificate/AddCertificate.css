@@ -119,7 +119,8 @@
   padding: 1rem;
 }
 
-.right-side button {
+.right-side button,
+.upload-button {
   width: fit-content;
   border: 0;
   background-color: var(--primaryColor);
@@ -187,4 +188,10 @@
   color: transparent;
   background: transparent;
   cursor: pointer;
+}
+
+.preview-area {
+  width: 100%;
+  height: 20rem;
+  border: 1px solid var(--grayBorder);
 }

@@ -1,7 +1,69 @@
 import './AddCertificate.css';
 import CustomDateInput from '../../components/CustomDateInput/CustomDateInput';
+import { useState } from 'react';
+
+type CertificateData = {
+  supplier: string;
+  certificateType: string;
+  validFrom: Date | null;
+  validTo: Date | null;
+};
 
 const AddCertificate: React.FC = () => {
+  const [certificateData, setCertificateData] = useState<CertificateData>({
+    supplier: '',
+    certificateType: '',
+    validFrom: null,
+    validTo: null,
+  });
+
+  const [savedData, setSavedData] = useState<CertificateData | null>(null);
+  const [pdfPreview, setPdfPreview] = useState<string | null>(null);
+
+  const handleInput = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
+    const { name, value } = e.target;
+    setCertificateData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleDateChange = (name: string, date: Date | null) => {
+    setCertificateData((prevData) => ({
+      ...prevData,
+      [name]: date,
+    }));
+  };
+
+  const handleSave = () => {
+    setSavedData(certificateData);
+    console.log('Data saved:', certificateData); // Debugging output
+  };
+
+  const handleReset = () => {
+    setCertificateData({
+      supplier: '',
+      certificateType: '',
+      validFrom: null,
+      validTo: null,
+    });
+    setPdfPreview(null);
+    setSavedData(null);
+  };
+
+  const handlePdfUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setPdfPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   return (
     <div className="certificate-form-container">
       <div className="left-side">
@@ -11,6 +73,9 @@ const AddCertificate: React.FC = () => {
             <input
               type="text"
               id="supplier"
+              name="supplier"
+              value={certificateData.supplier}
+              onChange={handleInput}
               className="supplier-input"
             />
 
@@ -54,6 +119,9 @@ const AddCertificate: React.FC = () => {
           <label htmlFor="certificate-type">Certificate type</label>
           <select
             id="certificate-type"
+            name="certificateType"
+            value={certificateData.certificateType}
+            onChange={handleInput}
             defaultValue=""
           >
             <option
@@ -67,46 +135,66 @@ const AddCertificate: React.FC = () => {
           </select>
         </div>
 
-        {/* <div className="row">
-          <label htmlFor="start-date">Valid from</label>
-          <input
-            type="date"
-            id="start-date"
-            placeholder="Click to select date"
-          />
-        </div>
-
-        <div className="row">
-          <label htmlFor="end-date">Valid to</label>
-          <input
-            type="date"
-            id="end-date"
-            placeholder="Click to select date"
-          />
-        </div> */}
-
         <CustomDateInput
           id="start-date"
           label="Valid from"
+          name="validFrom"
+          value={certificateData.validFrom}
+          onChange={(date) => handleDateChange('validFrom', date)}
         />
         <CustomDateInput
           id="end-date"
           label="Valid to"
+          name="validTo"
+          value={certificateData.validTo}
+          onChange={(date) => handleDateChange('validTo', date)}
         />
       </div>
       <div className="right-side">
         <div>
-          <button>Upload</button>
-          <textarea
-            name=""
-            id=""
-          ></textarea>
+          <label className="upload-button">
+            <input
+              type="file"
+              accept="application/pdf"
+              onChange={handlePdfUpload}
+              hidden
+            />
+            Upload
+          </label>
+          <div className="pdf-preview">
+            <iframe
+              src={pdfPreview || 'about:blank'}
+              width="100%"
+              height="100%"
+              title="PDF Preview"
+              className="preview-area"
+            ></iframe>
+          </div>
         </div>
 
         <div>
-          <button>Save</button>
-          <button>Reset</button>
+          <button onClick={handleSave}>Save</button>
+          <button onClick={handleReset}>Reset</button>
         </div>
+
+        {savedData && (
+          <div className="saved-data">
+            <p>Supplier: {savedData.supplier}</p>
+            <p>Certificate Type: {savedData.certificateType}</p>
+            <p>
+              Valid From:{' '}
+              {savedData.validFrom
+                ? savedData.validFrom.toLocaleDateString()
+                : 'N/A'}
+            </p>
+            <p>
+              Valid To:{' '}
+              {savedData.validTo
+                ? savedData.validTo.toLocaleDateString()
+                : 'N/A'}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
