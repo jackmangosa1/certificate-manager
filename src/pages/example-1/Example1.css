@@ -46,7 +46,7 @@ tbody tr:hover {
 
 .add-certificate-btn {
   border: 2px solid #b8be69;
-  background-color: #c0cc3a;
+  background-color: var(--greeColor);
   padding: 0.5rem 2.7rem;
   color: white;
   width: fit-content;
