@@ -54,7 +54,7 @@ export const App: React.FC = () => {
                 element={<Example3 />}
               />
               <Route
-                path="/add-certificate"
+                path="/add-certificate/:id?"
                 element={<AddCertificate />}
               />
             </Routes>

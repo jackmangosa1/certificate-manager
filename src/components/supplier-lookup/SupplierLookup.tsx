@@ -1,3 +1,4 @@
+import React from 'react';
 import SearchIcon from '../../icons/SearchIcon';
 import CrossIcon from '../../icons/CrossIcon';
 import './SupplierLookup.css';
@@ -25,11 +26,9 @@ const SupplierLookup: React.FC<SupplierLookupProps> = ({
           onChange={onChange}
           className="supplier-input"
         />
-
         <button className="search-button">
           <SearchIcon />
         </button>
-
         <button className="clear-button">
           <CrossIcon />
         </button>

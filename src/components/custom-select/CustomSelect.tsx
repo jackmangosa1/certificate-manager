@@ -1,3 +1,4 @@
+import React from 'react';
 import './CustomSelect.css';
 
 type CustomSelectProps = {
@@ -7,7 +8,7 @@ type CustomSelectProps = {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   options: { value: string; label: string }[];
-  error?: string;
+  error: string;
 };
 
 const CustomSelect: React.FC<CustomSelectProps> = ({
@@ -27,14 +28,9 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
         name={name}
         value={value}
         onChange={onChange}
-        defaultValue=""
+        className="select-input"
       >
-        <option
-          value=""
-          disabled
-        >
-          Select your option
-        </option>
+        <option value="">Select {label.toLowerCase()}</option>
         {options.map((option) => (
           <option
             key={option.value}

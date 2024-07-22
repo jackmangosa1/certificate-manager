@@ -1,14 +1,18 @@
-// src/components/Example2.tsx
-
-import React, { useState, useRef, useEffect } from 'react';
 import './Example1.css';
 import Table from '../../components/table/Table';
 import { useNavigate } from 'react-router-dom';
-import { certificates } from './certificateMockData';
+import { certificates } from '../add-certificate/certificateMockData';
 
-const Example2: React.FC = () => {
+const Example1: React.FC = () => {
   const headers = ['Supplier', 'Certificate type', 'Valid from', 'Valid to'];
   const navigate = useNavigate();
+
+  const handleEdit = (index: number) => {
+    const certificateToEdit = certificates[index];
+    navigate(`/add-certificate/${certificateToEdit.id}`);
+  };
+
+  const handleDelete = () => {};
 
   return (
     <div className="content">
@@ -22,6 +26,8 @@ const Example2: React.FC = () => {
       <Table
         headers={headers}
         data={certificates}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
       />
     </div>
   );
