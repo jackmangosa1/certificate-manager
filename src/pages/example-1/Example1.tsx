@@ -48,6 +48,18 @@ const Example1: React.FC = () => {
   const handleDelete = (index: number) => {
     setDeleteIndex(index);
     setIsModalOpen(true);
+<<<<<<< HEAD
+=======
+  };
+
+  const confirmDelete = () => {
+    if (deleteIndex !== null) {
+      deleteCertificate(deleteIndex);
+      console.log(`Deleted item at index ${deleteIndex}`);
+      setIsModalOpen(false);
+      setDeleteIndex(null);
+    }
+>>>>>>> 7ea68d9 (task5-KAN-53 add added custom hook to certificate table and form)
   };
 
   const handleConfirmDelete = () => {

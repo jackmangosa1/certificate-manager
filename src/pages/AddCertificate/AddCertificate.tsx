@@ -1,3 +1,5 @@
+import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './AddCertificate.css';
 import CustomDateInput from '../../components/CustomDateInput/CustomDateInput';
 
@@ -36,7 +38,6 @@ const AddCertificate: React.FC = () => {
                 />
               </svg>
             </button>
-
             <button className="clear-button">
               <svg
                 viewBox="0 0 352 512"
