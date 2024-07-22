@@ -9,6 +9,22 @@ type CertificateData = {
   validTo: Date | null;
 };
 
+type FormError = {
+  supplier: string;
+  certificateType: string;
+  validFrom: string;
+  validTo: string;
+  validRange: string;
+};
+
+type NewFormError = {
+  supplier: string;
+  certificateType: string;
+  validFrom: string;
+  validTo: string;
+  validRange: string;
+};
+
 const AddCertificate: React.FC = () => {
   const [certificateData, setCertificateData] = useState<CertificateData>({
     supplier: '',
@@ -19,6 +35,41 @@ const AddCertificate: React.FC = () => {
 
   const [savedData, setSavedData] = useState<CertificateData | null>(null);
   const [pdfPreview, setPdfPreview] = useState<string | null>(null);
+  const [errors, setErrors] = useState<FormError>({
+    supplier: '',
+    certificateType: '',
+    validFrom: '',
+    validTo: '',
+    validRange: '',
+  });
+
+  const validateForm = (): boolean => {
+    const newErrors: NewFormError = {
+      supplier: '',
+      certificateType: '',
+      validFrom: '',
+      validTo: '',
+      validRange: '',
+    };
+    if (!certificateData.supplier) newErrors.supplier = 'Supplier is required.';
+    if (!certificateData.certificateType)
+      newErrors.certificateType = 'Certificate type is required.';
+    if (!certificateData.validFrom)
+      newErrors.validFrom = 'Valid from date is required.';
+    if (!certificateData.validTo)
+      newErrors.validTo = 'Valid to date is required.';
+    if (
+      certificateData.validFrom &&
+      certificateData.validTo &&
+      certificateData.validFrom > certificateData.validTo
+    ) {
+      newErrors.validRange =
+        'Valid from date cannot be after the valid to date.';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleInput = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -38,8 +89,28 @@ const AddCertificate: React.FC = () => {
   };
 
   const handleSave = () => {
-    setSavedData(certificateData);
-    console.log('Data saved:', certificateData); // Debugging output
+    // setSavedData(certificateData);
+    // setErrors({
+    //   supplier: '',
+    //   certificateType: '',
+    //   validFrom: '',
+    //   validTo: '',
+    //   validRange: '',
+    // });
+    // console.log('Data saved:', certificateData); // Debugging output
+
+    if (validateForm()) {
+      setSavedData(certificateData);
+      console.log('Data saved:', certificateData); // Debugging output
+      // Clear errors if validation passes
+      setErrors({
+        supplier: '',
+        certificateType: '',
+        validFrom: '',
+        validTo: '',
+        validRange: '',
+      });
+    }
   };
 
   const handleReset = () => {
@@ -114,6 +185,7 @@ const AddCertificate: React.FC = () => {
             </button>
           </div>
         </div>
+        {errors.supplier && <p className="error-message">{errors.supplier}</p>}
 
         <div className="row">
           <label htmlFor="certificate-type">Certificate type</label>
@@ -134,6 +206,27 @@ const AddCertificate: React.FC = () => {
             <option value="type2">Type 2</option>
           </select>
         </div>
+        {errors.certificateType && (
+          <p className="error-message">{errors.certificateType}</p>
+        )}
+
+        {/* <div className="row">
+          <label htmlFor="start-date">Valid from</label>
+          <input
+            type="date"
+            id="start-date"
+            placeholder="Click to select date"
+          />
+        </div>
+
+        <div className="row">
+          <label htmlFor="end-date">Valid to</label>
+          <input
+            type="date"
+            id="end-date"
+            placeholder="Click to select date"
+          />
+        </div> */}
 
         <CustomDateInput
           id="start-date"
@@ -142,6 +235,10 @@ const AddCertificate: React.FC = () => {
           value={certificateData.validFrom}
           onChange={(date) => handleDateChange('validFrom', date)}
         />
+        {errors.validFrom && (
+          <p className="error-message">{errors.validFrom}</p>
+        )}
+
         <CustomDateInput
           id="end-date"
           label="Valid to"
@@ -149,6 +246,10 @@ const AddCertificate: React.FC = () => {
           value={certificateData.validTo}
           onChange={(date) => handleDateChange('validTo', date)}
         />
+        {errors.validTo && <p className="error-message">{errors.validTo}</p>}
+        {errors.validRange && (
+          <p className="error-message">{errors.validRange}</p>
+        )}
       </div>
       <div className="right-side">
         <div>
