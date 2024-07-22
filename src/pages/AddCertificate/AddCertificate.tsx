@@ -1,13 +1,9 @@
 import './AddCertificate.css';
 import CustomDateInput from '../../components/CustomDateInput/CustomDateInput';
 import { useState } from 'react';
-
-type CertificateData = {
-  supplier: string;
-  certificateType: string;
-  validFrom: Date | null;
-  validTo: Date | null;
-};
+import { Certificate } from '@/types/types';
+import { certificates } from '../example-1/Example1';
+import { useNavigate } from 'react-router-dom';
 
 type FormError = {
   supplier: string;
@@ -26,14 +22,14 @@ type NewFormError = {
 };
 
 const AddCertificate: React.FC = () => {
-  const [certificateData, setCertificateData] = useState<CertificateData>({
+  const navigate = useNavigate();
+  const [certificateData, setCertificateData] = useState<Certificate>({
     supplier: '',
     certificateType: '',
     validFrom: null,
     validTo: null,
   });
 
-  const [savedData, setSavedData] = useState<CertificateData | null>(null);
   const [pdfPreview, setPdfPreview] = useState<string | null>(null);
   const [errors, setErrors] = useState<FormError>({
     supplier: '',
@@ -51,6 +47,9 @@ const AddCertificate: React.FC = () => {
       validTo: '',
       validRange: '',
     };
+
+    console.log('Validating form data:', certificateData);
+
     if (!certificateData.supplier) newErrors.supplier = 'Supplier is required.';
     if (!certificateData.certificateType)
       newErrors.certificateType = 'Certificate type is required.';
@@ -67,8 +66,14 @@ const AddCertificate: React.FC = () => {
         'Valid from date cannot be after the valid to date.';
     }
 
+    console.log('Validation errors:', newErrors);
+
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+
+    const isValid = Object.values(newErrors).every((error) => error === '');
+    console.log('Form is valid:', isValid);
+
+    return isValid;
   };
 
   const handleInput = (
@@ -89,20 +94,14 @@ const AddCertificate: React.FC = () => {
   };
 
   const handleSave = () => {
-    // setSavedData(certificateData);
-    // setErrors({
-    //   supplier: '',
-    //   certificateType: '',
-    //   validFrom: '',
-    //   validTo: '',
-    //   validRange: '',
-    // });
-    // console.log('Data saved:', certificateData); // Debugging output
-
+    console.log('Attempting to save...');
     if (validateForm()) {
-      setSavedData(certificateData);
-      console.log('Data saved:', certificateData); // Debugging output
-      // Clear errors if validation passes
+      console.log('Form validated successfully');
+      setCertificateData(certificateData);
+      certificates.push(certificateData);
+      console.log('Certificate added:', certificateData);
+      console.log('Updated certificates array:', certificates);
+
       setErrors({
         supplier: '',
         certificateType: '',
@@ -110,6 +109,11 @@ const AddCertificate: React.FC = () => {
         validTo: '',
         validRange: '',
       });
+
+      navigate('/machine-learning/example1');
+    } else {
+      console.log('Form validation failed');
+      console.log('Current errors:', errors);
     }
   };
 
@@ -121,7 +125,6 @@ const AddCertificate: React.FC = () => {
       validTo: null,
     });
     setPdfPreview(null);
-    setSavedData(null);
   };
 
   const handlePdfUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -202,8 +205,10 @@ const AddCertificate: React.FC = () => {
             >
               Select your option
             </option>
-            <option value="type1">Type 1</option>
-            <option value="type2">Type 2</option>
+            <option value="Permission of Printing">
+              Permission of Printing
+            </option>
+            <option value="OHSAS 18001">OHSAS 18001</option>
           </select>
         </div>
         {errors.certificateType && (
@@ -277,25 +282,6 @@ const AddCertificate: React.FC = () => {
           <button onClick={handleSave}>Save</button>
           <button onClick={handleReset}>Reset</button>
         </div>
-
-        {savedData && (
-          <div className="saved-data">
-            <p>Supplier: {savedData.supplier}</p>
-            <p>Certificate Type: {savedData.certificateType}</p>
-            <p>
-              Valid From:{' '}
-              {savedData.validFrom
-                ? savedData.validFrom.toLocaleDateString()
-                : 'N/A'}
-            </p>
-            <p>
-              Valid To:{' '}
-              {savedData.validTo
-                ? savedData.validTo.toLocaleDateString()
-                : 'N/A'}
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );
