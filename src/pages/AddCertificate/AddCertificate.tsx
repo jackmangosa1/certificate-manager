@@ -62,8 +62,10 @@ const AddCertificate: React.FC = () => {
             >
               Select your option
             </option>
-            <option value="type1">Type 1</option>
-            <option value="type2">Type 2</option>
+            <option value="Permission of Printing">
+              Permission of Printing
+            </option>
+            <option value="OHSAS 18001">OHSAS 18001</option>
           </select>
         </div>
 
