@@ -13,7 +13,6 @@ const AddCertificate: React.FC = () => {
               id="supplier"
               className="supplier-input"
             />
-
             <button className="search-button">
               <svg
                 width="24"
