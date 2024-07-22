@@ -13,7 +13,6 @@ const AddCertificate: React.FC = () => {
               id="supplier"
               className="supplier-input"
             />
-
             <button className="search-button">
               <svg
                 width="24"
@@ -54,7 +53,9 @@ const AddCertificate: React.FC = () => {
           <label htmlFor="certificate-type">Certificate type</label>
           <select
             id="certificate-type"
-            defaultValue=""
+            name="certificateType"
+            value={certificateData.certificateType}
+            onChange={handleInput}
           >
             <option
               value=""
@@ -106,8 +107,8 @@ const AddCertificate: React.FC = () => {
         </div>
 
         <div>
-          <button>Save</button>
-          <button>Reset</button>
+          <button onClick={handleSave}>{isEditMode ? 'Update' : 'Save'}</button>
+          <button onClick={handleReset}>Reset</button>
         </div>
       </div>
     </div>
