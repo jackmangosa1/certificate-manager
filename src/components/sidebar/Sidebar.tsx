@@ -4,7 +4,7 @@ import './Sidebar.css';
 import { AppRoutes } from '../../routes/routes';
 import HomeIcon from '../../icons/home';
 import MenuIcon from '../../icons/menu';
-import RenderMenuItems from '../renderMenuItems/RenderMenuItems';
+import RenderMenuItems from '../sidebarMenuItems/sidebarMenuItems';
 
 type SidebarProps = {
   className: string;
