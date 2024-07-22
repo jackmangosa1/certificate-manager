@@ -1,4 +1,6 @@
-import React from 'react';
+// src/components/Example2.tsx
+
+import React, { useState, useRef, useEffect } from 'react';
 import './Example1.css';
 import Table from '../../components/table/Table';
 import { useNavigate } from 'react-router-dom';
@@ -25,4 +27,4 @@ const Example2: React.FC = () => {
   );
 };
 
-export default Example2;
+export default Example1;

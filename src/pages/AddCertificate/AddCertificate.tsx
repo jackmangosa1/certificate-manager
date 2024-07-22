@@ -3,7 +3,7 @@ import CustomDateInput from '../../components/CustomDateInput/CustomDateInput';
 import { useState } from 'react';
 import { Certificate } from '@/types/types';
 import { certificates } from '../example-1/Example1';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 type FormError = {
   supplier: string;
@@ -13,22 +13,24 @@ type FormError = {
   validRange: string;
 };
 
-type NewFormError = {
-  supplier: string;
-  certificateType: string;
-  validFrom: string;
-  validTo: string;
-  validRange: string;
-};
-
 const AddCertificate: React.FC = () => {
   const navigate = useNavigate();
-  const [certificateData, setCertificateData] = useState<Certificate>({
-    supplier: '',
-    certificateType: '',
-    validFrom: null,
-    validTo: null,
+  const location = useLocation();
+  const { state } = location;
+
+  const [certificateData, setCertificateData] = useState<Certificate>(() => {
+    if (state && state.editMode) {
+      return state.certificateData;
+    }
+    return {
+      supplier: '',
+      certificateType: '',
+      validFrom: null,
+      validTo: null,
+    };
   });
+
+  const [isEditMode] = useState<boolean>(state && state.editMode);
 
   const [pdfPreview, setPdfPreview] = useState<string | null>(null);
   const [errors, setErrors] = useState<FormError>({
@@ -40,15 +42,13 @@ const AddCertificate: React.FC = () => {
   });
 
   const validateForm = (): boolean => {
-    const newErrors: NewFormError = {
+    const newErrors: FormError = {
       supplier: '',
       certificateType: '',
       validFrom: '',
       validTo: '',
       validRange: '',
     };
-
-    console.log('Validating form data:', certificateData);
 
     if (!certificateData.supplier) newErrors.supplier = 'Supplier is required.';
     if (!certificateData.certificateType)
@@ -66,14 +66,9 @@ const AddCertificate: React.FC = () => {
         'Valid from date cannot be after the valid to date.';
     }
 
-    console.log('Validation errors:', newErrors);
-
     setErrors(newErrors);
 
-    const isValid = Object.values(newErrors).every((error) => error === '');
-    console.log('Form is valid:', isValid);
-
-    return isValid;
+    return Object.values(newErrors).every((error) => error === '');
   };
 
   const handleInput = (
@@ -94,13 +89,21 @@ const AddCertificate: React.FC = () => {
   };
 
   const handleSave = () => {
-    console.log('Attempting to save...');
     if (validateForm()) {
-      console.log('Form validated successfully');
-      setCertificateData(certificateData);
-      certificates.push(certificateData);
-      console.log('Certificate added:', certificateData);
-      console.log('Updated certificates array:', certificates);
+      if (isEditMode) {
+        // Find and update the existing certificate
+        const index = certificates.findIndex(
+          (cert) =>
+            cert.supplier === state.certificateData.supplier &&
+            cert.certificateType === state.certificateData.certificateType,
+        );
+        if (index !== -1) {
+          certificates[index] = certificateData;
+        }
+      } else {
+        // Add new certificate
+        certificates.push(certificateData);
+      }
 
       setErrors({
         supplier: '',
@@ -111,9 +114,6 @@ const AddCertificate: React.FC = () => {
       });
 
       navigate('/machine-learning/example1');
-    } else {
-      console.log('Form validation failed');
-      console.log('Current errors:', errors);
     }
   };
 
@@ -149,7 +149,6 @@ const AddCertificate: React.FC = () => {
               id="supplier"
               className="supplier-input"
             />
-
             <button className="search-button">
               <svg
                 width="24"
@@ -190,7 +189,9 @@ const AddCertificate: React.FC = () => {
           <label htmlFor="certificate-type">Certificate type</label>
           <select
             id="certificate-type"
-            defaultValue=""
+            name="certificateType"
+            value={certificateData.certificateType}
+            onChange={handleInput}
           >
             <option
               value=""
@@ -242,8 +243,8 @@ const AddCertificate: React.FC = () => {
         </div>
 
         <div>
-          <button>Save</button>
-          <button>Reset</button>
+          <button onClick={handleSave}>{isEditMode ? 'Update' : 'Save'}</button>
+          <button onClick={handleReset}>Reset</button>
         </div>
       </div>
     </div>
