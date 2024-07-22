@@ -1,13 +1,14 @@
 import './App.css';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Navbar from './components/Navbar/Navbar';
-import Sidebar from './components/Sidebar/Sidebar';
-import Container from './components/Container/Container';
+import Navbar from './components/navbar/Navbar';
+import Sidebar from './components/sidebar/Sidebar';
+import Container from './components/container/Container';
 import Example1 from './pages/example-1/Example1';
 import Example2 from './pages/example-2/Example2';
 import Example3 from './pages/example-3/Example3';
 import Start from './pages/start/Start';
 import { useState } from 'react';
+import { AppRoutes } from './routes/routes';
 
 export const App: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -32,23 +33,23 @@ export const App: React.FC = () => {
           <div className="content">
             <Routes>
               <Route
-                path="/"
+                path={AppRoutes.Home}
                 element={<Start />}
               />
               <Route
-                path="/machine-learning"
+                path={AppRoutes.MachineLearning}
                 element={<Example1 />}
               />
               <Route
-                path="/machine-learning/example1"
+                path={AppRoutes.Example1}
                 element={<Example1 />}
               />
               <Route
-                path="/machine-learning/example2"
+                path={AppRoutes.Example2}
                 element={<Example2 />}
               />
               <Route
-                path="/machine-learning/example3"
+                path={AppRoutes.Example3}
                 element={<Example3 />}
               />
             </Routes>
