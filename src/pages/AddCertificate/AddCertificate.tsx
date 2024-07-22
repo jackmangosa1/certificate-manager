@@ -215,24 +215,6 @@ const AddCertificate: React.FC = () => {
           <p className="error-message">{errors.certificateType}</p>
         )}
 
-        {/* <div className="row">
-          <label htmlFor="start-date">Valid from</label>
-          <input
-            type="date"
-            id="start-date"
-            placeholder="Click to select date"
-          />
-        </div>
-
-        <div className="row">
-          <label htmlFor="end-date">Valid to</label>
-          <input
-            type="date"
-            id="end-date"
-            placeholder="Click to select date"
-          />
-        </div> */}
-
         <CustomDateInput
           id="start-date"
           label="Valid from"

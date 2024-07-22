@@ -81,9 +81,9 @@
 }
 
 .row select {
-  appearance: none; /* Removes default arrow in some browsers */
-  -webkit-appearance: none; /* Removes default arrow in Chrome/Safari */
-  -moz-appearance: none; /* Removes default arrow in Firefox */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
   background-image: url('data:image/svg+xml;utf8,<svg fill="gray" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
   background-repeat: no-repeat;
   background-position-x: 100%;
@@ -178,7 +178,6 @@
   outline: none;
 }
 
-/* Styles to make the native date picker more visible */
 .hidden-date-input::-webkit-calendar-picker-indicator {
   width: 100%;
   height: 100%;
@@ -199,4 +198,10 @@
 .error-message {
   color: red;
   margin-top: -1rem;
+}
+
+@media screen and (max-width: 800px) {
+  .certificate-form-container {
+    flex-direction: column;
+  }
 }
