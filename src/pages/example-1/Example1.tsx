@@ -1,5 +1,3 @@
-// src/components/Example2.tsx
-
 import React, { useState, useRef, useEffect } from 'react';
 import './Example1.css';
 import Table from '../../components/table/Table';
