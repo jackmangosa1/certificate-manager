@@ -1,4 +1,3 @@
-// src/components/icons/HomeIcon.tsx
 import React from 'react';
 
 type HomeIconProps = {

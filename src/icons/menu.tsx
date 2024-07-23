@@ -1,4 +1,3 @@
-// src/components/icons/MenuIcon.tsx
 import React from 'react';
 
 type MenuIconProps = {
