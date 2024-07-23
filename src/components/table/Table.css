@@ -1,0 +1,27 @@
+.table-wrapper {
+  border: 1px solid var(--grayBorder);
+  border-radius: 0.25rem;
+  overflow-y: scroll;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--lightGrayBg);
+  color: var(--grayTexColor);
+}
+
+th {
+  font-weight: normal;
+  border-right: 1px solid var(--grayBorder);
+}
+
+th,
+td {
+  padding: 0.75rem 0.9rem;
+  text-align: left;
+  border-bottom: 1px solid var(--grayBorder);
+}
+
+tbody tr:hover {
+  background-color: #f5f5f5;
+}

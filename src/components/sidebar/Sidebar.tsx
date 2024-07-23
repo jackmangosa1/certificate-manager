@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import './Sidebar.css';
 import { AppRoutes } from '../../routes/routes';
-import HomeIcon from '../../icons/home';
-import MenuIcon from '../../icons/menu';
-import RenderMenuItems from '../sidebarMenuItems/sidebarMenuItems';
+import HomeIcon from '../../icons/Home';
+import MenuIcon from '../../icons/Menu';
+import SidebarMenuItems from '../sidebar-menu-items/SidebarMenuItems';
 
 type SidebarProps = {
   className: string;
@@ -58,7 +58,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
         const isExpanded = expandedItems.includes(item.title);
 
         return (
-          <RenderMenuItems
+          <SidebarMenuItems
             key={item.title}
             item={item}
             isExpanded={isExpanded}

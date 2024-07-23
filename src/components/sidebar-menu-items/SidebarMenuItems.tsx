@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import ArrowIcon from '../../icons/arrow-down';
+import ArrowIcon from '../../icons/ArrowDown';
 
 type MenuItem = {
   title: string;
@@ -8,14 +8,14 @@ type MenuItem = {
   children?: { title: string; path: string }[];
 };
 
-type RenderMenuItemProps = {
+type SidebarMenuItemsProps = {
   item: MenuItem;
   isExpanded: boolean;
   toggleExpanded: (title: string) => void;
   isSelected: boolean;
 };
 
-const RenderMenuItem: React.FC<RenderMenuItemProps> = ({
+const SidebarMenuItems: React.FC<SidebarMenuItemsProps> = ({
   item,
   isExpanded,
   toggleExpanded,
@@ -58,4 +58,4 @@ const RenderMenuItem: React.FC<RenderMenuItemProps> = ({
   );
 };
 
-export default RenderMenuItem;
+export default SidebarMenuItems;

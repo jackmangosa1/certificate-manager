@@ -17,5 +17,9 @@ ul {
 :root {
   --primaryColor: #3f9ac9;
   --secondaryColor: #265c79;
-  --grayColor: #e7e9ea;
+  --grayBg: #e7e9ea;
+  --lightGrayBg: #f9f9f9;
+  --grayTexColor: #666;
+  --grayBorder: #e0e0e0;
+  --darkTexColor: #444444;
 }
