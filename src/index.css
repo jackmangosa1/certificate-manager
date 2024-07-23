@@ -1,0 +1,21 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  overflow-x: hidden;
+}
+
+ul {
+  list-style: none;
+}
+:root {
+  --primaryColor: #3f9ac9;
+  --secondaryColor: #265c79;
+  --grayColor: #e7e9ea;
+}

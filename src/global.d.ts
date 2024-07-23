@@ -1,8 +1,9 @@
 declare global {
-  interface ImportMeta {
-    env: {
-      DEV: boolean;
-    };
+  namespace NodeJS {
+    interface ProcessEnv {
+      NODE_ENV: 'development' | 'production';
+      DEV: string;
+    }
   }
 }
 
