@@ -1,0 +1,165 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 5px;
+  width: 80%;
+  max-width: 37.5rem;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1rem 0rem 1rem;
+  background-color: #f5f5f5;
+  border: 1px solid var(--grayBorder);
+}
+.modal-header h2 {
+  font-size: 1rem;
+  color: var(--darkTexColor);
+}
+.close-button {
+  border: 1px solid var(--grayBorder);
+  padding: 0.1rem 2rem;
+  background-color: transparent;
+  color: gray;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: -1rem;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.search-criteria-header,
+.supplier-list-header {
+  display: flex;
+  align-items: center;
+  background-color: #3f9ac9;
+  color: white;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+}
+
+.dropdown-arrow {
+  margin-right: 1rem;
+  font-size: 0.6rem;
+}
+.search-criteria {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.search-fields {
+  display: flex;
+  gap: 0.5rem;
+}
+.search-field input {
+  width: 100%;
+  padding: 0.5rem 2rem 0.5rem 0.5rem;
+  border: 1px solid var(--grayBorder);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.search-field label {
+  color: var(--darkTexColor);
+  font-size: 0.8rem;
+  font-style: italic;
+  font-weight: 500;
+}
+
+.search-buttons {
+  margin-top: 1rem;
+}
+
+.search-buttons button,
+.modal-footer button {
+  background: none;
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f5;
+  padding: 0.5rem;
+  border: 1px solid rgb(207, 201, 201);
+  width: 10rem;
+}
+
+.search-buttons :nth-child(1) {
+  background-color: #265c79;
+  color: white;
+}
+
+.search-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.search-buttons {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+.search-button,
+.reset-button {
+  padding: 5px 20px;
+}
+
+.supplier-list table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow-y: scroll;
+}
+
+.supplier-list th,
+.supplier-list td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+.modal-footer :nth-child(1) {
+  background-color: #f0ad4e;
+  color: white;
+  border: none;
+  padding: 0.5rem;
+  width: 10rem;
+  cursor: pointer;
+}
+
+.cancel-button {
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+  width: 10rem;
+  cursor: pointer;
+}
