@@ -1,11 +1,11 @@
 import './AddCertificate.css';
-import CustomDateInput from '../../components/CustomDateInput/CustomDateInput';
+import CustomDateInput from '../../components/custom-date-input/CustomDateInput';
 import { useState } from 'react';
 import { Certificate } from '@/types/types';
 import { certificates } from '../example-1/Example1';
 import { useNavigate } from 'react-router-dom';
-import SearchIcon from '../../icons/SearchIcon';
-import CrossIcon from '../../icons/CrossIcon';
+import SupplierLookup from '../../components/supplier-lookup/SupplierLookup';
+import PdfViewer from '../../components/pdf-viewer/PdfViewer';
 
 type FormError = {
   supplier: string;
@@ -15,42 +15,33 @@ type FormError = {
   validRange: string;
 };
 
-type NewFormError = {
-  supplier: string;
-  certificateType: string;
-  validFrom: string;
-  validTo: string;
-  validRange: string;
+const initialErrorData: FormError = {
+  supplier: '',
+  certificateType: '',
+  validFrom: '',
+  validTo: '',
+  validRange: '',
+};
+
+const initialCertificateData: Certificate = {
+  supplier: '',
+  certificateType: '',
+  validFrom: null,
+  validTo: null,
 };
 
 const AddCertificate: React.FC = () => {
   const navigate = useNavigate();
-  const [certificateData, setCertificateData] = useState<Certificate>({
-    supplier: '',
-    certificateType: '',
-    validFrom: null,
-    validTo: null,
-  });
+
+  const [certificateData, setCertificateData] = useState<Certificate>(
+    initialCertificateData,
+  );
 
   const [pdfPreview, setPdfPreview] = useState<string | null>(null);
-  const [errors, setErrors] = useState<FormError>({
-    supplier: '',
-    certificateType: '',
-    validFrom: '',
-    validTo: '',
-    validRange: '',
-  });
+  const [errors, setErrors] = useState<FormError>(initialErrorData);
 
   const validateForm = (): boolean => {
-    const newErrors: NewFormError = {
-      supplier: '',
-      certificateType: '',
-      validFrom: '',
-      validTo: '',
-      validRange: '',
-    };
-
-    console.log('Validating form data:', certificateData);
+    const newErrors: FormError = { ...initialErrorData };
 
     if (!certificateData.supplier) newErrors.supplier = 'Supplier is required.';
     if (!certificateData.certificateType)
@@ -68,12 +59,9 @@ const AddCertificate: React.FC = () => {
         'Valid from date cannot be after the valid to date.';
     }
 
-    console.log('Validation errors:', newErrors);
-
     setErrors(newErrors);
 
     const isValid = Object.values(newErrors).every((error) => error === '');
-    console.log('Form is valid:', isValid);
 
     return isValid;
   };
@@ -96,75 +84,29 @@ const AddCertificate: React.FC = () => {
   };
 
   const handleSave = () => {
-    console.log('Attempting to save...');
     if (validateForm()) {
-      console.log('Form validated successfully');
-      setCertificateData(certificateData);
       certificates.push(certificateData);
-      console.log('Certificate added:', certificateData);
-      console.log('Updated certificates array:', certificates);
 
-      setErrors({
-        supplier: '',
-        certificateType: '',
-        validFrom: '',
-        validTo: '',
-        validRange: '',
-      });
+      setErrors(initialErrorData);
 
       navigate('/machine-learning/example1');
-    } else {
-      console.log('Form validation failed');
-      console.log('Current errors:', errors);
     }
   };
 
   const handleReset = () => {
-    setCertificateData({
-      supplier: '',
-      certificateType: '',
-      validFrom: null,
-      validTo: null,
-    });
+    setCertificateData(initialCertificateData);
     setPdfPreview(null);
-  };
-
-  const handlePdfUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setPdfPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+    setErrors(initialErrorData);
   };
 
   return (
     <div className="certificate-form-container">
       <div className="left-side">
-        <div className="row">
-          <label htmlFor="supplier">Supplier</label>
-          <div className="input-wrapper">
-            <input
-              type="text"
-              id="supplier"
-              name="supplier"
-              value={certificateData.supplier}
-              onChange={handleInput}
-              className="supplier-input"
-            />
-
-            <button className="search-button">
-              <SearchIcon />
-            </button>
-
-            <button className="clear-button">
-              <CrossIcon />
-            </button>
-          </div>
-        </div>
-        {errors.supplier && <p className="error-message">{errors.supplier}</p>}
+        <SupplierLookup
+          value={certificateData.supplier}
+          onChange={handleInput}
+          error={errors.supplier}
+        />
 
         <div className="row">
           <label htmlFor="certificate-type">Certificate type</label>
@@ -215,26 +157,10 @@ const AddCertificate: React.FC = () => {
         )}
       </div>
       <div className="right-side">
-        <div>
-          <label className="upload-button">
-            <input
-              type="file"
-              accept="application/pdf"
-              onChange={handlePdfUpload}
-              hidden
-            />
-            Upload
-          </label>
-          <div className="pdf-preview">
-            <iframe
-              src={pdfPreview || 'about:blank'}
-              width="100%"
-              height="100%"
-              title="PDF Preview"
-              className="preview-area"
-            ></iframe>
-          </div>
-        </div>
+        <PdfViewer
+          pdfPreview={pdfPreview}
+          setPdfPreview={setPdfPreview}
+        />
 
         <div>
           <button onClick={handleSave}>Save</button>
