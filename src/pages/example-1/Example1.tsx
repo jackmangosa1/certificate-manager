@@ -15,7 +15,7 @@ const Example1: React.FC = () => {
   const { certificates, deleteCertificate } = useCertificates();
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const columns: ColumnConfig<Certificate>[] = [
     { header: 'Supplier', accessor: (row: Certificate) => row.supplier },
@@ -35,8 +35,8 @@ const Example1: React.FC = () => {
     navigate(`${AppRoutes.AddCertificate}/${certificateToEdit.id}`);
   };
 
-  const handleDelete = (index: number) => {
-    setDeleteIndex(index);
+  const handleDelete = (id: number) => {
+    setDeleteId(id);
     setIsModalOpen(true);
   };
 
