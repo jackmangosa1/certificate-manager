@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { Certificate } from '@/types/types';
 import { certificates } from '../example-1/Example1';
 import { useNavigate } from 'react-router-dom';
-import SearchIcon from '@/icons/SearchIcon';
-import CrossIcon from '@/icons/CrossIcon';
+import SearchIcon from '../../icons/SearchIcon';
+import CrossIcon from '../../icons/CrossIcon';
 
 type FormError = {
   supplier: string;

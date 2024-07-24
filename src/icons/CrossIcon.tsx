@@ -6,8 +6,8 @@ type CrossIconProps = {
 
 const CrossIcon: React.FC<CrossIconProps> = ({
   className,
-  height = 24,
-  width = 24,
+  height = 18,
+  width = 18,
 }) => (
   <svg
     viewBox="0 0 352 512"
