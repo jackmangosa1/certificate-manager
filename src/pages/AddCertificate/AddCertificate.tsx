@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { Certificate } from '@/types/types';
 import { certificates } from '../example-1/Example1';
 import { useNavigate } from 'react-router-dom';
+import SearchIcon from '@/icons/SearchIcon';
+import CrossIcon from '@/icons/CrossIcon';
 
 type FormError = {
   supplier: string;
@@ -154,37 +156,11 @@ const AddCertificate: React.FC = () => {
             />
 
             <button className="search-button">
-              <svg
-                width="24"
-                height="24"
-                strokeWidth="1.5"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M15.5 15.5L19 19"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M5 11C5 14.3137 7.68629 17 11 17C12.6597 17 14.1621 16.3261 15.2483 15.237C16.3308 14.1517 17 12.654 17 11C17 7.68629 14.3137 5 11 5C7.68629 5 5 7.68629 5 11Z"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <SearchIcon />
             </button>
 
             <button className="clear-button">
-              <svg
-                viewBox="0 0 352 512"
-                xmlns="http://www.w3.org/2000/svg"
-                className="cancel-icon"
-              >
-                <path d="m242.72 256 100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0l-100.07 100.07-100.07-100.07c-12.28-12.28-32.19-12.28-44.48 0l-22.24 22.24c-12.28 12.28-12.28 32.19 0 44.48l100.07 100.07-100.07 100.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0l100.07-100.07 100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48z" />
-              </svg>
+              <CrossIcon />
             </button>
           </div>
         </div>
