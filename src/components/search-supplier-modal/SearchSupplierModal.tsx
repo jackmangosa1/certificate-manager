@@ -97,14 +97,18 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
       <div className="modal-content">
         <div className="modal-header">
           <h2>{translations.searchForSuppliers}</h2>
-          <button className="close-button" onClick={handleCloseModal}>
+          <button
+            className="close-button"
+            onClick={handleCloseModal}
+          >
             ×
           </button>
         </div>
         <div className="modal-body">
           <div className="search-criteria-container">
             <div className="search-criteria-header">
-              <span className="dropdown-arrow">▼</span> {translations.searchCriteria}
+              <span className="dropdown-arrow">▼</span>{' '}
+              {translations.searchCriteria}
             </div>
             <div className="search-criteria">
               <div className="search-fields">
@@ -137,10 +141,16 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
                 </div>
               </div>
               <div className="search-buttons">
-                <button className="supplier-search-button" onClick={handleSearch}>
+                <button
+                  className="supplier-search-button"
+                  onClick={handleSearch}
+                >
                   {translations.search}
                 </button>
-                <button className="reset-button" onClick={handleReset}>
+                <button
+                  className="reset-button"
+                  onClick={handleReset}
+                >
                   {translations.reset}
                 </button>
               </div>
@@ -169,7 +179,10 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
             >
               {translations.select}
             </button>
-            <button className="cancel-button" onClick={handleCloseModal}>
+            <button
+              className="cancel-button"
+              onClick={handleCloseModal}
+            >
               {translations.cancel}
             </button>
           </div>
