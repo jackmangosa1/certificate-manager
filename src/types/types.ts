@@ -11,3 +11,10 @@ export type Certificate = {
   validTo: Date | null;
   pdfData: string | null;
 };
+
+export interface Supplier {
+  id: number;
+  name: string;
+  index: string;
+  city: string;
+}
