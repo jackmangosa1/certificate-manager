@@ -15,7 +15,10 @@ const AddCertificate: React.FC = () => {
               id="supplier"
               className="supplier-input"
             />
-            <button className="search-button">
+            <button
+              className="search-button"
+              onClick={openModal}
+            >
               <svg
                 width="24"
                 height="24"
@@ -110,6 +113,12 @@ const AddCertificate: React.FC = () => {
           <button>Reset</button>
         </div>
       </div>
+
+      <SupplierSearchModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onSelect={handleSupplierSelect}
+      />
     </div>
   );
 };
