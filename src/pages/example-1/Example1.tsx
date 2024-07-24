@@ -17,7 +17,7 @@ const Example1: React.FC = () => {
   const { certificates, deleteCertificate } = useCertificates();
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const columns: ColumnConfig<Certificate>[] = [
     {
@@ -45,21 +45,9 @@ const Example1: React.FC = () => {
     navigate(`${AppRoutes.AddCertificate}/${certificateToEdit.id}`);
   };
 
-  const handleDelete = (index: number) => {
-    setDeleteIndex(index);
+  const handleDelete = (id: number) => {
+    setDeleteId(id);
     setIsModalOpen(true);
-<<<<<<< HEAD
-=======
-  };
-
-  const confirmDelete = () => {
-    if (deleteIndex !== null) {
-      deleteCertificate(deleteIndex);
-      console.log(`Deleted item at index ${deleteIndex}`);
-      setIsModalOpen(false);
-      setDeleteIndex(null);
-    }
->>>>>>> 7ea68d9 (task5-KAN-53 add added custom hook to certificate table and form)
   };
 
   const handleConfirmDelete = () => {
