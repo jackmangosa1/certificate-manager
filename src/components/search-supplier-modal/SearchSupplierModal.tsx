@@ -38,7 +38,6 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
   };
 
   const handleSearch = async () => {
-    await initializeDatabase();
     const results = await searchSuppliers(searchCriteria);
     setSearchResults(results);
   };
