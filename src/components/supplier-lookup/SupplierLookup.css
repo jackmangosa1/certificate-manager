@@ -1,0 +1,44 @@
+.supplier-input {
+  width: 100%;
+  padding: 0.5rem 2rem 0.5rem 0.5rem;
+  border: 1px solid var(--grayBorder);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.clear-button,
+.search-button {
+  position: absolute;
+  background: none;
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f5f5;
+  padding: 0.5rem;
+  border: 1px solid rgb(207, 201, 201);
+}
+
+.clear-button {
+  right: 0rem;
+}
+
+.search-button {
+  right: 2rem;
+}
+
+.cancel-icon {
+  height: 1rem;
+  width: 1rem;
+}
+
+.search-button svg {
+  height: 1.3rem;
+  width: 1.3rem;
+}
+
+.supplier-error-message {
+  color: red;
+  margin-top: 1rem;
+}

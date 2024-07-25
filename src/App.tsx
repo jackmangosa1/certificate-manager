@@ -7,6 +7,7 @@ import Example1 from './pages/example-1/Example1';
 import Example2 from './pages/example-2/Example2';
 import Example3 from './pages/example-3/Example3';
 import Start from './pages/start/Start';
+import AddCertificate from './pages/add-certificate/AddCertificate';
 import { useState } from 'react';
 import { AppRoutes } from './routes/routes';
 
@@ -51,6 +52,10 @@ export const App: React.FC = () => {
               <Route
                 path={AppRoutes.Example3}
                 element={<Example3 />}
+              />
+              <Route
+                path="/add-certificate"
+                element={<AddCertificate />}
               />
             </Routes>
           </div>

@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import './Container.css';
 
 type ContainerProps = {
@@ -11,5 +11,3 @@ const Container: React.FC<ContainerProps> = ({ children, className }) => {
 };
 
 export default Container;
-
-//

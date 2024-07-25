@@ -21,7 +21,20 @@ module.exports = (env) => ({
         use: ['source-map-loader'],
       },
       {
-        test: /\.css$/,
+        test: /\.module\.css$/, // For CSS Modules
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              modules: true,
+            },
+          },
+        ],
+      },
+      {
+        test: /\.css$/, // For regular CSS files
+        exclude: /\.module\.css$/,
         use: ['style-loader', 'css-loader'],
       },
     ],
