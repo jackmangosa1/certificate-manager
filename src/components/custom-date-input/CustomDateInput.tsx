@@ -1,12 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import './CustomDateInput.css';
 
-interface CustomDateInputProps {
+type CustomDateInputProps = {
   id: string;
   label: string;
   name: string;
   value: Date | null;
   onChange: (date: Date | null) => void;
-}
+  error?: string;
+};
 
 const CustomDateInput: React.FC<CustomDateInputProps> = ({
   id,
@@ -14,6 +16,7 @@ const CustomDateInput: React.FC<CustomDateInputProps> = ({
   name,
   value,
   onChange,
+  error,
 }) => {
   const [displayValue, setDisplayValue] = useState<string>('');
   const [showPicker, setShowPicker] = useState(false);
@@ -78,6 +81,7 @@ const CustomDateInput: React.FC<CustomDateInputProps> = ({
           </div>
         )}
       </div>
+      {error && <p className="date-error-message">{error}</p>}
     </div>
   );
 };

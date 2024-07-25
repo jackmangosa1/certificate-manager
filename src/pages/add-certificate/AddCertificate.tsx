@@ -1,11 +1,19 @@
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './AddCertificate.css';
 import CustomDateInput from '../../components/custom-date-input/CustomDateInput';
-import { useState } from 'react';
-import { Certificate } from '@/types/types';
-import { certificates } from '../example-1/Example1';
-import { useNavigate } from 'react-router-dom';
+import CustomSelect from '../../components/custom-select/CustomSelect';
+import { certificates } from '../example-1/certificateMockData';
 import SupplierLookup from '../../components/supplier-lookup/SupplierLookup';
 import PdfViewer from '../../components/pdf-viewer/PdfViewer';
+import { CertificateType } from '../../types/types';
+
+type Certificate = {
+  supplier: string;
+  certificateType: CertificateType | '';
+  validFrom: Date | null;
+  validTo: Date | null;
+};
 
 type FormError = {
   supplier: string;
@@ -29,6 +37,11 @@ const initialCertificateData: Certificate = {
   validFrom: null,
   validTo: null,
 };
+
+const certificateOptions = Object.values(CertificateType).map((value) => ({
+  value,
+  label: value,
+}));
 
 const AddCertificate: React.FC = () => {
   const navigate = useNavigate();
@@ -61,9 +74,7 @@ const AddCertificate: React.FC = () => {
 
     setErrors(newErrors);
 
-    const isValid = Object.values(newErrors).every((error) => error === '');
-
-    return isValid;
+    return Object.values(newErrors).every((error) => error === '');
   };
 
   const handleInput = (
@@ -72,7 +83,7 @@ const AddCertificate: React.FC = () => {
     const { name, value } = e.target;
     setCertificateData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: name === 'certificateType' ? (value as CertificateType) : value,
     }));
   };
 
@@ -86,9 +97,7 @@ const AddCertificate: React.FC = () => {
   const handleSave = () => {
     if (validateForm()) {
       certificates.push(certificateData);
-
       setErrors(initialErrorData);
-
       navigate('/machine-learning/example1');
     }
   };
@@ -108,30 +117,15 @@ const AddCertificate: React.FC = () => {
           error={errors.supplier}
         />
 
-        <div className="row">
-          <label htmlFor="certificate-type">Certificate type</label>
-          <select
-            id="certificate-type"
-            name="certificateType"
-            value={certificateData.certificateType}
-            onChange={handleInput}
-            defaultValue=""
-          >
-            <option
-              value=""
-              disabled
-            >
-              Select your option
-            </option>
-            <option value="Permission of Printing">
-              Permission of Printing
-            </option>
-            <option value="OHSAS 18001">OHSAS 18001</option>
-          </select>
-        </div>
-        {errors.certificateType && (
-          <p className="error-message">{errors.certificateType}</p>
-        )}
+        <CustomSelect
+          id="certificate-type"
+          label="Certificate type"
+          name="certificateType"
+          value={certificateData.certificateType}
+          onChange={handleInput}
+          options={certificateOptions}
+          error={errors.certificateType}
+        />
 
         <CustomDateInput
           id="start-date"
@@ -139,10 +133,8 @@ const AddCertificate: React.FC = () => {
           name="validFrom"
           value={certificateData.validFrom}
           onChange={(date) => handleDateChange('validFrom', date)}
+          error={errors.validFrom}
         />
-        {errors.validFrom && (
-          <p className="error-message">{errors.validFrom}</p>
-        )}
 
         <CustomDateInput
           id="end-date"
@@ -150,8 +142,9 @@ const AddCertificate: React.FC = () => {
           name="validTo"
           value={certificateData.validTo}
           onChange={(date) => handleDateChange('validTo', date)}
+          error={errors.validTo}
         />
-        {errors.validTo && <p className="error-message">{errors.validTo}</p>}
+
         {errors.validRange && (
           <p className="error-message">{errors.validRange}</p>
         )}
