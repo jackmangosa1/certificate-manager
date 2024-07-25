@@ -14,6 +14,7 @@ const AddCertificate: React.FC = () => {
               type="text"
               id="supplier"
               className="supplier-input"
+              readOnly={!!selectedSupplier}
             />
             <button
               className="search-button"
@@ -41,7 +42,10 @@ const AddCertificate: React.FC = () => {
                 />
               </svg>
             </button>
-            <button className="clear-button">
+            <button
+              className="clear-button"
+              onClick={handleClearSupplier}
+            >
               <svg
                 viewBox="0 0 352 512"
                 xmlns="http://www.w3.org/2000/svg"
