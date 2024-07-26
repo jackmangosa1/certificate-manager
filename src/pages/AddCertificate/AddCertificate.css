@@ -27,6 +27,31 @@
   font-weight: 500;
 }
 
+.row input,
+.row select {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--grayBorder);
+  outline: none;
+}
+
+.row select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg fill="gray" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+  background-repeat: no-repeat;
+  background-position-x: 100%;
+  background-position-y: center;
+  font-size: 16px;
+  color: #333;
+}
+
+.row select option {
+  background-color: #ffffff;
+  color: #333;
+  font-size: 1rem;
+}
+
 .input-wrapper {
   position: relative;
   display: flex;
@@ -71,31 +96,6 @@
 .search-button svg {
   height: 1.3rem;
   width: 1.3rem;
-}
-
-.row input,
-.row select {
-  padding: 0.5rem 1rem;
-  border: 1px solid var(--grayBorder);
-  outline: none;
-}
-
-.row select {
-  appearance: none; /* Removes default arrow in some browsers */
-  -webkit-appearance: none; /* Removes default arrow in Chrome/Safari */
-  -moz-appearance: none; /* Removes default arrow in Firefox */
-  background-image: url('data:image/svg+xml;utf8,<svg fill="gray" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
-  background-repeat: no-repeat;
-  background-position-x: 100%;
-  background-position-y: center;
-  font-size: 16px;
-  color: #333;
-}
-
-.row select option {
-  background-color: #ffffff;
-  color: #333;
-  font-size: 1rem;
 }
 
 .right-side {

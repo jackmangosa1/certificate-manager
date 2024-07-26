@@ -17,7 +17,7 @@
   color: #333;
 }
 
-.row select option {
+.row-select select option {
   background-color: #ffffff;
   color: #333;
   font-size: 1rem;
@@ -25,4 +25,55 @@
 .select-error-message {
   margin-top: 1rem;
   color: red;
+}
+.language-select select {
+  width: fit-content;
+}
+.language-select select option:first-child {
+  display: none;
+}
+
+.language-select {
+  display: flex;
+  flex-direction: row;
+}
+
+.row-select {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.row-select label {
+  color: var(--grayTexColor);
+  font-style: italic;
+  font-weight: 500;
+}
+
+.row-select input,
+.row-select select {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--grayBorder);
+  outline: none;
+}
+
+.row-select select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg fill="gray" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+  background-repeat: no-repeat;
+  background-position-x: 100%;
+  background-position-y: center;
+  font-size: 16px;
+  color: #333;
+}
+
+.row-select select option {
+  background-color: #ffffff;
+  color: #333;
+  font-size: 1rem;
 }

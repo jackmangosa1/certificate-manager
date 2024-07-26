@@ -1,4 +1,3 @@
-import React from 'react';
 import './CustomSelect.css';
 
 type CustomSelectProps = {
@@ -8,7 +7,8 @@ type CustomSelectProps = {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   options: { value: string; label: string }[];
-  error: string;
+  error?: string;
+  className?: string;
 };
 
 const CustomSelect: React.FC<CustomSelectProps> = ({
@@ -18,19 +18,25 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   value,
   onChange,
   options,
+  className,
   error,
 }) => {
   return (
-    <div className="row">
+    <div className={`${className} row-select`}>
       <label htmlFor={id}>{label}</label>
       <select
         id={id}
         name={name}
         value={value}
         onChange={onChange}
-        className="select-input"
+        defaultValue=""
       >
-        <option value="">Select {label.toLowerCase()}</option>
+        <option
+          value=""
+          disabled
+        >
+          Select your option
+        </option>
         {options.map((option) => (
           <option
             key={option.value}

@@ -12,9 +12,14 @@ export type Certificate = {
   pdfData: string | null;
 };
 
-export interface Supplier {
+export type Supplier = {
   id: number;
   name: string;
   index: string;
   city: string;
+};
+
+export enum Language {
+  ENGLISH = 'en',
+  GERMAN = 'de',
 }

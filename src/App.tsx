@@ -9,7 +9,7 @@ import Example3 from './pages/example-3/Example3';
 import Start from './pages/start/Start';
 import AddCertificate from './pages/add-certificate/AddCertificate';
 import { useState } from 'react';
-import { AppRoutes } from './routes/routes';
+import { LanguageProvider } from './context/LanguageContext';
 
 export const App: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -59,8 +59,8 @@ export const App: React.FC = () => {
               />
             </Routes>
           </div>
-        </div>
-      </Container>
-    </Router>
+        </Container>
+      </Router>
+    </LanguageProvider>
   );
 };
