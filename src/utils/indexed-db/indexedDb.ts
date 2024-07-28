@@ -1,12 +1,15 @@
 import { Certificate } from '../../types/types';
 import { Supplier } from '../../types/types';
 import { Participant } from '../../types/types';
+import { User } from '../../types/types';
+import { Language } from '../../types/types';
 
 const DB_NAME = 'CertificatesDB';
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 const CERTIFICATES_STORE_NAME = 'certificates';
 const SUPPLIERS_STORE_NAME = 'suppliers';
 const PARTICIPANTS_STORE_NAME = 'participants';
+const USERS_STORE_NAME = 'users';
 
 const openDB = (): Promise<IDBDatabase> => {
   return new Promise((resolve, reject) => {
@@ -28,6 +31,12 @@ const openDB = (): Promise<IDBDatabase> => {
       }
       if (!db.objectStoreNames.contains(PARTICIPANTS_STORE_NAME)) {
         db.createObjectStore(PARTICIPANTS_STORE_NAME, {
+          keyPath: 'id',
+          autoIncrement: true,
+        });
+      }
+      if (!db.objectStoreNames.contains(USERS_STORE_NAME)) {
+        db.createObjectStore(USERS_STORE_NAME, {
           keyPath: 'id',
           autoIncrement: true,
         });
@@ -178,7 +187,7 @@ const initializeParticipants = async () => {
       userId: 'jane.smith',
       department: 'Marketing',
       plant: '094',
-      email: "janesmuth@gmail.com"
+      email: 'janesmuth@gmail.com',
     },
     {
       id: 2,
@@ -187,7 +196,7 @@ const initializeParticipants = async () => {
       userId: 'alice.johnson',
       department: 'Sales',
       plant: '098',
-      email: "alicejohnson@gmail.com"
+      email: 'alicejohnson@gmail.com',
     },
   ];
 
@@ -205,6 +214,10 @@ export const initializeDatabase = async () => {
   const participants = await getParticipants();
   if (participants.length === 0) {
     await initializeParticipants();
+  }
+  const users = await getUsers();
+  if (users.length === 0) {
+    await initializeUsers();
   }
 };
 
@@ -291,4 +304,61 @@ export const searchParticipants = async (
       (!criteria.plant ||
         participant.plant.toLowerCase().includes(criteria.plant.toLowerCase())),
   );
+};
+
+export const addUser = async (user: Omit<User, 'id'>): Promise<number> => {
+  const db = await openDB();
+  const transaction = db.transaction(USERS_STORE_NAME, 'readwrite');
+  const store = transaction.objectStore(USERS_STORE_NAME);
+  const request = store.add(user);
+
+  return new Promise((resolve, reject) => {
+    request.onsuccess = () => resolve(request.result as number);
+    request.onerror = (event) => reject((event.target as IDBRequest).error);
+  });
+};
+
+export const getUsers = async (): Promise<User[]> => {
+  const db = await openDB();
+  const transaction = db.transaction(USERS_STORE_NAME, 'readonly');
+  const store = transaction.objectStore(USERS_STORE_NAME);
+  const request = store.getAll();
+
+  return new Promise((resolve, reject) => {
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = (event) => reject((event.target as IDBRequest).error);
+  });
+};
+
+const initializeUsers = async () => {
+  const sampleUsers: User[] = [
+    {
+      id: 1,
+      username: 'jackmangosa',
+      firstName: 'Jack',
+      lastName: 'Mangosa',
+      email: 'jack.mangosa@example.com',
+      language: Language.ENGLISH,
+    },
+    {
+      id: 2,
+      username: 'dan',
+      firstName: 'Dan',
+      lastName: 'Mangosa',
+      email: 'dan.mangosa@example.com',
+      language: Language.GERMAN,
+    },
+    {
+      id: 3,
+      username: 'cedmangosa',
+      firstName: 'Ced',
+      lastName: 'Mangosa',
+      email: 'ced.mangosa@example.com',
+      language: Language.ENGLISH,
+    },
+  ];
+
+  for (const user of sampleUsers) {
+    await addUser(user);
+  }
 };

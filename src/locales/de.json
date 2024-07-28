@@ -50,5 +50,6 @@
   "userId": "Benutzer-ID",
   "plant": "Werk",
   "personList": "Personenliste",
-  "noDataAvailable": "Keine Daten verfügbar"
+  "noDataAvailable": "Keine Daten verfügbar",
+  "user": "Benutzer"
 }

@@ -2,7 +2,9 @@ import './Navbar.css';
 import { Link } from 'react-router-dom';
 import CustomSelect from '../custom-select/CustomSelect';
 import { useLanguage } from '../../hooks/useLanguage';
-import { Language } from '../../types/types';
+import { useUsers } from '../../hooks/useUsers';
+import { Language, User } from '../../types/types';
+import { useState, useEffect } from 'react';
 
 type NavBarProps = {
   className: string;
@@ -11,15 +13,32 @@ type NavBarProps = {
 
 const Navbar: React.FC<NavBarProps> = ({ className, toggleSidebar }) => {
   const { language, setLanguage, translations } = useLanguage();
+  const { users } = useUsers();
+  const [selectedUser, setSelectedUser] = useState<string>('');
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setLanguage(e.target.value as Language);
+  };
+
+  const handleUserChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedUser(e.target.value);
   };
 
   const languageOptions = [
     { value: Language.ENGLISH, label: 'English' },
     { value: Language.GERMAN, label: 'Deutsch' },
   ];
+
+  const userOptions = users.map((user: User) => ({
+    value: String(user.id),
+    label: `${user.firstName} ${user.lastName}`,
+  }));
+
+  useEffect(() => {
+    if (users.length > 0 && !selectedUser) {
+      setSelectedUser(String(users[0].id));
+    }
+  }, [users, selectedUser]);
 
   return (
     <div className={`navbar ${className}`}>
@@ -51,6 +70,15 @@ const Navbar: React.FC<NavBarProps> = ({ className, toggleSidebar }) => {
           onChange={handleLanguageChange}
           options={languageOptions}
           className="language-select"
+        />
+        <CustomSelect
+          id="user"
+          label={translations.user}
+          name="user"
+          value={selectedUser}
+          onChange={handleUserChange}
+          options={userOptions}
+          className="user-select"
         />
       </div>
     </div>

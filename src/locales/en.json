@@ -50,5 +50,6 @@
   "userId": "User ID",
   "plant": "Plant",
   "personList": "Person list",
-  "noDataAvailable": "No data available"
+  "noDataAvailable": "No data available",
+  "user": "user"
 }

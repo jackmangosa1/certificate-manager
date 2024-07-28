@@ -34,3 +34,12 @@ export type Participant = {
   plant: string;
   email: string;
 };
+
+export type User = {
+  id: number;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  language: Language.ENGLISH | Language.GERMAN;
+};
