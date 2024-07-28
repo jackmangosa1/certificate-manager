@@ -34,10 +34,3 @@ export type Participant = {
   plant: string;
   email: string;
 };
-
-export interface Supplier {
-  id: number;
-  name: string;
-  index: string;
-  city: string;
-}
