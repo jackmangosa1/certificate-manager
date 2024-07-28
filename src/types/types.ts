@@ -9,7 +9,11 @@ export type Certificate = {
   certificateType: CertificateType | '';
   validFrom: Date | null;
   validTo: Date | null;
+<<<<<<< HEAD
   pdfData: string | null;
+=======
+  participants: Participant[];
+>>>>>>> 337662f (task8-KAN-78 Implemented Add-participant feature)
 };
 
 export type Supplier = {
@@ -23,3 +27,13 @@ export enum Language {
   ENGLISH = 'en',
   GERMAN = 'de',
 }
+
+export type Participant = {
+  id: number;
+  name: string;
+  firstName: string;
+  userId: string;
+  department: string;
+  plant: string;
+  email: string;
+};

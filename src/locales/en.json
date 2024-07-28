@@ -38,5 +38,16 @@
       "pdfData": "PDF is required"
     },
     "validRange": "Valid from date cannot be after the valid to date."
-  }
+  },
+  "assignedUsers": "Assigned users",
+  "addParticipant": "Add participant",
+  "name": "Name",
+  "department": "Department",
+  "email": "E-mail",
+  "searchForPerson": "Search for persons",
+  "firstName": "First name",
+  "userId": "User ID",
+  "plant": "Plant",
+  "personList": "Person list",
+  "noDataAvailable": "No data available"
 }
