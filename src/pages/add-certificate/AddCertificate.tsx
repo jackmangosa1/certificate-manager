@@ -1,19 +1,13 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import './AddCertificate.css';
 import CustomDateInput from '../../components/custom-date-input/CustomDateInput';
 import CustomSelect from '../../components/custom-select/CustomSelect';
-import { certificates } from '../example-1/certificateMockData';
+import { certificates } from './certificateMockData';
 import SupplierLookup from '../../components/supplier-lookup/SupplierLookup';
 import PdfViewer from '../../components/pdf-viewer/PdfViewer';
-import { CertificateType } from '../../types/types';
-
-type Certificate = {
-  supplier: string;
-  certificateType: CertificateType | '';
-  validFrom: Date | null;
-  validTo: Date | null;
-};
+import { Certificate, CertificateType } from '../../types/types';
+import { AppRoutes } from '../../routes/routes';
 
 type FormError = {
   supplier: string;
@@ -32,6 +26,7 @@ const initialErrorData: FormError = {
 };
 
 const initialCertificateData: Certificate = {
+  id: 0,
   supplier: '',
   certificateType: '',
   validFrom: null,
@@ -45,13 +40,26 @@ const certificateOptions = Object.values(CertificateType).map((value) => ({
 
 const AddCertificate: React.FC = () => {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
 
   const [certificateData, setCertificateData] = useState<Certificate>(
     initialCertificateData,
   );
-
+  const [editMode, setEditMode] = useState(false);
   const [pdfPreview, setPdfPreview] = useState<string | null>(null);
   const [errors, setErrors] = useState<FormError>(initialErrorData);
+
+  useEffect(() => {
+    if (id) {
+      const certificateToEdit = certificates.find(
+        (cert) => cert.id === parseInt(id),
+      );
+      if (certificateToEdit) {
+        setCertificateData(certificateToEdit);
+        setEditMode(true);
+      }
+    }
+  }, [id]);
 
   const validateForm = (): boolean => {
     const newErrors: FormError = { ...initialErrorData };
@@ -96,9 +104,21 @@ const AddCertificate: React.FC = () => {
 
   const handleSave = () => {
     if (validateForm()) {
-      certificates.push(certificateData);
+      if (editMode) {
+        const index = certificates.findIndex(
+          (cert) => cert.id === certificateData.id,
+        );
+        if (index !== -1) {
+          certificates[index] = certificateData;
+        }
+      } else {
+        certificateData.id = certificates.length
+          ? certificates[certificates.length - 1].id + 1
+          : 1;
+        certificates.push(certificateData);
+      }
       setErrors(initialErrorData);
-      navigate('/machine-learning/example1');
+      navigate(AppRoutes.Example1);
     }
   };
 
@@ -106,6 +126,7 @@ const AddCertificate: React.FC = () => {
     setCertificateData(initialCertificateData);
     setPdfPreview(null);
     setErrors(initialErrorData);
+    setEditMode(false);
   };
 
   return (
@@ -155,9 +176,19 @@ const AddCertificate: React.FC = () => {
           setPdfPreview={setPdfPreview}
         />
 
-        <div>
-          <button onClick={handleSave}>Save</button>
-          <button onClick={handleReset}>Reset</button>
+        <div className="button-container">
+          <button
+            onClick={handleSave}
+            className="save-button"
+          >
+            {editMode ? 'Update' : 'Save'}
+          </button>
+          <button
+            onClick={handleReset}
+            className="reset-button"
+          >
+            Reset
+          </button>
         </div>
       </div>
     </div>
