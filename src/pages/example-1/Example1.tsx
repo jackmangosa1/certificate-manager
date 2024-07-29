@@ -2,6 +2,7 @@ import './Example1.css';
 import Table from '../../components/table/Table';
 import { useNavigate } from 'react-router-dom';
 import { certificates } from '../add-certificate/certificateMockData';
+import { AppRoutes } from '../../routes/routes';
 
 const Example1: React.FC = () => {
   const headers = ['Supplier', 'Certificate type', 'Valid from', 'Valid to'];
@@ -9,7 +10,7 @@ const Example1: React.FC = () => {
 
   const handleEdit = (index: number) => {
     const certificateToEdit = certificates[index];
-    navigate(`/add-certificate/${certificateToEdit.id}`);
+    navigate(`${AppRoutes.AddCertificate}/${certificateToEdit.id}`);
   };
 
   const handleDelete = () => {};
@@ -19,7 +20,7 @@ const Example1: React.FC = () => {
       <h1 className="title">Example 1</h1>
       <button
         className="add-certificate-btn"
-        onClick={() => navigate('/add-certificate')}
+        onClick={() => navigate(AppRoutes.AddCertificate)}
       >
         New Certificate
       </button>
