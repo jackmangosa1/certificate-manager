@@ -1,17 +1,26 @@
-import './pdfViewer.css';
+import './PdfViewer.css';
 
 type PdfViewerProps = {
   pdfPreview: string | null;
   setPdfPreview: (preview: string | null) => void;
+  onPdfChange: (pdfData: string | null) => void;
+  error?: string;
 };
 
-const PdfViewer: React.FC<PdfViewerProps> = ({ pdfPreview, setPdfPreview }) => {
+const PdfViewer: React.FC<PdfViewerProps> = ({
+  pdfPreview,
+  setPdfPreview,
+  onPdfChange,
+  error,
+}) => {
   const handlePdfUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        setPdfPreview(reader.result as string);
+        const pdfData = reader.result as string;
+        setPdfPreview(pdfData);
+        onPdfChange(pdfData);
       };
       reader.readAsDataURL(file);
     }
@@ -28,6 +37,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({ pdfPreview, setPdfPreview }) => {
         />
         Upload
       </label>
+
       <div className="pdf-preview">
         <iframe
           src={pdfPreview || 'about:blank'}
@@ -37,6 +47,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({ pdfPreview, setPdfPreview }) => {
           className="preview-area"
         ></iframe>
       </div>
+      {error && <p className="pdf-error-message">{error}</p>}
     </div>
   );
 };

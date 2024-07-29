@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './AddCertificate.css';
 import CustomDateInput from '../../components/custom-date-input/CustomDateInput';
 import CustomSelect from '../../components/custom-select/CustomSelect';
-import { certificates } from './certificateMockData';
 import SupplierLookup from '../../components/supplier-lookup/SupplierLookup';
 import PdfViewer from '../../components/pdf-viewer/PdfViewer';
 import { Certificate, CertificateType } from '../../types/types';
 import { AppRoutes } from '../../routes/routes';
+import { useCertificates } from '../../hooks/useCertificates';
+import { getCertificateById } from '../../db/indexedDb';
 
 type FormError = {
   supplier: string;
@@ -15,6 +16,7 @@ type FormError = {
   validFrom: string;
   validTo: string;
   validRange: string;
+  pdfData: string;
 };
 
 const initialErrorData: FormError = {
@@ -23,14 +25,15 @@ const initialErrorData: FormError = {
   validFrom: '',
   validTo: '',
   validRange: '',
+  pdfData: '',
 };
 
-const initialCertificateData: Certificate = {
-  id: 0,
+const initialCertificateData: Omit<Certificate, 'id'> = {
   supplier: '',
   certificateType: '',
   validFrom: null,
   validTo: null,
+  pdfData: null,
 };
 
 const certificateOptions = Object.values(CertificateType).map((value) => ({
@@ -41,24 +44,27 @@ const certificateOptions = Object.values(CertificateType).map((value) => ({
 const AddCertificate: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
+  const { addCertificate, updateCertificate } = useCertificates();
 
-  const [certificateData, setCertificateData] = useState<Certificate>(
-    initialCertificateData,
-  );
+  const [certificateData, setCertificateData] = useState<
+    Omit<Certificate, 'id'>
+  >(initialCertificateData);
   const [editMode, setEditMode] = useState(false);
   const [pdfPreview, setPdfPreview] = useState<string | null>(null);
   const [errors, setErrors] = useState<FormError>(initialErrorData);
 
   useEffect(() => {
-    if (id) {
-      const certificateToEdit = certificates.find(
-        (cert) => cert.id === parseInt(id),
-      );
-      if (certificateToEdit) {
-        setCertificateData(certificateToEdit);
-        setEditMode(true);
+    const fetchCertificate = async () => {
+      if (id) {
+        const fetchedCertificate = await getCertificateById(parseInt(id));
+        if (fetchedCertificate) {
+          setCertificateData(fetchedCertificate);
+          setEditMode(true);
+          setPdfPreview(fetchedCertificate.pdfData);
+        }
       }
-    }
+    };
+    fetchCertificate();
   }, [id]);
 
   const validateForm = (): boolean => {
@@ -79,7 +85,9 @@ const AddCertificate: React.FC = () => {
       newErrors.validRange =
         'Valid from date cannot be after the valid to date.';
     }
-
+    if (!certificateData.pdfData) {
+      newErrors.pdfData = 'PDF file is required.';
+    }
     setErrors(newErrors);
 
     return Object.values(newErrors).every((error) => error === '');
@@ -102,23 +110,19 @@ const AddCertificate: React.FC = () => {
     }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (validateForm()) {
-      if (editMode) {
-        const index = certificates.findIndex(
-          (cert) => cert.id === certificateData.id,
-        );
-        if (index !== -1) {
-          certificates[index] = certificateData;
+      try {
+        if (editMode && id) {
+          await updateCertificate(parseInt(id), certificateData);
+        } else {
+          await addCertificate(certificateData);
         }
-      } else {
-        certificateData.id = certificates.length
-          ? certificates[certificates.length - 1].id + 1
-          : 1;
-        certificates.push(certificateData);
+        setErrors(initialErrorData);
+        navigate(AppRoutes.Example1);
+      } catch (error) {
+        console.error('Error saving certificate:', error);
       }
-      setErrors(initialErrorData);
-      navigate(AppRoutes.Example1);
     }
   };
 
@@ -127,6 +131,13 @@ const AddCertificate: React.FC = () => {
     setPdfPreview(null);
     setErrors(initialErrorData);
     setEditMode(false);
+  };
+
+  const handlePdfChange = (pdfData: string | null) => {
+    setCertificateData((prevData) => ({
+      ...prevData,
+      pdfData,
+    }));
   };
 
   return (
@@ -174,6 +185,8 @@ const AddCertificate: React.FC = () => {
         <PdfViewer
           pdfPreview={pdfPreview}
           setPdfPreview={setPdfPreview}
+          onPdfChange={handlePdfChange}
+          error={errors.pdfData}
         />
 
         <div className="button-container">

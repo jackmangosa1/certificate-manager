@@ -1,44 +1,62 @@
-import { useState } from 'react';
-import { Certificate } from '@/types/types';
+import { useState, useEffect, useCallback } from 'react';
+import { Certificate } from '../types/types';
+import {
+  addCertificate as addCertificateDB,
+  getCertificates as getCertificatesDB,
+  updateCertificate as updateCertificateDB,
+  deleteCertificate as deleteCertificateDB,
+  getCertificateById,
+} from '../db/indexedDb';
 
 export const useCertificates = () => {
-  const [certificates, setCertificates] = useState<Certificate[]>([
-    {
-      supplier: 'DAIMLER AG, 1, Berlin',
-      certificateType: 'Permission of Printing',
-      validFrom: new Date('2017-08-21'),
-      validTo: new Date('2017-08-26'),
-    },
-    {
-      supplier: 'ANDEMIS GmbH, 1, Stuttgart',
-      certificateType: 'OHSAS 18001',
-      validFrom: new Date('2017-08-18'),
-      validTo: new Date('2017-08-24'),
-    },
-    {
-      supplier: 'ANDEMIS GmbH, 1, Stuttgart',
-      certificateType: 'Permission of Printing',
-      validFrom: new Date('2017-10-04'),
-      validTo: new Date('2017-10-10'),
-    },
-  ]);
+  const [certificates, setCertificates] = useState<Certificate[]>([]);
 
-  const addCertificate = (certificate: Certificate) => {
-    setCertificates([...certificates, certificate]);
+  const fetchCertificates = useCallback(async () => {
+    try {
+      const fetchedCertificates = await getCertificatesDB();
+      setCertificates(fetchedCertificates);
+    } catch (error) {
+      console.error('Error fetching certificates:', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCertificates();
+  }, [fetchCertificates]);
+
+  const addCertificate = async (certificate: Omit<Certificate, 'id'>) => {
+    try {
+      const id = await addCertificateDB(certificate);
+      const newCertificate = await getCertificateById(id);
+      if (newCertificate) {
+        setCertificates((prev) => [...prev, newCertificate]);
+      }
+    } catch (error) {
+      console.error('Error adding certificate:', error);
+      throw error;
+    }
   };
 
-  const updateCertificate = (
-    index: number,
-    updatedCertificate: Certificate,
+  const updateCertificate = async (
+    id: number,
+    updatedCertificate: Omit<Certificate, 'id'>,
   ) => {
-    const newCertificates = [...certificates];
-    newCertificates[index] = updatedCertificate;
-    setCertificates(newCertificates);
+    try {
+      await updateCertificateDB(id, updatedCertificate);
+      fetchCertificates();
+    } catch (error) {
+      console.error('Error updating certificate:', error);
+      throw error;
+    }
   };
 
-  const deleteCertificate = (index: number) => {
-    const newCertificates = certificates.filter((_, i) => i !== index);
-    setCertificates(newCertificates);
+  const deleteCertificate = async (id: number) => {
+    try {
+      await deleteCertificateDB(id);
+      setCertificates((prev) => prev.filter((cert) => cert.id !== id));
+    } catch (error) {
+      console.error('Error deleting certificate:', error);
+    }
   };
 
   return { certificates, addCertificate, updateCertificate, deleteCertificate };
