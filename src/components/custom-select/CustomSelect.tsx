@@ -19,7 +19,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   value,
   onChange,
   options,
-  className,
+  className = '',
   error,
 }) => {
   const { translations } = useLanguage();
@@ -31,7 +31,6 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
         name={name}
         value={value}
         onChange={onChange}
-        defaultValue=""
       >
         <option
           value=""

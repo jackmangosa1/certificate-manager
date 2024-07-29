@@ -11,6 +11,7 @@ import AddCertificate from './pages/add-certificate/AddCertificate';
 import { useState } from 'react';
 import { AppRoutes } from './routes/routes';
 import { LanguageProvider } from './context/LanguageContext';
+import { UserProvider } from './context/UserContext';
 
 export const App: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
