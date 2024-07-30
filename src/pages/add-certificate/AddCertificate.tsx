@@ -1,14 +1,16 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import './AddCertificate.css';
 import CustomDateInput from '../../components/custom-date-input/CustomDateInput';
 import CustomSelect from '../../components/custom-select/CustomSelect';
+import SupplierSearchModal from '../../components/search-supplier-modal/SearchSupplierModal';
 import SupplierLookup from '../../components/supplier-lookup/SupplierLookup';
 import PdfViewer from '../../components/pdf-viewer/PdfViewer';
 import { Certificate, CertificateType } from '../../types/types';
 import { AppRoutes } from '../../routes/routes';
 import { useCertificates } from '../../hooks/useCertificates';
 import { getCertificateById } from '../../db/indexedDb';
+import { Supplier } from '../../types/types';
 
 type FormError = {
   supplier: string;
@@ -45,6 +47,10 @@ const AddCertificate: React.FC = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { addCertificate, updateCertificate } = useCertificates();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   const [certificateData, setCertificateData] = useState<
     Omit<Certificate, 'id'>
@@ -126,18 +132,32 @@ const AddCertificate: React.FC = () => {
     }
   };
 
-  const handleReset = () => {
-    setCertificateData(initialCertificateData);
-    setPdfPreview(null);
-    setErrors(initialErrorData);
-    setEditMode(false);
-  };
-
   const handlePdfChange = (pdfData: string | null) => {
     setCertificateData((prevData) => ({
       ...prevData,
       pdfData,
     }));
+  };
+
+  const handleSupplierSelect = (supplier: Supplier) => {
+    setCertificateData((prevData) => ({
+      ...prevData,
+      supplier: supplier.name,
+    }));
+    closeModal();
+  };
+
+  const handleClearSupplier = () => {
+    setCertificateData((prevData) => ({
+      ...prevData,
+      supplier: '', 
+    }));
+    
+  };
+
+  const handleReset = () => {
+    setCertificateData(initialCertificateData);
+    setPdfPreview(null);
   };
 
   return (
@@ -147,6 +167,13 @@ const AddCertificate: React.FC = () => {
           value={certificateData.supplier}
           onChange={handleInput}
           error={errors.supplier}
+          onSearch={openModal}
+          onClear={handleClearSupplier} 
+        />
+        <SupplierSearchModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          onSelect={handleSupplierSelect}
         />
 
         <CustomSelect

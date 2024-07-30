@@ -189,3 +189,8 @@
   height: 1rem;
   width: 1rem;
 }
+
+.select-button.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}

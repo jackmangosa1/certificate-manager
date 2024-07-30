@@ -7,12 +7,16 @@ type SupplierLookupProps = {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error: string;
+  onSearch: () => void;
+  onClear: () => void;
 };
 
 const SupplierLookup: React.FC<SupplierLookupProps> = ({
   value,
   onChange,
+  onSearch,
   error,
+  onClear,
 }) => {
   return (
     <div className="row">
@@ -26,10 +30,16 @@ const SupplierLookup: React.FC<SupplierLookupProps> = ({
           onChange={onChange}
           className="supplier-input"
         />
-        <button className="search-button">
+        <button
+          className="search-button"
+          onClick={onSearch}
+        >
           <SearchIcon />
         </button>
-        <button className="clear-button">
+        <button
+          className="clear-button"
+          onClick={onClear}
+        >
           <CrossIcon />
         </button>
       </div>

@@ -5,7 +5,7 @@ import {
   getSuppliers,
   searchSuppliers as searchSuppliersInDB,
   initializeDatabase,
-} from '../utils/indexed-db/indexedDb';
+} from '../db/indexedDb';
 
 export const useSuppliers = () => {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);

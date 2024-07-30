@@ -1,8 +1,9 @@
-import { Certificate } from '../types/types';
+import { Certificate, Supplier } from '../types/types';
 
 const DB_NAME = 'CertificatesDB';
 const DB_VERSION = 5;
 const CERTIFICATES_STORE_NAME = 'certificates';
+const SUPPLIERS_STORE_NAME = 'suppliers';
 
 const openDB = (): Promise<IDBDatabase> => {
   return new Promise((resolve, reject) => {
@@ -12,6 +13,12 @@ const openDB = (): Promise<IDBDatabase> => {
       const db = (event.target as IDBOpenDBRequest).result;
       if (!db.objectStoreNames.contains(CERTIFICATES_STORE_NAME)) {
         db.createObjectStore(CERTIFICATES_STORE_NAME, {
+          keyPath: 'id',
+          autoIncrement: true,
+        });
+      }
+      if (!db.objectStoreNames.contains(SUPPLIERS_STORE_NAME)) {
+        db.createObjectStore(SUPPLIERS_STORE_NAME, {
           keyPath: 'id',
           autoIncrement: true,
         });
@@ -100,4 +107,63 @@ export const getCertificateById = async (
     request.onsuccess = () => resolve(request.result);
     request.onerror = (event) => reject((event.target as IDBRequest).error);
   });
+};
+
+export const addSupplier = async (
+  supplier: Omit<Supplier, 'id'>,
+): Promise<number> => {
+  const db = await openDB();
+  const transaction = db.transaction(SUPPLIERS_STORE_NAME, 'readwrite');
+  const store = transaction.objectStore(SUPPLIERS_STORE_NAME);
+  const request = store.add(supplier);
+
+  return new Promise((resolve, reject) => {
+    request.onsuccess = () => resolve(request.result as number);
+    request.onerror = (event) => reject((event.target as IDBRequest).error);
+  });
+};
+
+export const getSuppliers = async (): Promise<Supplier[]> => {
+  const db = await openDB();
+  const transaction = db.transaction(SUPPLIERS_STORE_NAME, 'readonly');
+  const store = transaction.objectStore(SUPPLIERS_STORE_NAME);
+  const request = store.getAll();
+  return new Promise((resolve, reject) => {
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = (event) => reject((event.target as IDBRequest).error);
+  });
+};
+
+export const searchSuppliers = async (
+  criteria: Partial<Supplier>,
+): Promise<Supplier[]> => {
+  const suppliers = await getSuppliers();
+  return suppliers.filter(
+    (supplier) =>
+      (!criteria.name ||
+        supplier.name.toLowerCase().includes(criteria.name.toLowerCase())) &&
+      (!criteria.index || supplier.index.includes(criteria.index)) &&
+      (!criteria.city ||
+        supplier.city.toLowerCase().includes(criteria.city.toLowerCase())),
+  );
+};
+
+const initializeSuppliers = async () => {
+  const sampleSuppliers: Supplier[] = [
+    { id: 1, name: 'ANDEMIS GmbH', index: '1', city: 'Stuttgart' },
+    { id: 2, name: 'Acme Corp', index: '2', city: 'Berlin' },
+    { id: 3, name: 'TechnoSoft', index: '3', city: 'Munich' },
+  ];
+
+  for (const supplier of sampleSuppliers) {
+    await addSupplier(supplier);
+  }
+};
+
+export const initializeDatabase = async () => {
+  await openDB();
+  const suppliers = await getSuppliers();
+  if (suppliers.length === 0) {
+    await initializeSuppliers();
+  }
 };

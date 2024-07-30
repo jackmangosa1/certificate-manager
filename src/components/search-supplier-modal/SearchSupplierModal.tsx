@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSuppliers } from '../../hooks/useSuppliers';
-import { initializeDatabase } from '../../utils/indexed-db/indexedDb';
+import { initializeDatabase } from '../../db/indexedDb';
 import './SearchSupplierModal.css';
 import { Supplier } from '@/types/types';
+import Table from '../../components/table/Table';
 
 type SupplierSearchModalProps = {
   isOpen: boolean;
@@ -22,22 +23,7 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
     index: '',
     city: '',
   });
-  const [initialResults, setInitialResults] = useState<Supplier[]>([]);
-  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(
-    null,
-  );
-
-  useEffect(() => {
-    if (isOpen) {
-      const initializeAndFetch = async () => {
-        await initializeDatabase();
-        const results = await searchSuppliers({});
-        setInitialResults(results);
-        setSearchResults(results);
-      };
-      initializeAndFetch();
-    }
-  }, [isOpen]);
+  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
 
   if (!isOpen) return null;
 
@@ -50,13 +36,14 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
   };
 
   const handleSearch = async () => {
+    await initializeDatabase();
     const results = await searchSuppliers(searchCriteria);
     setSearchResults(results);
   };
 
   const handleReset = () => {
     setSearchCriteria({ name: '', index: '', city: '' });
-    setSearchResults(initialResults);
+    setSearchResults([]);
   };
 
   const handleRadioChange = (supplier: Supplier) => {
@@ -76,15 +63,30 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
     onClose();
   };
 
+  const columns = [
+    { header: 'Supplier name', accessor: (supplier: Supplier) => supplier.name },
+    { header: 'Supplier index', accessor: (supplier: Supplier) => supplier.index },
+    { header: 'City', accessor: (supplier: Supplier) => supplier.city },
+  ];
+
+  const actionColumn = {
+    render: (supplier: Supplier) => (
+      <input
+        type="radio"
+        name="selectedSupplier"
+        value={supplier.id}
+        checked={selectedSupplier?.id === supplier.id}
+        onChange={() => handleRadioChange(supplier)}
+      />
+    ),
+  };
+
   return (
     <div className="modal-overlay">
       <div className="modal-content">
         <div className="modal-header">
           <h2>Search for suppliers</h2>
-          <button
-            className="close-button"
-            onClick={handleCloseModal}
-          >
+          <button className="close-button" onClick={handleCloseModal}>
             ×
           </button>
         </div>
@@ -124,16 +126,10 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
                 </div>
               </div>
               <div className="search-buttons">
-                <button
-                  className="supplier-search-button"
-                  onClick={handleSearch}
-                >
+                <button className="supplier-search-button" onClick={handleSearch}>
                   Search
                 </button>
-                <button
-                  className="reset-button"
-                  onClick={handleReset}
-                >
+                <button className="reset-button" onClick={handleReset}>
                   Reset
                 </button>
               </div>
@@ -146,50 +142,22 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
               Supplier list
             </div>
             <div className="supplier-list">
-              <table>
-                <thead>
-                  <tr>
-                    <th></th>
-                    <th>Supplier name</th>
-                    <th>Supplier index</th>
-                    <th>City</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {searchResults.map((supplier) => (
-                    <tr key={supplier.id}>
-                      <td>
-                        <td>
-                          <input
-                            type="radio"
-                            name="selectedSupplier"
-                            value={supplier.id}
-                            checked={selectedSupplier?.id === supplier.id}
-                            onChange={() => handleRadioChange(supplier)}
-                          />
-                        </td>
-                      </td>
-                      <td>{supplier.name}</td>
-                      <td>{supplier.index}</td>
-                      <td>{supplier.city}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <Table
+                columns={columns}
+                data={searchResults}
+                actionColumn={actionColumn}
+              />
             </div>
           </div>
           <div className="modal-footer">
             <button
-              className="select-button"
+              className={`select-button ${!selectedSupplier ? 'disabled' : ''}`}
               onClick={handleSelect}
               disabled={!selectedSupplier}
             >
               Select
             </button>
-            <button
-              className="cancel-button"
-              onClick={handleCloseModal}
-            >
+            <button className="cancel-button" onClick={handleCloseModal}>
               Cancel
             </button>
           </div>

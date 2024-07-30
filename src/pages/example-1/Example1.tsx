@@ -1,14 +1,34 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import './Example1.css';
 import Table from '../../components/table/Table';
 import { useNavigate } from 'react-router-dom';
 import { AppRoutes } from '../../routes/routes';
 import { useCertificates } from '../../hooks/useCertificates';
+import ActionMenu from '../../components/action-menu/ActionMenu';
+import GearIcon from '../../icons/GearIcon';
+import ConfirmationModal from '../../components/confirmation-modal/ConfirmationModal';
+import { Certificate } from '../../types/types';
+import { ColumnConfig } from '../../components/table/Table';
 
 const Example1: React.FC = () => {
-  const headers = ['Supplier', 'Certificate type', 'Valid from', 'Valid to'];
   const navigate = useNavigate();
   const { certificates, deleteCertificate } = useCertificates();
+  const [activeMenu, setActiveMenu] = useState<number | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
+
+  const columns: ColumnConfig<Certificate>[] = [
+    { header: 'Supplier', accessor: (row: Certificate) => row.supplier },
+    { header: 'Certificate type', accessor: (row: Certificate) => row.certificateType },
+    {
+      header: 'Valid from',
+      accessor: (row: Certificate) => new Date(row.validFrom as Date).toLocaleDateString(),
+    },
+    {
+      header: 'Valid to',
+      accessor: (row: Certificate) => new Date(row.validTo as Date).toLocaleDateString(),
+    },
+  ];
 
   const handleEdit = (index: number) => {
     const certificateToEdit = certificates[index];
@@ -16,10 +36,34 @@ const Example1: React.FC = () => {
   };
 
   const handleDelete = (index: number) => {
-    const certificateToDelete = certificates[index];
-    if (certificateToDelete.id !== undefined) {
-      deleteCertificate(certificateToDelete.id);
+    setDeleteIndex(index);
+    setIsModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteIndex !== null) {
+      const certificateToDelete = certificates[deleteIndex];
+      if (certificateToDelete.id !== undefined) {
+        deleteCertificate(certificateToDelete.id);
+      }
     }
+    setIsModalOpen(false);
+  };
+
+  const actionColumn = {
+    render: (_row: any, index: number) => (
+      <div className="menu-wrapper">
+        <div onClick={() => setActiveMenu(activeMenu === index ? null : index)}>
+          <GearIcon className="gear-icon" />
+        </div>
+        {activeMenu === index && (
+          <ActionMenu
+            onEdit={() => handleEdit(index)}
+            onDelete={() => handleDelete(index)}
+          />
+        )}
+      </div>
+    ),
   };
 
   return (
@@ -32,10 +76,15 @@ const Example1: React.FC = () => {
         New Certificate
       </button>
       <Table
-        headers={headers}
+        columns={columns}
         data={certificates}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
+        actionColumn={actionColumn}
+      />
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        message="Are you sure you want to delete this certificate?"
       />
     </div>
   );
