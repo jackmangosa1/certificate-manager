@@ -23,7 +23,9 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
     index: '',
     city: '',
   });
-  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(null);
+  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(
+    null,
+  );
 
   if (!isOpen) return null;
 
@@ -53,7 +55,7 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
   const handleSelect = () => {
     if (selectedSupplier) {
       onSelect(selectedSupplier);
-      onClose();
+      handleCloseModal();
     }
   };
 
@@ -64,8 +66,14 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
   };
 
   const columns = [
-    { header: 'Supplier name', accessor: (supplier: Supplier) => supplier.name },
-    { header: 'Supplier index', accessor: (supplier: Supplier) => supplier.index },
+    {
+      header: 'Supplier name',
+      accessor: (supplier: Supplier) => supplier.name,
+    },
+    {
+      header: 'Supplier index',
+      accessor: (supplier: Supplier) => supplier.index,
+    },
     { header: 'City', accessor: (supplier: Supplier) => supplier.city },
   ];
 
@@ -86,7 +94,10 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
       <div className="modal-content">
         <div className="modal-header">
           <h2>Search for suppliers</h2>
-          <button className="close-button" onClick={handleCloseModal}>
+          <button
+            className="close-button"
+            onClick={handleCloseModal}
+          >
             ×
           </button>
         </div>
@@ -126,10 +137,16 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
                 </div>
               </div>
               <div className="search-buttons">
-                <button className="supplier-search-button" onClick={handleSearch}>
+                <button
+                  className="supplier-search-button"
+                  onClick={handleSearch}
+                >
                   Search
                 </button>
-                <button className="reset-button" onClick={handleReset}>
+                <button
+                  className="reset-button"
+                  onClick={handleReset}
+                >
                   Reset
                 </button>
               </div>
@@ -157,7 +174,10 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
             >
               Select
             </button>
-            <button className="cancel-button" onClick={handleCloseModal}>
+            <button
+              className="cancel-button"
+              onClick={handleCloseModal}
+            >
               Cancel
             </button>
           </div>
