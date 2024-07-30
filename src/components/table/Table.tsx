@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import './Table.css';
 import ActionMenu from '../action-menu/ActionMenu';
 import GearIcon from '../../icons/GearIcon';
+import ConfirmationModal from '../confirmation-modal/ConfirmationModal';
 
 type TableProps<T extends Record<string, unknown>> = {
   headers: string[];
@@ -17,6 +18,8 @@ const Table = <T extends Record<string, unknown>>({
   onDelete,
 }: TableProps<T>): JSX.Element => {
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
   const menuRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -36,11 +39,24 @@ const Table = <T extends Record<string, unknown>>({
     };
   }, [activeMenu]);
 
+  const handleDelete = (index: number) => {
+    setDeleteIndex(index);
+    setIsModalOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteIndex !== null) {
+      onDelete(deleteIndex);
+    }
+    setIsModalOpen(false);
+  };
+
   return (
     <div className="table-wrapper">
       <table>
         <thead>
           <tr>
+            <td></td>
             {headers.map((header, index) => (
               <th key={index}>{header}</th>
             ))}
@@ -48,8 +64,7 @@ const Table = <T extends Record<string, unknown>>({
         </thead>
         <tbody>
           {data.map((row, rowIndex) => {
-            const rowData = { ...row };
-            delete rowData.id;
+            const { id, pdfData, ...rowData } = row;
             return (
               <tr key={rowIndex}>
                 <td>
@@ -67,7 +82,7 @@ const Table = <T extends Record<string, unknown>>({
                     {activeMenu === rowIndex && (
                       <ActionMenu
                         onEdit={() => onEdit(rowIndex)}
-                        onDelete={() => onDelete(rowIndex)}
+                        onDelete={() => handleDelete(rowIndex)}
                       />
                     )}
                   </div>
@@ -84,6 +99,13 @@ const Table = <T extends Record<string, unknown>>({
           })}
         </tbody>
       </table>
+
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        message="Are you sure you want to delete this item?"
+      />
     </div>
   );
 };

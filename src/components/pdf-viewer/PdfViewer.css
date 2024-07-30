@@ -13,3 +13,8 @@
   cursor: pointer;
   font-size: 0.9rem;
 }
+
+.pdf-error-message {
+  margin-top: 0.5rem;
+  color: red;
+}

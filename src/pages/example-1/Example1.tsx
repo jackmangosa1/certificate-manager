@@ -1,19 +1,26 @@
+import React from 'react';
 import './Example1.css';
 import Table from '../../components/table/Table';
 import { useNavigate } from 'react-router-dom';
-import { certificates } from '../add-certificate/certificateMockData';
 import { AppRoutes } from '../../routes/routes';
+import { useCertificates } from '../../hooks/useCertificates';
 
 const Example1: React.FC = () => {
   const headers = ['Supplier', 'Certificate type', 'Valid from', 'Valid to'];
   const navigate = useNavigate();
+  const { certificates, deleteCertificate } = useCertificates();
 
   const handleEdit = (index: number) => {
     const certificateToEdit = certificates[index];
     navigate(`${AppRoutes.AddCertificate}/${certificateToEdit.id}`);
   };
 
-  const handleDelete = () => {};
+  const handleDelete = (index: number) => {
+    const certificateToDelete = certificates[index];
+    if (certificateToDelete.id !== undefined) {
+      deleteCertificate(certificateToDelete.id);
+    }
+  };
 
   return (
     <div className="content">

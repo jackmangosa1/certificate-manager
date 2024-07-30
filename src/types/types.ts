@@ -4,9 +4,10 @@ export enum CertificateType {
 }
 
 export type Certificate = {
-  id: number,
+  id: number;
   supplier: string;
   certificateType: CertificateType | '';
   validFrom: Date | null;
   validTo: Date | null;
+  pdfData: string | null;
 };
