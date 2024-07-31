@@ -206,6 +206,9 @@
   margin-top: -1rem;
 }
 
+.search-partcipant-icon {
+  margin-right: 0.5rem;
+}
 @media screen and (max-width: 800px) {
   .certificate-form-container {
     flex-direction: column;

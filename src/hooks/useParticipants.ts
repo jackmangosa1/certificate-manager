@@ -7,7 +7,7 @@ import {
   deleteParticipant as deleteParticipantInDB,
   initializeDatabase,
   searchParticipants as searchParticipantsInDB,
-} from '../utils/indexed-db/indexedDb';
+} from '../db/indexedDb';
 
 export const useParticipants = () => {
   const [participants, setParticipants] = useState<Participant[]>([]);

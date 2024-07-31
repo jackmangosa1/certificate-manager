@@ -1,7 +1,6 @@
 import { ReactNode } from 'react';
 import './Table.css';
 
-
 export type ColumnConfig<T> = {
   header: string;
   accessor: (row: T) => ReactNode;
@@ -11,12 +10,15 @@ type TableProps<T> = {
   columns: ColumnConfig<T>[];
   data: T[];
   actionColumn?: {
+    header: ReactNode;
     render: (row: T, index: number) => ReactNode;
   };
   onRowClick?: (row: T, index: number) => void;
+  selectedRows?: T[];
+  onSelectRow?: (row: T) => void;
 };
 
-const Table = <T,>({ 
+const Table = <T,>({
   columns,
   data,
   actionColumn,
@@ -27,7 +29,7 @@ const Table = <T,>({
       <table>
         <thead>
           <tr>
-            {actionColumn && <th></th>}
+            {actionColumn && <th>{actionColumn.header}</th>}
             {columns.map((column, index) => (
               <th key={index}>{column.header}</th>
             ))}
@@ -35,18 +37,18 @@ const Table = <T,>({
         </thead>
         <tbody>
           {data.map((row, rowIndex) => (
-            <tr 
-              key={rowIndex} 
+            <tr
+              key={rowIndex}
               onClick={() => onRowClick && onRowClick(row, rowIndex)}
               style={onRowClick ? { cursor: 'pointer' } : {}}
             >
               {actionColumn && (
-                <td>{actionColumn.render(row, rowIndex)}</td>
+                <td onClick={(e) => e.stopPropagation()}>
+                  {actionColumn.render(row, rowIndex)}
+                </td>
               )}
               {columns.map((column, colIndex) => (
-                <td key={colIndex}>
-                  {column.accessor(row)}
-                </td>
+                <td key={colIndex}>{column.accessor(row)}</td>
               ))}
             </tr>
           ))}

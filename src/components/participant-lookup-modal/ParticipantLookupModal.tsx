@@ -1,14 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useParticipants } from '../../hooks/useParticipants';
-import { initializeDatabase } from '../../utils/indexed-db/indexedDb';
+import { initializeDatabase } from '../../db/indexedDb';
 import './ParticipantLookup.css';
-import { Participant } from '@/types/types';
+import { Participant } from '../../types/types';
 import { useLanguage } from '../../hooks/useLanguage';
+import Table, { ColumnConfig } from '../table/Table';
 
 type ParticipantLookupModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSelect: (participant: Participant) => void;
+  onSelect: (participants: Participant[]) => void;
+};
+
+const initialSearchCriteria = {
+  name: '',
+  firstName: '',
+  userId: '',
+  department: '',
+  plant: '',
 };
 
 const ParticipantLookupModal: React.FC<ParticipantLookupModalProps> = ({
@@ -19,26 +28,15 @@ const ParticipantLookupModal: React.FC<ParticipantLookupModalProps> = ({
   const { translations } = useLanguage();
   const { searchParticipants } = useParticipants();
   const [searchResults, setSearchResults] = useState<Participant[]>([]);
-  const [searchCriteria, setSearchCriteria] = useState({
-    name: '',
-    firstName: '',
-    userId: '',
-    department: '',
-    plant: '',
-  });
-  const [initialResults, setInitialResults] = useState<Participant[]>([]);
-  const [selectedParticipant, setSelectedParticipant] =
-    useState<Participant | null>(null);
+  const [searchCriteria, setSearchCriteria] = useState(initialSearchCriteria);
+  const [selectedParticipants, setSelectedParticipants] = useState<
+    Participant[]
+  >([]);
+  const [selectAll, setSelectAll] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      const initializeAndFetch = async () => {
-        await initializeDatabase();
-        const results = await searchParticipants({});
-        setInitialResults(results);
-        setSearchResults(results);
-      };
-      initializeAndFetch();
+      initializeDatabase();
     }
   }, [isOpen]);
 
@@ -55,34 +53,96 @@ const ParticipantLookupModal: React.FC<ParticipantLookupModalProps> = ({
   const handleSearch = async () => {
     const results = await searchParticipants(searchCriteria);
     setSearchResults(results);
+    setSelectAll(false);
+    setSelectedParticipants([]);
   };
 
   const handleReset = () => {
-    setSearchCriteria({
-      name: '',
-      firstName: '',
-      userId: '',
-      department: '',
-      plant: '',
-    });
-    setSearchResults(initialResults);
+    setSearchCriteria(initialSearchCriteria);
+    setSearchResults([]);
+    setSelectedParticipants([]);
+    setSelectAll(false);
   };
 
-  const handleRadioChange = (Participant: Participant) => {
-    setSelectedParticipant(Participant);
+  const handleCheckboxChange = (participant: Participant) => {
+    setSelectedParticipants((prev) => {
+      if (prev.some((p) => p.id === participant.id)) {
+        const newSelected = prev.filter((p) => p.id !== participant.id);
+        setSelectAll(false);
+        return newSelected;
+      } else {
+        const newSelected = [...prev, participant];
+        setSelectAll(newSelected.length === searchResults.length);
+        return newSelected;
+      }
+    });
+  };
+
+  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const isChecked = e.target.checked;
+    setSelectAll(isChecked);
+    if (isChecked) {
+      setSelectedParticipants(searchResults);
+    } else {
+      setSelectedParticipants([]);
+    }
   };
 
   const handleSelect = () => {
-    if (selectedParticipant) {
-      onSelect(selectedParticipant);
-      onClose();
+    if (selectedParticipants.length > 0) {
+      onSelect(selectedParticipants);
+      handleCloseModal();
     }
   };
 
   const handleCloseModal = () => {
     handleReset();
-    setSelectedParticipant(null);
     onClose();
+  };
+
+  const columns: ColumnConfig<Participant>[] = [
+    { header: translations.name, accessor: (participant) => participant.name },
+    {
+      header: translations.firstName,
+      accessor: (participant) => participant.firstName,
+    },
+    {
+      header: translations.userId,
+      accessor: (participant) => participant.userId,
+    },
+    {
+      header: translations.department,
+      accessor: (participant) => participant.department,
+    },
+    {
+      header: translations.plant,
+      accessor: (participant) => participant.plant,
+    },
+  ];
+
+  const actionColumn = {
+    header: (
+      <div style={{ display: 'flex', alignItems: 'center' }}>
+        <input
+          type="checkbox"
+          checked={selectAll}
+          onChange={handleSelectAll}
+          className="select-all"
+        />
+      </div>
+    ),
+    render: (participant: Participant) => (
+      <input
+        type="checkbox"
+        checked={
+          selectAll || selectedParticipants.some((p) => p.id === participant.id)
+        }
+        onChange={(e) => {
+          e.stopPropagation();
+          handleCheckboxChange(participant);
+        }}
+      />
+    ),
   };
 
   return (
@@ -170,51 +230,25 @@ const ParticipantLookupModal: React.FC<ParticipantLookupModalProps> = ({
 
           <div className="participant-list-container">
             <div className="participant-list-header">
-              <span className="dropdown-arrow">▼</span>
+              <span className="dropdown-arrow">▼</span>{' '}
               {translations.personList}
             </div>
             <div className="participant-list">
-              <table>
-                <thead>
-                  <tr>
-                    <th></th>
-                    <th>{translations.name}</th>
-                    <th>{translations.firstName}</th>
-                    <th>{translations.userId}</th>
-                    <th>{translations.department}</th>
-                    <th>{translations.plant}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {searchResults.map((Participant) => (
-                    <tr key={Participant.id}>
-                      <td>
-                        <td>
-                          <input
-                            type="checkbox"
-                            name="selectedParticipant"
-                            value={Participant.id}
-                            checked={selectedParticipant?.id === Participant.id}
-                            onChange={() => handleRadioChange(Participant)}
-                          />
-                        </td>
-                      </td>
-                      <td>{Participant.name}</td>
-                      <td>{Participant.firstName}</td>
-                      <td>{Participant.userId}</td>
-                      <td>{Participant.department}</td>
-                      <td>{Participant.plant}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <Table
+                columns={columns}
+                data={searchResults}
+                actionColumn={actionColumn}
+                onRowClick={(participant) => handleCheckboxChange(participant)}
+                selectedRows={selectedParticipants}
+                onSelectRow={handleCheckboxChange}
+              />
             </div>
           </div>
           <div className="modal-footer">
             <button
-              className="select-button"
+              className={`select-button ${selectedParticipants.length === 0 ? 'disabled' : ''}`}
               onClick={handleSelect}
-              disabled={!selectedParticipant}
+              disabled={selectedParticipants.length === 0}
             >
               {translations.select}
             </button>

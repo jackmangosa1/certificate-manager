@@ -29,6 +29,7 @@
   "update": "aktualisieren",
   "delete": "löschen",
   "confirmAction": "Aktion bestätigen",
+  "deleteConfirmation": "Sind Sie sicher, dass Sie löschen möchten?",
   "errors": {
     "required": {
       "supplier": "Lieferant ist erforderlich.",

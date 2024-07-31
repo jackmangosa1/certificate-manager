@@ -6,12 +6,16 @@ import CustomSelect from '../../components/custom-select/CustomSelect';
 import SupplierSearchModal from '../../components/search-supplier-modal/SearchSupplierModal';
 import SupplierLookup from '../../components/supplier-lookup/SupplierLookup';
 import PdfViewer from '../../components/pdf-viewer/PdfViewer';
-import { Certificate, CertificateType } from '../../types/types';
+import { Certificate, CertificateType, Supplier, Participant } from '../../types/types';
 import { AppRoutes } from '../../routes/routes';
 import { useCertificates } from '../../hooks/useCertificates';
 import { getCertificateById } from '../../db/indexedDb';
-import { Supplier } from '../../types/types';
 import { useLanguage } from '../../hooks/useLanguage';
+import ParticipantLookupModal from '../../components/participant-lookup-modal/ParticipantLookupModal';
+import Table, { ColumnConfig } from '../../components/table/Table';
+import SearchIcon from '../../icons/SearchIcon';
+import CrossIcon from '../../icons/CrossIcon';
+import { useParticipants } from '../../hooks/useParticipants';
 
 type FormError = {
   supplier: string;
@@ -37,6 +41,7 @@ const initialCertificateData: Omit<Certificate, 'id'> = {
   validFrom: null,
   validTo: null,
   pdfData: null,
+  participants: [],
 };
 
 const AddCertificate: React.FC = () => {
@@ -45,16 +50,17 @@ const AddCertificate: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { addCertificate, updateCertificate } = useCertificates();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isParticipantModalOpen, setIsParticipantModalOpen] = useState(false);
+  const [selectedParticipants, setSelectedParticipants] = useState<Participant[]>([]);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const [certificateData, setCertificateData] = useState<
-    Omit<Certificate, 'id'>
-  >(initialCertificateData);
+  const [certificateData, setCertificateData] = useState<Omit<Certificate, 'id'>>(initialCertificateData);
   const [editMode, setEditMode] = useState(false);
   const [pdfPreview, setPdfPreview] = useState<string | null>(null);
   const [errors, setErrors] = useState<FormError>(initialErrorData);
+  const { deleteParticipant } = useParticipants();
 
   useEffect(() => {
     const fetchCertificate = async () => {
@@ -62,6 +68,7 @@ const AddCertificate: React.FC = () => {
         const fetchedCertificate = await getCertificateById(parseInt(id));
         if (fetchedCertificate) {
           setCertificateData(fetchedCertificate);
+          setSelectedParticipants(fetchedCertificate.participants || []);
           setEditMode(true);
           setPdfPreview(fetchedCertificate.pdfData);
         }
@@ -116,10 +123,15 @@ const AddCertificate: React.FC = () => {
   const handleSave = async () => {
     if (validateForm()) {
       try {
+        const certificateToSave = {
+          ...certificateData,
+          participants: selectedParticipants,
+        };
+
         if (editMode && id) {
-          await updateCertificate(parseInt(id), certificateData);
+          await updateCertificate(parseInt(id), certificateToSave);
         } else {
-          await addCertificate(certificateData);
+          await addCertificate(certificateToSave);
         }
         setErrors(initialErrorData);
         navigate(AppRoutes.Example1);
@@ -153,14 +165,54 @@ const AddCertificate: React.FC = () => {
 
   const handleReset = () => {
     setCertificateData(initialCertificateData);
+    setSelectedParticipants([]);
     setPdfPreview(null);
   };
+
+  const handleOpenParticipantModal = () => {
+    setIsParticipantModalOpen(true);
+  };
+
+  const handleCloseParticipantModal = () => {
+    setIsParticipantModalOpen(false);
+  };
+
+  const handleSelectParticipant = (participants: Participant[]) => {
+    setSelectedParticipants(participants);
+  };
+
+  const handleRemoveParticipant = async (participantId: number) => {
+    try {
+      await deleteParticipant(participantId);
+      setSelectedParticipants((prevParticipants) =>
+        prevParticipants.filter(
+          (participant) => participant.id !== participantId,
+        ),
+      );
+    } catch (error) {
+      console.error('Failed to delete participant:', error);
+    }
+  };
+
+  const participantColumns: ColumnConfig<Participant>[] = [
+    {
+      header: translations.name,
+      accessor: (row) => row.name,
+    },
+    {
+      header: translations.department,
+      accessor: (row) => row.department,
+    },
+    {
+      header: translations.email,
+      accessor: (row) => row.userId,
+    },
+  ];
 
   return (
     <div className="certificate-form-container">
       <div className="left-side">
         <SupplierLookup
-          // label={translations.supplier}
           value={certificateData.supplier}
           onChange={handleInput}
           error={errors.supplier}
@@ -208,6 +260,41 @@ const AddCertificate: React.FC = () => {
         {errors.validRange && (
           <p className="error-message">{errors.validRange}</p>
         )}
+
+        <div className="participants-container">
+          <div>
+            <label>{translations.assignedUsers}</label>
+            <button
+              className="add-participants-btn"
+              onClick={handleOpenParticipantModal}
+            >
+              <SearchIcon className="search-partcipant-icon" />
+              {translations.addParticipant}
+            </button>
+          </div>
+
+          {selectedParticipants.length > 0 ? (
+            <Table
+              columns={participantColumns}
+              data={selectedParticipants}
+              actionColumn={{
+                header: '',
+                render: (row) => (
+                  <div onClick={() => handleRemoveParticipant(row.id)}>
+                    <CrossIcon className="cross-icon" />
+                  </div>
+                ),
+              }}
+            />
+          ) : (
+            <p className="no-data-available">{translations.noDataAvailable}</p>
+          )}
+          <ParticipantLookupModal
+            isOpen={isParticipantModalOpen}
+            onClose={handleCloseParticipantModal}
+            onSelect={handleSelectParticipant}
+          />
+        </div>
       </div>
       <div className="right-side">
         <PdfViewer

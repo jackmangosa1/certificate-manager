@@ -29,6 +29,7 @@
   "update": "update",
   "delete": "delete",
   "confirmAction": "Confirm Action",
+  "deleteConfirmation": "Are you sure you want to delete?",
   "errors": {
     "required": {
       "supplier": "Supplier is required.",
