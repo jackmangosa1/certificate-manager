@@ -1,0 +1,42 @@
+{
+  "title": "DCCS Tuzla",
+  "language": "Language",
+  "start": "Start",
+  "machineLearning": "Machine Learning",
+  "example1": "Example 1",
+  "example2": "Example 2",
+  "example3": "Example 3",
+  "newCertificate": "New Certificate",
+  "supplier": "Supplier",
+  "certificateType": "Certificate Type",
+  "validFrom": "Valid From",
+  "validTo": "Valid To",
+  "save": "Save",
+  "reset": "Reset",
+  "upload": "Upload",
+  "searchForSuppliers": "Search for suppliers",
+  "searchCriteria": "Search criteria",
+  "supplierName": "Supplier name",
+  "supplierIndex": "Supplier index",
+  "city": "City",
+  "search": "Search",
+  "supplierList": "Supplier list",
+  "select": "Select",
+  "cancel": "Cancel",
+  "clickToSelectDate": "Click to select date",
+  "selectYourOption": "Select your option",
+  "validFromPlaceholder": "Click to select the date",
+  "update": "update",
+  "delete": "delete",
+  "confirmAction": "Confirm Action",
+  "errors": {
+    "required": {
+      "supplier": "Supplier is required.",
+      "certificateType": "Certificate Type is required.",
+      "validFrom": "Valid From is required.",
+      "validTo": "Valid To is required.",
+      "pdfData": "PDF is required"
+    },
+    "validRange": "Valid from date cannot be after the valid to date."
+  }
+}

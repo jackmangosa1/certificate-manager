@@ -2,6 +2,7 @@ import React from 'react';
 import SearchIcon from '../../icons/SearchIcon';
 import CrossIcon from '../../icons/CrossIcon';
 import './SupplierLookup.css';
+import { useLanguage } from '../../hooks/useLanguage';
 
 type SupplierLookupProps = {
   value: string;
@@ -18,9 +19,10 @@ const SupplierLookup: React.FC<SupplierLookupProps> = ({
   error,
   onClear,
 }) => {
+  const {translations} = useLanguage()
   return (
     <div className="row">
-      <label htmlFor="supplier">Supplier</label>
+      <label htmlFor="supplier">{translations.supplier}</label>
       <div className="input-wrapper">
         <input
           type="text"

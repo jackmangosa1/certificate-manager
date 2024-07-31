@@ -5,6 +5,7 @@ import { AppRoutes } from '../../routes/routes';
 import HomeIcon from '../../icons/Home';
 import MenuIcon from '../../icons/Menu';
 import SidebarMenuItems from '../sidebar-menu-items/SidebarMenuItems';
+import { useLanguage } from '../../hooks/useLanguage';
 
 type SidebarProps = {
   className: string;
@@ -18,23 +19,24 @@ type MenuItem = {
 };
 
 const Sidebar: React.FC<SidebarProps> = ({ className }) => {
+  const { translations } = useLanguage();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const location = useLocation();
 
   const menuItems: MenuItem[] = [
     {
-      title: 'Start',
+      title: translations.start,
       icon: <HomeIcon className="home-icon" />,
       path: AppRoutes.Home,
     },
     {
-      title: 'Machine Learning',
+      title: translations.machineLearning,
       icon: <MenuIcon className="menu-icon" />,
       path: AppRoutes.MachineLearning,
       children: [
-        { title: 'Example 1', path: AppRoutes.Example1 },
-        { title: 'Example 2', path: AppRoutes.Example2 },
-        { title: 'Example 3', path: AppRoutes.Example3 },
+        { title: translations.example1, path: AppRoutes.Example1 },
+        { title: translations.example2, path: AppRoutes.Example2 },
+        { title: translations.example3, path: AppRoutes.Example3 },
       ],
     },
   ];

@@ -1,4 +1,5 @@
 import './PdfViewer.css';
+import { useLanguage } from '../../hooks/useLanguage';
 
 type PdfViewerProps = {
   pdfPreview: string | null;
@@ -13,6 +14,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
   onPdfChange,
   error,
 }) => {
+  const { translations } = useLanguage();
   const handlePdfUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -35,7 +37,7 @@ const PdfViewer: React.FC<PdfViewerProps> = ({
           onChange={handlePdfUpload}
           hidden
         />
-        Upload
+        {translations.upload}
       </label>
 
       <div className="pdf-preview">

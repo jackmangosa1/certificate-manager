@@ -1,11 +1,13 @@
-.row input,
-.row select {
+.row-select input,
+.row-select select {
   padding: 0.5rem 1rem;
   border: 1px solid var(--grayBorder);
   outline: none;
 }
 
-.row select {
+
+
+.row-select select {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -17,7 +19,7 @@
   color: #333;
 }
 
-.row select option {
+.row-select select option {
   background-color: #ffffff;
   color: #333;
   font-size: 1rem;
@@ -25,4 +27,25 @@
 .select-error-message {
   margin-top: 1rem;
   color: red;
+}
+.language-select {
+  position: absolute;
+  right: 2rem;
+  padding-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #b8aaa7;
+  width: fit-content;
+  font-size: 1.2rem;
+}
+.language-select select {
+  width: 7rem;
+}
+.language-select select option:first-child {
+  display: none;
+}
+
+.language-select label::after {
+  content: ':';
 }

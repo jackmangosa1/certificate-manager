@@ -10,6 +10,7 @@ import Start from './pages/start/Start';
 import AddCertificate from './pages/add-certificate/AddCertificate';
 import { useState } from 'react';
 import { AppRoutes } from './routes/routes';
+import { LanguageProvider } from './context/LanguageContext';
 
 export const App: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -20,47 +21,49 @@ export const App: React.FC = () => {
 
   return (
     <Router>
-      <Container className="container">
-        <Navbar
-          className="navbar"
-          toggleSidebar={toggleSidebar}
-        />
-        <div
-          className={`overlay ${isSidebarOpen ? 'active' : ''}`}
-          onClick={toggleSidebar}
-        ></div>
-        <div className="main">
-          <Sidebar className={`sidebar ${isSidebarOpen ? 'open' : ''}`} />
-          <div className="content">
-            <Routes>
-              <Route
-                path={AppRoutes.Home}
-                element={<Start />}
-              />
-              <Route
-                path={AppRoutes.MachineLearning}
-                element={<Example1 />}
-              />
-              <Route
-                path={AppRoutes.Example1}
-                element={<Example1 />}
-              />
-              <Route
-                path={AppRoutes.Example2}
-                element={<Example2 />}
-              />
-              <Route
-                path={AppRoutes.Example3}
-                element={<Example3 />}
-              />
-              <Route
-                path={`${AppRoutes.AddCertificate}/:id?`}
-                element={<AddCertificate />}
-              />
-            </Routes>
+      <LanguageProvider>
+        <Container className="container">
+          <Navbar
+            className="navbar"
+            toggleSidebar={toggleSidebar}
+          />
+          <div
+            className={`overlay ${isSidebarOpen ? 'active' : ''}`}
+            onClick={toggleSidebar}
+          ></div>
+          <div className="main">
+            <Sidebar className={`sidebar ${isSidebarOpen ? 'open' : ''}`} />
+            <div className="content">
+              <Routes>
+                <Route
+                  path={AppRoutes.Home}
+                  element={<Start />}
+                />
+                <Route
+                  path={AppRoutes.MachineLearning}
+                  element={<Example1 />}
+                />
+                <Route
+                  path={AppRoutes.Example1}
+                  element={<Example1 />}
+                />
+                <Route
+                  path={AppRoutes.Example2}
+                  element={<Example2 />}
+                />
+                <Route
+                  path={AppRoutes.Example3}
+                  element={<Example3 />}
+                />
+                <Route
+                  path={`${AppRoutes.AddCertificate}/:id?`}
+                  element={<AddCertificate />}
+                />
+              </Routes>
+            </div>
           </div>
-        </div>
-      </Container>
+        </Container>
+      </LanguageProvider>
     </Router>
   );
 };

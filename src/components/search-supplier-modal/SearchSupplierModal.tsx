@@ -4,7 +4,7 @@ import { initializeDatabase } from '../../db/indexedDb';
 import './SearchSupplierModal.css';
 import { Supplier } from '@/types/types';
 import Table from '../../components/table/Table';
-
+import { useLanguage } from '../../hooks/useLanguage';
 type SupplierSearchModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -16,6 +16,7 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
   onClose,
   onSelect,
 }) => {
+  const { translations } = useLanguage();
   const { searchSuppliers } = useSuppliers();
   const [searchResults, setSearchResults] = useState<Supplier[]>([]);
   const [searchCriteria, setSearchCriteria] = useState({
@@ -67,14 +68,14 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
 
   const columns = [
     {
-      header: 'Supplier name',
+      header: translations.supplierName,
       accessor: (supplier: Supplier) => supplier.name,
     },
     {
-      header: 'Supplier index',
+      header: translations.supplierIndex,
       accessor: (supplier: Supplier) => supplier.index,
     },
-    { header: 'City', accessor: (supplier: Supplier) => supplier.city },
+    { header: translations.city, accessor: (supplier: Supplier) => supplier.city },
   ];
 
   const actionColumn = {
@@ -93,7 +94,7 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
     <div className="modal-overlay">
       <div className="modal-content">
         <div className="modal-header">
-          <h2>Search for suppliers</h2>
+          <h2>{translations.searchForSuppliers}</h2>
           <button
             className="close-button"
             onClick={handleCloseModal}
@@ -104,12 +105,12 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
         <div className="modal-body">
           <div className="search-criteria-container">
             <div className="search-criteria-header">
-              <span className="dropdown-arrow">▼</span> Search criteria
+              <span className="dropdown-arrow">▼</span> {translations.searchCriteria}
             </div>
             <div className="search-criteria">
               <div className="search-fields">
                 <div className="search-field">
-                  <label>Supplier name</label>
+                  <label>{translations.supplierName}</label>
                   <input
                     type="text"
                     name="name"
@@ -118,7 +119,7 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
                   />
                 </div>
                 <div className="search-field">
-                  <label>Supplier index</label>
+                  <label>{translations.supplierIndex}</label>
                   <input
                     type="text"
                     name="index"
@@ -127,7 +128,7 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
                   />
                 </div>
                 <div className="search-field">
-                  <label>City</label>
+                  <label>{translations.city}</label>
                   <input
                     type="text"
                     name="city"
@@ -141,13 +142,13 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
                   className="supplier-search-button"
                   onClick={handleSearch}
                 >
-                  Search
+                  {translations.search}
                 </button>
                 <button
                   className="reset-button"
                   onClick={handleReset}
                 >
-                  Reset
+                  {translations.reset}
                 </button>
               </div>
             </div>
@@ -156,7 +157,7 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
           <div className="supplier-list-container">
             <div className="supplier-list-header">
               <span className="dropdown-arrow">▼</span>
-              Supplier list
+              {translations.supplierList}
             </div>
             <div className="supplier-list">
               <Table
@@ -172,13 +173,13 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
               onClick={handleSelect}
               disabled={!selectedSupplier}
             >
-              Select
+              {translations.search}
             </button>
             <button
               className="cancel-button"
               onClick={handleCloseModal}
             >
-              Cancel
+              {translations.cancel}
             </button>
           </div>
         </div>

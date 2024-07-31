@@ -9,8 +9,10 @@ import GearIcon from '../../icons/GearIcon';
 import ConfirmationModal from '../../components/confirmation-modal/ConfirmationModal';
 import { Certificate } from '../../types/types';
 import { ColumnConfig } from '../../components/table/Table';
+import { useLanguage } from '../../hooks/useLanguage';
 
 const Example1: React.FC = () => {
+  const { translations } = useLanguage();
   const navigate = useNavigate();
   const { certificates, deleteCertificate } = useCertificates();
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
@@ -18,15 +20,23 @@ const Example1: React.FC = () => {
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
 
   const columns: ColumnConfig<Certificate>[] = [
-    { header: 'Supplier', accessor: (row: Certificate) => row.supplier },
-    { header: 'Certificate type', accessor: (row: Certificate) => row.certificateType },
     {
-      header: 'Valid from',
-      accessor: (row: Certificate) => new Date(row.validFrom as Date).toLocaleDateString(),
+      header: translations.supplier,
+      accessor: (row: Certificate) => row.supplier,
     },
     {
-      header: 'Valid to',
-      accessor: (row: Certificate) => new Date(row.validTo as Date).toLocaleDateString(),
+      header: translations.certificateType,
+      accessor: (row: Certificate) => row.certificateType,
+    },
+    {
+      header: translations.validFrom,
+      accessor: (row: Certificate) =>
+        new Date(row.validFrom as Date).toLocaleDateString(),
+    },
+    {
+      header: translations.validTo,
+      accessor: (row: Certificate) =>
+        new Date(row.validTo as Date).toLocaleDateString(),
     },
   ];
 
@@ -68,12 +78,12 @@ const Example1: React.FC = () => {
 
   return (
     <div className="content">
-      <h1 className="title">Example 1</h1>
+      <h1 className="title">{translations.example1}</h1>
       <button
         className="add-certificate-btn"
         onClick={() => navigate(AppRoutes.AddCertificate)}
       >
-        New Certificate
+        {translations.newCertificate}
       </button>
       <Table
         columns={columns}
