@@ -3,8 +3,9 @@ import { useSuppliers } from '../../hooks/useSuppliers';
 import { initializeDatabase } from '../../db/indexedDb';
 import './SearchSupplierModal.css';
 import { Supplier } from '@/types/types';
-import Table from '../../components/table/Table';
+import Table, { ColumnConfig } from '../../components/table/Table';
 import { useLanguage } from '../../hooks/useLanguage';
+
 type SupplierSearchModalProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -47,6 +48,7 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
   const handleReset = () => {
     setSearchCriteria({ name: '', index: '', city: '' });
     setSearchResults([]);
+    setSelectedSupplier(null);
   };
 
   const handleRadioChange = (supplier: Supplier) => {
@@ -62,23 +64,23 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
 
   const handleCloseModal = () => {
     handleReset();
-    setSelectedSupplier(null);
     onClose();
   };
 
-  const columns = [
+  const columns: ColumnConfig<Supplier>[] = [
     {
       header: translations.supplierName,
-      accessor: (supplier: Supplier) => supplier.name,
+      accessor: (supplier) => supplier.name,
     },
     {
       header: translations.supplierIndex,
-      accessor: (supplier: Supplier) => supplier.index,
+      accessor: (supplier) => supplier.index,
     },
-    { header: translations.city, accessor: (supplier: Supplier) => supplier.city },
+    { header: translations.city, accessor: (supplier) => supplier.city },
   ];
 
   const actionColumn = {
+    header: translations.select,
     render: (supplier: Supplier) => (
       <input
         type="radio"
@@ -95,10 +97,7 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
       <div className="modal-content">
         <div className="modal-header">
           <h2>{translations.searchForSuppliers}</h2>
-          <button
-            className="close-button"
-            onClick={handleCloseModal}
-          >
+          <button className="close-button" onClick={handleCloseModal}>
             ×
           </button>
         </div>
@@ -138,16 +137,10 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
                 </div>
               </div>
               <div className="search-buttons">
-                <button
-                  className="supplier-search-button"
-                  onClick={handleSearch}
-                >
+                <button className="supplier-search-button" onClick={handleSearch}>
                   {translations.search}
                 </button>
-                <button
-                  className="reset-button"
-                  onClick={handleReset}
-                >
+                <button className="reset-button" onClick={handleReset}>
                   {translations.reset}
                 </button>
               </div>
@@ -164,6 +157,7 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
                 columns={columns}
                 data={searchResults}
                 actionColumn={actionColumn}
+                onRowClick={(supplier) => handleRadioChange(supplier)}
               />
             </div>
           </div>
@@ -173,12 +167,9 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
               onClick={handleSelect}
               disabled={!selectedSupplier}
             >
-              {translations.search}
+              {translations.select}
             </button>
-            <button
-              className="cancel-button"
-              onClick={handleCloseModal}
-            >
+            <button className="cancel-button" onClick={handleCloseModal}>
               {translations.cancel}
             </button>
           </div>

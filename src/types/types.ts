@@ -10,6 +10,7 @@ export type Certificate = {
   validFrom: Date | null;
   validTo: Date | null;
   pdfData: string | null;
+  participants?: Participant[];
 };
 
 export type Supplier = {
@@ -23,3 +24,13 @@ export enum Language {
   ENGLISH = 'en',
   GERMAN = 'de',
 }
+
+export type Participant = {
+  id: number;
+  name: string;
+  firstName: string;
+  userId: string;
+  department: string;
+  plant: string;
+  email: string;
+};

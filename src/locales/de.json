@@ -29,6 +29,7 @@
   "update": "aktualisieren",
   "delete": "löschen",
   "confirmAction": "Aktion bestätigen",
+  "deleteConfirmation": "Sind Sie sicher, dass Sie löschen möchten?",
   "errors": {
     "required": {
       "supplier": "Lieferant ist erforderlich.",
@@ -38,5 +39,16 @@
       "pdfData": "PDF ist erforderlich"
     },
     "validRange": "Das Gültigkeitsdatum kann nicht nach dem Ablaufdatum liegen."
-  }
+  },
+  "assignedUsers": "Zugewiesene Benutzer",
+  "addParticipant": "Teilnehmer hinzufügen",
+  "name": "Name",
+  "department": "Abteilung",
+  "email": "E-Mail",
+  "searchForPerson": "Suche nach Personen",
+  "firstName": "Vorname",
+  "userId": "Benutzer-ID",
+  "plant": "Werk",
+  "personList": "Personenliste",
+  "noDataAvailable": "Keine Daten verfügbar"
 }
