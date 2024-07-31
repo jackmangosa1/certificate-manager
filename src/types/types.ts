@@ -43,4 +43,3 @@ export type Comment = {
   text: string;
   timestamp: Date;
 };
-

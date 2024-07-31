@@ -6,6 +6,10 @@ import HomeIcon from '../../icons/Home';
 import MenuIcon from '../../icons/Menu';
 import SidebarMenuItems from '../sidebar-menu-items/SidebarMenuItems';
 import { useLanguage } from '../../hooks/useLanguage';
+import { Language } from '../../types/types';
+import { useUser } from '../../context/UserContext';
+import { useParticipants } from '../../hooks/useParticipants';
+import CustomSelect from '../custom-select/CustomSelect';
 
 type SidebarProps = {
   className: string;
@@ -19,10 +23,32 @@ type MenuItem = {
 };
 
 const Sidebar: React.FC<SidebarProps> = ({ className }) => {
-  const { translations } = useLanguage();
+  const { translations, language, setLanguage } = useLanguage();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const location = useLocation();
+  const { participants } = useParticipants();
+  const { selectedUser, setSelectedUser } = useUser();
 
+  const languageOptions = [
+    { value: Language.ENGLISH, label: 'English' },
+    { value: Language.GERMAN, label: 'Deutsch' },
+  ];
+
+  const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setLanguage(e.target.value as Language);
+  };
+
+  const handleUserChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const user = participants.find(
+      (user) => String(user.id) === e.target.value,
+    );
+    setSelectedUser(user || null);
+  };
+
+  const participantOptions = participants.map((participant) => ({
+    value: String(participant.id),
+    label: `${participant.firstName} ${participant.name}`,
+  }));
   const menuItems: MenuItem[] = [
     {
       title: translations.start,
@@ -69,6 +95,26 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
           />
         );
       })}
+      <div className="dropdown-selects">
+        <CustomSelect
+          id="language-type"
+          label={translations.language}
+          name="languageType"
+          value={language}
+          onChange={handleLanguageChange}
+          options={languageOptions}
+          className="language-select-sidebar"
+        />
+        <CustomSelect
+          id="user"
+          label={translations.user}
+          name="user"
+          value={selectedUser ? String(selectedUser.id) : ''}
+          onChange={handleUserChange}
+          options={participantOptions}
+          className="user-select-sidebar"
+        />
+      </div>
     </div>
   );
 };

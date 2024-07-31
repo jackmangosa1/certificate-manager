@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Comment } from '../../types/types';
 import './CommentSection.css';
 
@@ -15,9 +15,15 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   initialComments,
   onCommentsChange,
 }) => {
-  const [comments, setComments] = useState<Comment[] | undefined>(initialComments);
+  const [comments, setComments] = useState<Comment[] | undefined>(
+    initialComments,
+  );
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [newComment, setNewComment] = useState('');
+
+  useEffect(() => {
+    setComments(initialComments);
+  }, [initialComments]);
 
   const handleNewCommentClick = () => {
     setShowCommentInput(true);
@@ -48,14 +54,20 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   return (
     <div className="comment-section">
       <div className="comment-section-header">
-        <button className="comment-btn" onClick={handleNewCommentClick}>
+        <button
+          className="comment-btn"
+          onClick={handleNewCommentClick}
+        >
           New comment
         </button>
       </div>
 
       <div className="comments">
         {comments?.map((comment) => (
-          <div key={comment.id} className="comment">
+          <div
+            key={comment.id}
+            className="comment"
+          >
             <div className="user">
               <span>User:</span>
               <span>{comment.userName}</span>
