@@ -1,17 +1,21 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Comment } from '../../types/types';
 import './CommentSection.css';
 
 type CommentSectionProps = {
   currentUserId: number;
   currentUserName: string;
+  initialComments: Comment[] | undefined;
+  onCommentsChange: (comments: Comment[]) => void;
 };
 
 const CommentSection: React.FC<CommentSectionProps> = ({
   currentUserId,
   currentUserName,
+  initialComments,
+  onCommentsChange,
 }) => {
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState<Comment[] | undefined>(initialComments);
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [newComment, setNewComment] = useState('');
 
@@ -32,7 +36,10 @@ const CommentSection: React.FC<CommentSectionProps> = ({
         text: newComment.trim(),
         timestamp: new Date(),
       };
-      setComments((prevComments) => [...prevComments, comment]);
+      const updatedComments = [...(comments || []), comment];
+
+      setComments(updatedComments);
+      onCommentsChange(updatedComments);
       setNewComment('');
       setShowCommentInput(false);
     }
@@ -41,20 +48,14 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   return (
     <div className="comment-section">
       <div className="comment-section-header">
-        <button
-          className="comment-btn"
-          onClick={handleNewCommentClick}
-        >
+        <button className="comment-btn" onClick={handleNewCommentClick}>
           New comment
         </button>
       </div>
 
       <div className="comments">
-        {comments.map((comment) => (
-          <div
-            key={comment.id}
-            className="comment"
-          >
+        {comments?.map((comment) => (
+          <div key={comment.id} className="comment">
             <div className="user">
               <span>User:</span>
               <span>{comment.userName}</span>

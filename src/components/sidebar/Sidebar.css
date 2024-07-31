@@ -5,11 +5,7 @@
   background-color: var(--grayBg);
   padding: 4rem 1rem 1rem 1rem;
   height: 100vh;
-<<<<<<< HEAD:src/components/sidebar/Sidebar.css
   width: 23rem;
-=======
-  width: 22rem;
->>>>>>> 394aaf2 (task3-KAN-44 Add certificate creation form):src/components/Sidebar/Sidebar.css
   position: relative;
   transition: transform 0.3s ease-in-out;
   transform: translateX(0);

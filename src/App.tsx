@@ -23,47 +23,49 @@ export const App: React.FC = () => {
   return (
     <Router>
       <LanguageProvider>
-        <Container className="container">
-          <Navbar
-            className="navbar"
-            toggleSidebar={toggleSidebar}
-          />
-          <div
-            className={`overlay ${isSidebarOpen ? 'active' : ''}`}
-            onClick={toggleSidebar}
-          ></div>
-          <div className="main">
-            <Sidebar className={`sidebar ${isSidebarOpen ? 'open' : ''}`} />
-            <div className="content">
-              <Routes>
-                <Route
-                  path={AppRoutes.Home}
-                  element={<Start />}
-                />
-                <Route
-                  path={AppRoutes.MachineLearning}
-                  element={<Example1 />}
-                />
-                <Route
-                  path={AppRoutes.Example1}
-                  element={<Example1 />}
-                />
-                <Route
-                  path={AppRoutes.Example2}
-                  element={<Example2 />}
-                />
-                <Route
-                  path={AppRoutes.Example3}
-                  element={<Example3 />}
-                />
-                <Route
-                  path={`${AppRoutes.AddCertificate}/:id?`}
-                  element={<AddCertificate />}
-                />
-              </Routes>
+        <UserProvider>
+          <Container className="container">
+            <Navbar
+              className="navbar"
+              toggleSidebar={toggleSidebar}
+            />
+            <div
+              className={`overlay ${isSidebarOpen ? 'active' : ''}`}
+              onClick={toggleSidebar}
+            ></div>
+            <div className="main">
+              <Sidebar className={`sidebar ${isSidebarOpen ? 'open' : ''}`} />
+              <div className="content">
+                <Routes>
+                  <Route
+                    path={AppRoutes.Home}
+                    element={<Start />}
+                  />
+                  <Route
+                    path={AppRoutes.MachineLearning}
+                    element={<Example1 />}
+                  />
+                  <Route
+                    path={AppRoutes.Example1}
+                    element={<Example1 />}
+                  />
+                  <Route
+                    path={AppRoutes.Example2}
+                    element={<Example2 />}
+                  />
+                  <Route
+                    path={AppRoutes.Example3}
+                    element={<Example3 />}
+                  />
+                  <Route
+                    path={`${AppRoutes.AddCertificate}/:id?`}
+                    element={<AddCertificate />}
+                  />
+                </Routes>
+              </div>
             </div>
-          </div>
-        </Container>
+          </Container>
+        </UserProvider>
       </LanguageProvider>
     </Router>
   );

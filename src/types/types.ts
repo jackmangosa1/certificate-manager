@@ -11,6 +11,7 @@ export type Certificate = {
   validTo: Date | null;
   pdfData: string | null;
   participants?: Participant[];
+  comments?: Comment[] | undefined;
 };
 
 export type Supplier = {
@@ -35,9 +36,11 @@ export type Participant = {
   email: string;
 };
 
-export interface Supplier {
+export type Comment = {
   id: number;
-  name: string;
-  index: string;
-  city: string;
-}
+  userId: number;
+  userName: string;
+  text: string;
+  timestamp: Date;
+};
+
