@@ -1,4 +1,5 @@
 import './CustomSelect.css';
+import { useLanguage } from '../../hooks/useLanguage';
 
 type CustomSelectProps = {
   id: string;
@@ -21,6 +22,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
   className,
   error,
 }) => {
+  const { translations } = useLanguage();
   return (
     <div className={`${className} row-select`}>
       <label htmlFor={id}>{label}</label>
@@ -35,7 +37,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
           value=""
           disabled
         >
-          Select your option
+          {translations.selectYourOption}
         </option>
         {options.map((option) => (
           <option

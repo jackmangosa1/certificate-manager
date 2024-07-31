@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import './CustomDateInput.css';
+import { useLanguage } from '../../hooks/useLanguage';
 
 type CustomDateInputProps = {
   id: string;
@@ -18,6 +19,7 @@ const CustomDateInput: React.FC<CustomDateInputProps> = ({
   onChange,
   error,
 }) => {
+  const { translations } = useLanguage();
   const [displayValue, setDisplayValue] = useState<string>('');
   const [showPicker, setShowPicker] = useState(false);
   const dateInputRef = useRef<HTMLInputElement>(null);
@@ -64,7 +66,7 @@ const CustomDateInput: React.FC<CustomDateInputProps> = ({
           type="text"
           readOnly
           value={displayValue}
-          placeholder="Click to select date"
+          placeholder={translations.clickToSelectDate}
           onClick={handleClick}
           className="date-display-input"
         />

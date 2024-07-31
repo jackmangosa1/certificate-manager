@@ -11,6 +11,7 @@ import { AppRoutes } from '../../routes/routes';
 import { useCertificates } from '../../hooks/useCertificates';
 import { getCertificateById } from '../../db/indexedDb';
 import { Supplier } from '../../types/types';
+import { useLanguage } from '../../hooks/useLanguage';
 
 type FormError = {
   supplier: string;
@@ -38,17 +39,13 @@ const initialCertificateData: Omit<Certificate, 'id'> = {
   pdfData: null,
 };
 
-const certificateOptions = Object.values(CertificateType).map((value) => ({
-  value,
-  label: value,
-}));
-
 const AddCertificate: React.FC = () => {
+  const { translations } = useLanguage();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const { addCertificate, updateCertificate } = useCertificates();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
@@ -76,23 +73,23 @@ const AddCertificate: React.FC = () => {
   const validateForm = (): boolean => {
     const newErrors: FormError = { ...initialErrorData };
 
-    if (!certificateData.supplier) newErrors.supplier = 'Supplier is required.';
+    if (!certificateData.supplier)
+      newErrors.supplier = translations.errors.required.supplier;
     if (!certificateData.certificateType)
-      newErrors.certificateType = 'Certificate type is required.';
+      newErrors.certificateType = translations.errors.required.certificateType;
     if (!certificateData.validFrom)
-      newErrors.validFrom = 'Valid from date is required.';
+      newErrors.validFrom = translations.errors.required.validFrom;
     if (!certificateData.validTo)
-      newErrors.validTo = 'Valid to date is required.';
+      newErrors.validTo = translations.errors.required.validTo;
     if (
       certificateData.validFrom &&
       certificateData.validTo &&
       certificateData.validFrom > certificateData.validTo
     ) {
-      newErrors.validRange =
-        'Valid from date cannot be after the valid to date.';
+      newErrors.validRange = translations.errors.validRange;
     }
     if (!certificateData.pdfData) {
-      newErrors.pdfData = 'PDF file is required.';
+      newErrors.pdfData = translations.errors.required.pdfData;
     }
     setErrors(newErrors);
 
@@ -150,9 +147,8 @@ const AddCertificate: React.FC = () => {
   const handleClearSupplier = () => {
     setCertificateData((prevData) => ({
       ...prevData,
-      supplier: '', 
+      supplier: '',
     }));
-    
   };
 
   const handleReset = () => {
@@ -164,11 +160,12 @@ const AddCertificate: React.FC = () => {
     <div className="certificate-form-container">
       <div className="left-side">
         <SupplierLookup
+          // label={translations.supplier}
           value={certificateData.supplier}
           onChange={handleInput}
           error={errors.supplier}
           onSearch={openModal}
-          onClear={handleClearSupplier} 
+          onClear={handleClearSupplier}
         />
         <SupplierSearchModal
           isOpen={isModalOpen}
@@ -178,17 +175,21 @@ const AddCertificate: React.FC = () => {
 
         <CustomSelect
           id="certificate-type"
-          label="Certificate type"
+          label={translations.certificateType}
           name="certificateType"
           value={certificateData.certificateType}
           onChange={handleInput}
-          options={certificateOptions}
+          options={Object.values(CertificateType).map((value) => ({
+            value,
+            label: value,
+          }))}
           error={errors.certificateType}
+          className="certificate-select"
         />
 
         <CustomDateInput
           id="start-date"
-          label="Valid from"
+          label={translations.validFrom}
           name="validFrom"
           value={certificateData.validFrom}
           onChange={(date) => handleDateChange('validFrom', date)}
@@ -197,7 +198,7 @@ const AddCertificate: React.FC = () => {
 
         <CustomDateInput
           id="end-date"
-          label="Valid to"
+          label={translations.validTo}
           name="validTo"
           value={certificateData.validTo}
           onChange={(date) => handleDateChange('validTo', date)}
@@ -221,13 +222,13 @@ const AddCertificate: React.FC = () => {
             onClick={handleSave}
             className="save-button"
           >
-            {editMode ? 'Update' : 'Save'}
+            {editMode ? translations.update : translations.save}
           </button>
           <button
             onClick={handleReset}
             className="reset-button"
           >
-            Reset
+            {translations.reset}
           </button>
         </div>
       </div>

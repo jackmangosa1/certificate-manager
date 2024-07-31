@@ -1,4 +1,5 @@
 import './ConfirmationModal.css';
+import { useLanguage } from '../../hooks/useLanguage';
 
 interface ConfirmationModalProps {
   isOpen: boolean;
@@ -15,23 +16,25 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
+  const { translations } = useLanguage();
+
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <h2>Confirm Action</h2>
+        <h2>{translations.confirmAction}</h2>
         <p>{message}</p>
         <div className="modal-buttons">
           <button
             className="cancel-button"
             onClick={onClose}
           >
-            Cancel
+            {translations.cancel}
           </button>
           <button
             className="confirm-button"
             onClick={onConfirm}
           >
-            Confirm
+            {translations.confirmAction}
           </button>
         </div>
       </div>
