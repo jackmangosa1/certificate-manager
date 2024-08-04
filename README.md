@@ -8,7 +8,6 @@ This is a certificate management web application
   ```bash
   git clone https://github.com/jackmangosa1/certificate-manager.git
   ```
-- Navigate to the project directory.
 - Install dependencies:
 
 ```bash
