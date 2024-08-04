@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { Comment } from '../../types/types';
 import './CommentSection.css';
 
@@ -15,15 +16,8 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   initialComments,
   onCommentsChange,
 }) => {
-  const [comments, setComments] = useState<Comment[] | undefined>(
-    initialComments,
-  );
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [newComment, setNewComment] = useState('');
-
-  useEffect(() => {
-    setComments(initialComments);
-  }, [initialComments]);
 
   const handleNewCommentClick = () => {
     setShowCommentInput(true);
@@ -36,15 +30,14 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   const handleSendComment = () => {
     if (newComment.trim()) {
       const comment: Comment = {
-        id: Date.now(),
+        id: uuidv4(),
         userId: currentUserId,
         userName: currentUserName,
         text: newComment.trim(),
         timestamp: new Date(),
       };
-      const updatedComments = [...(comments || []), comment];
+      const updatedComments = [...(initialComments || []), comment];
 
-      setComments(updatedComments);
       onCommentsChange(updatedComments);
       setNewComment('');
       setShowCommentInput(false);
@@ -63,7 +56,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
       </div>
 
       <div className="comments">
-        {comments?.map((comment) => (
+        {initialComments?.map((comment) => (
           <div
             key={comment.id}
             className="comment"
@@ -88,7 +81,13 @@ const CommentSection: React.FC<CommentSectionProps> = ({
             onChange={handleCommentChange}
             placeholder="Comment"
           />
-          <button onClick={handleSendComment}>Send</button>
+          <button
+            onClick={handleSendComment}
+            disabled={!newComment.trim()}
+            className={!newComment.trim() ? 'disabled' : ''}
+          >
+            Send
+          </button>
         </div>
       )}
     </div>

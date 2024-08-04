@@ -8,7 +8,7 @@ import SidebarMenuItems from '../sidebar-menu-items/SidebarMenuItems';
 import { useLanguage } from '../../hooks/useLanguage';
 import { Language } from '../../types/types';
 import { useUser } from '../../context/UserContext';
-import { useParticipants } from '../../hooks/useParticipants';
+import { useUsers } from '../../hooks/useUsers';
 import CustomSelect from '../custom-select/CustomSelect';
 
 type SidebarProps = {
@@ -26,7 +26,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
   const { translations, language, setLanguage } = useLanguage();
   const [expandedItems, setExpandedItems] = useState<string[]>([]);
   const location = useLocation();
-  const { participants } = useParticipants();
+  const { users } = useUsers();
   const { selectedUser, setSelectedUser } = useUser();
 
   const languageOptions = [
@@ -39,15 +39,15 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
   };
 
   const handleUserChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const user = participants.find(
+    const user = users.find(
       (user) => String(user.id) === e.target.value,
     );
     setSelectedUser(user || null);
   };
 
-  const participantOptions = participants.map((participant) => ({
-    value: String(participant.id),
-    label: `${participant.firstName} ${participant.name}`,
+  const participantOptions = users.map((user) => ({
+    value: String(user.id),
+    label: `${user.firstName} ${user.lastName}`,
   }));
   const menuItems: MenuItem[] = [
     {

@@ -81,7 +81,6 @@ const AddCertificate: React.FC = () => {
     const fetchCertificate = async () => {
       if (id) {
         const fetchedCertificate = await getCertificateById(parseInt(id));
-        console.log('FETCHED', fetchedCertificate);
         if (fetchedCertificate) {
           setCertificateData(fetchedCertificate);
           setSelectedParticipants(fetchedCertificate.participants || []);

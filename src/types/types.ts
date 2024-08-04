@@ -37,9 +37,18 @@ export type Participant = {
 };
 
 export type Comment = {
-  id: number;
+  id: string;
   userId: number;
   userName: string;
   text: string;
   timestamp: Date;
+};
+
+export type User = {
+  id: number;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  language: Language.ENGLISH | Language.GERMAN;
 };

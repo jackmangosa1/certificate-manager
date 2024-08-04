@@ -26,8 +26,8 @@
   "clickToSelectDate": "Click to select date",
   "selectYourOption": "Select your option",
   "validFromPlaceholder": "Click to select the date",
-  "update": "update",
-  "delete": "delete",
+  "update": "Update",
+  "delete": "Delete",
   "confirmAction": "Confirm Action",
   "deleteConfirmation": "Are you sure you want to delete?",
   "errors": {
@@ -51,5 +51,5 @@
   "plant": "Plant",
   "personList": "Person list",
   "noDataAvailable": "No data available",
-  "user": "user"
+  "user": "User"
 }
