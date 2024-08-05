@@ -39,13 +39,26 @@
   width: fit-content;
   font-size: 1.2rem;
 }
+.user-select {
+  position: absolute;
+  right: 18rem;
+  padding-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #b8aaa7;
+  width: fit-content;
+  font-size: 1.2rem;
+}
 .language-select select {
   width: 7rem;
 }
-.language-select select option:first-child {
+.language-select select option:first-child,
+.user-select select option:first-child {
   display: none;
 }
 
-.language-select label::after {
+.language-select label::after,
+.user-select label::after {
   content: ':';
 }

@@ -1,4 +1,5 @@
-import { Supplier, Certificate, Participant } from '../types/types';
+import { Certificate, Supplier, Participant } from '../types/types';
+
 const DB_NAME = 'CertificatesDB';
 const DB_VERSION = 5;
 const CERTIFICATES_STORE_NAME = 'certificates';
