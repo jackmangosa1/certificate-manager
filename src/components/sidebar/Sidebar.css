@@ -4,7 +4,7 @@
   gap: 1rem;
   background-color: var(--grayBg);
   padding: 4rem 1rem 1rem 1rem;
-  height: 100vh;
+  height: 55rem;
   width: 23rem;
   position: relative;
   transition: transform 0.3s ease-in-out;
@@ -120,5 +120,20 @@
     z-index: 1000;
     width: 21rem;
     transform: translateX(-100%);
+  }
+}
+
+.dropdown-selects {
+  display: none;
+}
+
+@media screen and (max-width: 800px) {
+  .dropdown-selects {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 1rem;
+    padding-left: 1rem;
   }
 }

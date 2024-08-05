@@ -5,8 +5,6 @@
   outline: none;
 }
 
-
-
 .row-select select {
   appearance: none;
   -webkit-appearance: none;
@@ -61,4 +59,14 @@
 .language-select label::after,
 .user-select label::after {
   content: ':';
+}
+
+@media screen and (max-width: 800px) {
+  .language-select-sidebar > :nth-child(1) {
+    padding-right: 2rem;
+  }
+
+  .user-select-sidebar > :nth-child(1) {
+    padding-right: 4.2rem;
+  }
 }

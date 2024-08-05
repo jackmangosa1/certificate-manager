@@ -2,10 +2,11 @@ import './Navbar.css';
 import { Link } from 'react-router-dom';
 import CustomSelect from '../custom-select/CustomSelect';
 import { useLanguage } from '../../hooks/useLanguage';
-import { useParticipants } from '../../hooks/useParticipants';
+import { useUsers } from '../../hooks/useUsers'; // Updated import
 import { Language } from '../../types/types';
 import { useState, useEffect } from 'react';
 import MenuIcon from '../../icons/Menu';
+import { useUser } from '../../context/UserContext';
 
 type NavBarProps = {
   className: string;
@@ -14,22 +15,25 @@ type NavBarProps = {
 
 const Navbar: React.FC<NavBarProps> = ({ className, toggleSidebar }) => {
   const { language, setLanguage, translations } = useLanguage();
-  const { participants, initializeAndFetchParticipants } = useParticipants();
-  const [selectedParticipant, setSelectedParticipant] = useState<string>('');
+  const { users, refetch } = useUsers(); // Updated to use users
+  const { setSelectedUser } = useUser();
+  const [selectedUser, setSelectedUserLocal] = useState<string>('');
 
   useEffect(() => {
-    const fetchParticipants = async () => {
-      await initializeAndFetchParticipants();
-    };
-    fetchParticipants();
-  }, [initializeAndFetchParticipants]);
+    refetch(); // Fetch users on component mount
+  }, [refetch]);
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setLanguage(e.target.value as Language);
   };
 
-  const handleParticipantChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedParticipant(e.target.value);
+  const handleUserChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const userId = e.target.value;
+    setSelectedUserLocal(userId);
+    const selectedUserData = users.find((user) => String(user.id) === userId);
+    if (selectedUserData) {
+      setSelectedUser(selectedUserData);
+    }
   };
 
   const languageOptions = [
@@ -37,16 +41,18 @@ const Navbar: React.FC<NavBarProps> = ({ className, toggleSidebar }) => {
     { value: Language.GERMAN, label: 'Deutsch' },
   ];
 
-  const participantOptions = participants.map((participant) => ({
-    value: String(participant.id),
-    label: `${participant.firstName} ${participant.name}`,
+  const userOptions = users.map((user) => ({
+    value: String(user.id),
+    label: `${user.firstName} ${user.lastName}`,
   }));
 
   useEffect(() => {
-    if (participants.length > 0 && !selectedParticipant) {
-      setSelectedParticipant(String(participants[0].id));
+    if (users.length > 0 && !selectedUser) {
+      const firstUserId = String(users[0].id);
+      setSelectedUserLocal(firstUserId);
+      setSelectedUser(users[0]);
     }
-  }, [participants, selectedParticipant]);
+  }, [users, selectedUser, setSelectedUser]);
 
   return (
     <div className={`navbar ${className}`}>
@@ -70,12 +76,12 @@ const Navbar: React.FC<NavBarProps> = ({ className, toggleSidebar }) => {
           className="language-select"
         />
         <CustomSelect
-          id="participant"
+          id="user"
           label={translations.user}
-          name="participant"
-          value={selectedParticipant}
-          onChange={handleParticipantChange}
-          options={participantOptions}
+          name="user"
+          value={selectedUser}
+          onChange={handleUserChange}
+          options={userOptions}
           className="user-select"
         />
       </div>

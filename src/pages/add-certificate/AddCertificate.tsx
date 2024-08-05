@@ -6,7 +6,13 @@ import CustomSelect from '../../components/custom-select/CustomSelect';
 import SupplierSearchModal from '../../components/search-supplier-modal/SearchSupplierModal';
 import SupplierLookup from '../../components/supplier-lookup/SupplierLookup';
 import PdfViewer from '../../components/pdf-viewer/PdfViewer';
-import { Certificate, CertificateType, Supplier, Participant } from '../../types/types';
+import {
+  Certificate,
+  CertificateType,
+  Supplier,
+  Participant,
+  Comment,
+} from '../../types/types';
 import { AppRoutes } from '../../routes/routes';
 import { useCertificates } from '../../hooks/useCertificates';
 import { getCertificateById } from '../../db/indexedDb';
@@ -16,6 +22,8 @@ import Table, { ColumnConfig } from '../../components/table/Table';
 import SearchIcon from '../../icons/SearchIcon';
 import CrossIcon from '../../icons/CrossIcon';
 import { useParticipants } from '../../hooks/useParticipants';
+import CommentSection from '../../components/comment-section/CommentSection';
+import { useUser } from '../../context/UserContext';
 
 type FormError = {
   supplier: string;
@@ -42,6 +50,7 @@ const initialCertificateData: Omit<Certificate, 'id'> = {
   validTo: null,
   pdfData: null,
   participants: [],
+  comments: [],
 };
 
 const AddCertificate: React.FC = () => {
@@ -51,16 +60,22 @@ const AddCertificate: React.FC = () => {
   const { addCertificate, updateCertificate } = useCertificates();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isParticipantModalOpen, setIsParticipantModalOpen] = useState(false);
-  const [selectedParticipants, setSelectedParticipants] = useState<Participant[]>([]);
+  const [selectedParticipants, setSelectedParticipants] = useState<
+    Participant[]
+  >([]);
+  const { selectedUser } = useUser();
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const [certificateData, setCertificateData] = useState<Omit<Certificate, 'id'>>(initialCertificateData);
+  const [certificateData, setCertificateData] = useState<
+    Omit<Certificate, 'id'>
+  >(initialCertificateData);
   const [editMode, setEditMode] = useState(false);
   const [pdfPreview, setPdfPreview] = useState<string | null>(null);
   const [errors, setErrors] = useState<FormError>(initialErrorData);
   const { deleteParticipant } = useParticipants();
+  const [comments, setComments] = useState<Comment[] | undefined>([]);
 
   useEffect(() => {
     const fetchCertificate = async () => {
@@ -69,6 +84,7 @@ const AddCertificate: React.FC = () => {
         if (fetchedCertificate) {
           setCertificateData(fetchedCertificate);
           setSelectedParticipants(fetchedCertificate.participants || []);
+          setComments(fetchedCertificate.comments);
           setEditMode(true);
           setPdfPreview(fetchedCertificate.pdfData);
         }
@@ -126,6 +142,7 @@ const AddCertificate: React.FC = () => {
         const certificateToSave = {
           ...certificateData,
           participants: selectedParticipants,
+          comments: comments,
         };
 
         if (editMode && id) {
@@ -166,6 +183,7 @@ const AddCertificate: React.FC = () => {
   const handleReset = () => {
     setCertificateData(initialCertificateData);
     setSelectedParticipants([]);
+    setComments([]);
     setPdfPreview(null);
   };
 
@@ -192,6 +210,10 @@ const AddCertificate: React.FC = () => {
     } catch (error) {
       console.error('Failed to delete participant:', error);
     }
+  };
+
+  const handleCommentsChange = (newComments: Comment[] | undefined) => {
+    setComments(newComments);
   };
 
   const participantColumns: ColumnConfig<Participant>[] = [
@@ -259,6 +281,17 @@ const AddCertificate: React.FC = () => {
 
         {errors.validRange && (
           <p className="error-message">{errors.validRange}</p>
+        )}
+
+        {selectedUser ? (
+          <CommentSection
+            currentUserId={selectedUser.id}
+            currentUserName={selectedUser.firstName}
+            initialComments={comments}
+            onCommentsChange={handleCommentsChange}
+          />
+        ) : (
+          <p>Select a user first</p>
         )}
 
         <div className="participants-container">
