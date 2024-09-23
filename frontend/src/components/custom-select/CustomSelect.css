@@ -1,0 +1,72 @@
+.row-select input,
+.row-select select {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--grayBorder);
+  outline: none;
+}
+
+.row-select select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg fill="gray" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+  background-repeat: no-repeat;
+  background-position-x: 100%;
+  background-position-y: center;
+  font-size: 16px;
+  color: #333;
+}
+
+.row-select select option {
+  background-color: #ffffff;
+  color: #333;
+  font-size: 1rem;
+}
+.select-error-message {
+  margin-top: 1rem;
+  color: red;
+}
+.language-select {
+  position: absolute;
+  right: 2rem;
+  padding-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #b8aaa7;
+  width: fit-content;
+  font-size: 1.2rem;
+}
+.user-select {
+  position: absolute;
+  right: 18rem;
+  padding-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #b8aaa7;
+  width: fit-content;
+  font-size: 1.2rem;
+}
+.language-select select {
+  width: 7rem;
+}
+.language-select select option:first-child,
+.user-select select option:first-child {
+  display: none;
+}
+
+.language-select label::after,
+.user-select label::after {
+  content: ':';
+}
+
+@media screen and (max-width: 800px) {
+  .language-select-sidebar > :nth-child(1) {
+    padding-right: 2rem;
+  }
+
+  .user-select-sidebar > :nth-child(1) {
+    padding-right: 4.2rem;
+  }
+}

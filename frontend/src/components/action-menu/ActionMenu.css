@@ -1,0 +1,21 @@
+.action-menu {
+  position: fixed;
+  background: white;
+  border: 1px solid var(--grayBorder);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+.action-menu button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.action-menu button:hover {
+  background-color: #f0f0f0;
+}
