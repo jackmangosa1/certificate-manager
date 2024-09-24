@@ -1,5 +1,4 @@
 using CertificateManagerAPI.Entities;
-using CertificateMangerAPI.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace CertificateManagerAPI.Data;
@@ -35,7 +34,6 @@ public partial class CertificateManagerDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        DatabaseSeeder.Seed(modelBuilder);
         modelBuilder.Entity<Certificate>(entity =>
         {
             entity.HasKey(e => e.CertificateId).HasName("PK__Certific__BBF8A7E193AC33B4");
