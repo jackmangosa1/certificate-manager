@@ -1,4 +1,4 @@
-﻿using CertificateManagerAPI.Entities;
+using CertificateManagerAPI.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CertificateManagerAPI.Data;
