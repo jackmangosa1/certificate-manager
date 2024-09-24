@@ -1,7 +1,7 @@
-﻿using backend.Models;
+﻿using CertificateManagerAPI.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace backend.Data;
+namespace CertificateManagerAPI.Data;
 
 public partial class CertificateManagerDbContext : DbContext
 {

@@ -1,8 +1,8 @@
 
-using backend.Data;
+using CertificateManagerAPI.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace backend
+namespace CertificateManagerAPI
 {
     public class Program
     {

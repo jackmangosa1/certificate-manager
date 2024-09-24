@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace backend.Models;
-
+﻿namespace CertificateManagerAPI.Entities;
 public partial class CertificateAssignment
 {
     public int CertificateAssignmentId { get; set; }
