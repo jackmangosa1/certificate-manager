@@ -1,4 +1,5 @@
 ﻿namespace CertificateManagerAPI.Entities;
+
 public partial class CertificateAssignment
 {
     public int CertificateAssignmentId { get; set; }

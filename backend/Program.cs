@@ -1,6 +1,11 @@
 
+using BookAPI.Utilities;
 using CertificateManagerAPI.Data;
+using CertificateManagerAPI.Repositories;
+using CertificateManagerAPI.Services;
+using CertificateManagerAPI.Utilities;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 namespace CertificateManagerAPI
 {
@@ -12,9 +17,18 @@ namespace CertificateManagerAPI
 
             // Add services to the container.
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+             .AddJsonOptions(options =>
+             {
+                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                 options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
+             });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddDbContext<CertificateManagerDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString")));
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            builder.Services.AddScoped<ICertificateRepository, CertificateRepository>();
+            builder.Services.AddScoped<ICertificateService, CertificateService>();
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -29,8 +43,9 @@ namespace CertificateManagerAPI
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            app.UseExceptionHandler(_ => { });
 
+            app.UseAuthorization();
 
             app.MapControllers();
 
