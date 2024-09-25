@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace CertificateMangerAPI.Mappers
+namespace CertificateManagerAPI.Utilities
 {
     public class DateOnlyJsonConverter : JsonConverter<DateOnly>
     {

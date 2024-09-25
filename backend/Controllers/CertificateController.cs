@@ -11,6 +11,7 @@ namespace CertificateMangerAPI.Controllers
     public class CertificateController : ControllerBase
     {
         private readonly ICertificateService _certificateService;
+
         private readonly IMapper _mapper;
         public CertificateController(ICertificateService certificateService, IMapper mapper)
         {
@@ -46,7 +47,6 @@ namespace CertificateMangerAPI.Controllers
             var certificates = await _certificateService.GetAllCertificatesAsync();
             return Ok(certificates);
         }
-
 
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -132,8 +132,6 @@ namespace CertificateMangerAPI.Controllers
             }
 
             var certificateToPatch = _mapper.Map<UpdateCertficateDTO>(certificate);
-
-
             certificateUpdates.ApplyTo(certificateToPatch);
             await _certificateService.UpdateCertificateAsync(id, certificateToPatch);
             return NoContent();

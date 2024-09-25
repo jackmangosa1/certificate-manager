@@ -3,7 +3,7 @@ using BookAPI.Utilities;
 using CertificateManagerAPI.Data;
 using CertificateManagerAPI.Repositories;
 using CertificateManagerAPI.Services;
-using CertificateMangerAPI.Mappers;
+using CertificateManagerAPI.Utilities;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 

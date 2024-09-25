@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 
-namespace CertificateMangerAPI.Mappers
+namespace CertificateManagerAPI.Utilities
 {
     public class StringToDateOnlyConverter : ITypeConverter<string, DateOnly>
     {

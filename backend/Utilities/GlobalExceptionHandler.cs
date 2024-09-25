@@ -53,11 +53,13 @@ namespace BookAPI.Utilities
             }
 
             httpContext.Response.StatusCode = statusCode;
+
             var errorResponse = new
             {
                 Status = statusCode,
                 Message = errorMessage
             };
+
             await httpContext.Response.WriteAsJsonAsync(errorResponse, cancellationToken);
             return true;
         }
