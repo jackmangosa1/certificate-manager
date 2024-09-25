@@ -29,7 +29,6 @@ namespace CertificateManagerAPI.Repositories
             return _mapper.Map<CreateCertificateDTO>(certificate);
         }
 
-
         public async Task<IEnumerable<CertificateSummaryDTO>> GetAllCertificatesAsync()
         {
             var certificates = await _context.Certificates
@@ -40,21 +39,18 @@ namespace CertificateManagerAPI.Repositories
             return _mapper.Map<IEnumerable<CertificateSummaryDTO>>(certificates);
         }
 
-
-
         public async Task UpdateCertificateAsync(int certificateId, UpdateCertficateDTO certificateDTO)
         {
             var certificate = await _context.Certificates.FindAsync(certificateId);
+
             if (certificate == null)
             {
                 throw new KeyNotFoundException($"Certificate with ID {certificateId} not found.");
             }
 
             _mapper.Map(certificateDTO, certificate);
-
             await _context.SaveChangesAsync();
         }
-
 
         public async Task DeleteCertificateAsync(int certificateId)
         {
@@ -64,6 +60,7 @@ namespace CertificateManagerAPI.Repositories
             {
                 throw new KeyNotFoundException($"Certificate with ID {certificateId} not found.");
             }
+
             _context.Certificates.Remove(certificate);
             await _context.SaveChangesAsync();
         }

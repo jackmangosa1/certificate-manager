@@ -10,6 +10,7 @@ namespace CertificateManagerAPI.Services
         {
             _certificateRepository = certificateRepository;
         }
+
         public async Task<CreateCertificateDTO> CreateCertificateAsync(CreateCertificateDTO certificateDTO)
         {
             var certificate = await _certificateRepository.CreateCertificateAsync(certificateDTO);
@@ -27,12 +28,10 @@ namespace CertificateManagerAPI.Services
             var certificates = await _certificateRepository.GetAllCertificatesAsync();
             return certificates;
         }
-
         public async Task UpdateCertificateAsync(int certificateId, UpdateCertficateDTO certificateDTO)
         {
             await _certificateRepository.UpdateCertificateAsync(certificateId, certificateDTO);
         }
-
 
         public async Task DeleteCertificateAsync(int certificateId)
         {

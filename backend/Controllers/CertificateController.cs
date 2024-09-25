@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using CertificateManagerAPI.DTO;
 using CertificateManagerAPI.Services;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CertificateMangerAPI.Controllers
@@ -51,7 +50,7 @@ namespace CertificateMangerAPI.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<CreateCertificateDTO>> CreateCertificate([FromBody] CreateCertificateDTO certificateDto)
+        public async Task<ActionResult<CreateCertificateDTO>> CreateCertificate(CreateCertificateDTO certificateDto)
         {
             if (!ModelState.IsValid)
             {
@@ -111,29 +110,6 @@ namespace CertificateMangerAPI.Controllers
             }
 
             await _certificateService.UpdateCertificateAsync(id, certificateDTO);
-            return NoContent();
-        }
-
-        [HttpPatch("{id:int}")]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> PatchCertificate(int id, [FromBody] JsonPatchDocument<UpdateCertficateDTO> certificateUpdates)
-        {
-            if (certificateUpdates == null)
-            {
-                return BadRequest("Certificate cannot be null");
-            }
-
-            var certificate = await _certificateService.GetCertificateByIdAsync(id);
-            if (certificate == null)
-            {
-                return NotFound("Certificate is not found");
-            }
-
-            var certificateToPatch = _mapper.Map<UpdateCertficateDTO>(certificate);
-            certificateUpdates.ApplyTo(certificateToPatch);
-            await _certificateService.UpdateCertificateAsync(id, certificateToPatch);
             return NoContent();
         }
     }
