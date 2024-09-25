@@ -1,4 +1,5 @@
 
+using BookAPI.Utilities;
 using CertificateManagerAPI.Data;
 using CertificateManagerAPI.Repositories;
 using CertificateManagerAPI.Services;
@@ -28,6 +29,7 @@ namespace CertificateManagerAPI
             builder.Services.AddScoped<ICertificateRepository, CertificateRepository>();
             builder.Services.AddScoped<ICertificateService, CertificateService>();
             builder.Services.AddControllers().AddNewtonsoftJson();
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -42,8 +44,9 @@ namespace CertificateManagerAPI
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            app.UseExceptionHandler(_ => { });
 
+            app.UseAuthorization();
 
             app.MapControllers();
 
