@@ -28,6 +28,8 @@ namespace CertificateManagerAPI
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             builder.Services.AddScoped<ICertificateRepository, CertificateRepository>();
             builder.Services.AddScoped<ICertificateService, CertificateService>();
+            builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
+            builder.Services.AddScoped<ISupplierService, SupplierService>();
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
