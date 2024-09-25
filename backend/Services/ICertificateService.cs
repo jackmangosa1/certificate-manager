@@ -7,7 +7,7 @@ namespace CertificateManagerAPI.Services
 
         Task<CertificateDTO> CreateCertificateAsync(CertificateDTO certificateDTO);
         Task<CertificateDTO> GetCertificateByIdAsync(int certificateId);
-        Task<IEnumerable<CertificateDTO>> GetAllCertificatesAsync();
+        Task<IEnumerable<CertificateSummaryDTO>> GetAllCertificatesAsync();
         Task DeleteCertificateAsync(int certificateId);
         Task UpdateCertificateAsync(int certificateId, CertificateDTO certificateDTO);
     }

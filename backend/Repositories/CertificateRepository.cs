@@ -29,11 +29,18 @@ namespace CertificateManagerAPI.Repositories
             return _mapper.Map<CertificateDTO>(certificate);
         }
 
-        public async Task<IEnumerable<CertificateDTO>> GetAllCertificatesAsync()
+
+        public async Task<IEnumerable<CertificateSummaryDTO>> GetAllCertificatesAsync()
         {
-            var certificates = await _context.Certificates.ToListAsync();
-            return _mapper.Map<IEnumerable<CertificateDTO>>(certificates);
+            var certificates = await _context.Certificates
+                .Include(c => c.Supplier)
+                .Include(c => c.CertificateType)
+                .ToListAsync();
+
+            return _mapper.Map<IEnumerable<CertificateSummaryDTO>>(certificates);
         }
+
+
 
         public async Task UpdateCertificateAsync(int certificateId, CertificateDTO certificateDTO)
         {

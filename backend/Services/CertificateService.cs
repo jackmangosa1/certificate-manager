@@ -22,7 +22,7 @@ namespace CertificateManagerAPI.Services
             return certificate;
         }
 
-        public async Task<IEnumerable<CertificateDTO>> GetAllCertificatesAsync()
+        public async Task<IEnumerable<CertificateSummaryDTO>> GetAllCertificatesAsync()
         {
             var certificates = await _certificateRepository.GetAllCertificatesAsync();
             return certificates;

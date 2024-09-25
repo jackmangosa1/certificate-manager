@@ -38,7 +38,7 @@ namespace CertificateMangerAPI.Controllers
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<CertificateDTO>>> GetAllCertificates()
+        public async Task<ActionResult<IEnumerable<CertificateSummaryDTO>>> GetAllCertificates()
         {
             var certificates = await _certificateService.GetAllCertificatesAsync();
             return Ok(certificates);
