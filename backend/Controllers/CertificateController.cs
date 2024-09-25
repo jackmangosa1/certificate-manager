@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using CertificateManagerAPI.DTO;
+﻿using CertificateManagerAPI.DTO;
 using CertificateManagerAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,11 +10,9 @@ namespace CertificateMangerAPI.Controllers
     {
         private readonly ICertificateService _certificateService;
 
-        private readonly IMapper _mapper;
-        public CertificateController(ICertificateService certificateService, IMapper mapper)
+        public CertificateController(ICertificateService certificateService)
         {
             _certificateService = certificateService;
-            _mapper = mapper;
         }
 
         [HttpGet("{id:int}", Name = "GetCertificate")]

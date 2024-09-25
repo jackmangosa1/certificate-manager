@@ -10,6 +10,7 @@ namespace CertificateManagerAPI.Repositories
         private readonly CertificateManagerDbContext _context;
 
         private readonly IMapper _mapper;
+
         public SupplierRepository(CertificateManagerDbContext context, IMapper mapper)
         {
             _context = context;
