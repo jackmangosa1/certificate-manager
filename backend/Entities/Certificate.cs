@@ -1,4 +1,4 @@
-namespace CertificateManagerAPI.Entities;
+﻿namespace CertificateManagerAPI.Entities;
 
 public partial class Certificate
 {
