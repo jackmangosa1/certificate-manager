@@ -15,18 +15,18 @@ namespace CertificateManagerAPI.Repositories
             _context = context;
             _mapper = mapper;
         }
-        public async Task<CertificateDTO> CreateCertificateAsync(CertificateDTO certificateDTO)
+        public async Task<CreateCertificateDTO> CreateCertificateAsync(CreateCertificateDTO certificateDTO)
         {
             var certificate = _mapper.Map<Certificate>(certificateDTO);
             await _context.Certificates.AddAsync(certificate);
             await _context.SaveChangesAsync();
-            return _mapper.Map<CertificateDTO>(certificate);
+            return _mapper.Map<CreateCertificateDTO>(certificate);
         }
 
-        public async Task<CertificateDTO> GetCertificateByIdAsync(int certificateId)
+        public async Task<CreateCertificateDTO> GetCertificateByIdAsync(int certificateId)
         {
             var certificate = await _context.Certificates.FindAsync(certificateId);
-            return _mapper.Map<CertificateDTO>(certificate);
+            return _mapper.Map<CreateCertificateDTO>(certificate);
         }
 
 
@@ -42,7 +42,7 @@ namespace CertificateManagerAPI.Repositories
 
 
 
-        public async Task UpdateCertificateAsync(int certificateId, CertificateDTO certificateDTO)
+        public async Task UpdateCertificateAsync(int certificateId, UpdateCertficateDTO certificateDTO)
         {
             var certificate = await _context.Certificates.FindAsync(certificateId);
             if (certificate == null)

@@ -1,4 +1,5 @@
-﻿using CertificateManagerAPI.DTO;
+﻿using AutoMapper;
+using CertificateManagerAPI.DTO;
 using CertificateManagerAPI.Services;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -10,16 +11,18 @@ namespace CertificateMangerAPI.Controllers
     public class CertificateController : ControllerBase
     {
         private readonly ICertificateService _certificateService;
-        public CertificateController(ICertificateService certificateService)
+        private readonly IMapper _mapper;
+        public CertificateController(ICertificateService certificateService, IMapper mapper)
         {
             _certificateService = certificateService;
+            _mapper = mapper;
         }
 
         [HttpGet("{id:int}", Name = "GetCertificate")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<CertificateDTO>> GetCertificate(int id)
+        public async Task<ActionResult<CreateCertificateDTO>> GetCertificate(int id)
         {
             var certificate = await _certificateService.GetCertificateByIdAsync(id);
 
@@ -48,7 +51,7 @@ namespace CertificateMangerAPI.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<CertificateDTO>> CreateCertificate([FromBody] CertificateDTO certificateDto)
+        public async Task<ActionResult<CreateCertificateDTO>> CreateCertificate([FromBody] CreateCertificateDTO certificateDto)
         {
             if (!ModelState.IsValid)
             {
@@ -100,7 +103,7 @@ namespace CertificateMangerAPI.Controllers
         [HttpPut("{id:int}", Name = "UpdateBook")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<ActionResult> UpdateCertificate(int id, CertificateDTO certificateDTO)
+        public async Task<ActionResult> UpdateCertificate(int id, UpdateCertficateDTO certificateDTO)
         {
             if (id <= 0)
             {
@@ -115,7 +118,7 @@ namespace CertificateMangerAPI.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> PatchCertificate(int id, [FromBody] JsonPatchDocument<CertificateDTO> certificateUpdates)
+        public async Task<IActionResult> PatchCertificate(int id, [FromBody] JsonPatchDocument<UpdateCertficateDTO> certificateUpdates)
         {
             if (certificateUpdates == null)
             {
@@ -128,8 +131,11 @@ namespace CertificateMangerAPI.Controllers
                 return NotFound("Certificate is not found");
             }
 
-            certificateUpdates.ApplyTo(certificate);
-            await _certificateService.UpdateCertificateAsync(id, certificate);
+            var certificateToPatch = _mapper.Map<UpdateCertficateDTO>(certificate);
+
+
+            certificateUpdates.ApplyTo(certificateToPatch);
+            await _certificateService.UpdateCertificateAsync(id, certificateToPatch);
             return NoContent();
         }
     }
