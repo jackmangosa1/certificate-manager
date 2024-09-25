@@ -7,6 +7,5 @@ namespace CertificateManagerAPI.Repositories
         Task<SupplierDTO> GetSupplierByName(string name);
         Task<SupplierDTO> GetSupplierByIndex(int index);
         Task<SupplierDTO> GetSupplierByCity(string city);
-
     }
 }

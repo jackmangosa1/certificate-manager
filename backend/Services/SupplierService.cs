@@ -6,6 +6,7 @@ namespace CertificateManagerAPI.Services
     public class SupplierService : ISupplierService
     {
         private readonly ISupplierRepository _supplierRepository;
+
         public SupplierService(ISupplierRepository supplierRepository)
         {
             _supplierRepository = supplierRepository;
