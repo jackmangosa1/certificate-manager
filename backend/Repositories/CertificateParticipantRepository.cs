@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using CertificateManagerAPI.Data;
+﻿using CertificateManagerAPI.Data;
 using CertificateManagerAPI.DTO;
 using CertificateManagerAPI.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -10,12 +9,9 @@ namespace CertificateManagerAPI.Repositories
     {
         private readonly CertificateManagerDbContext _context;
 
-        private readonly IMapper _mapper;
-
-        public CertificateParticipantRepository(CertificateManagerDbContext context, IMapper mapper)
+        public CertificateParticipantRepository(CertificateManagerDbContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
 
         public async Task<CertificateParticipantDTO> AddParticipantToCertificate(int certificateId, ParticipantDTO participantDTO)

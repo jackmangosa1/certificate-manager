@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CertificateManagerAPI.Controllers
 {
-    [Route("api/certificate-participants")]
+    [Route("api/certificates")]
     [ApiController]
     public class CertificateParticipantController : ControllerBase
     {
@@ -15,7 +15,7 @@ namespace CertificateManagerAPI.Controllers
             _certificateParticipantService = certificateParticipantService;
         }
 
-        [HttpPost("{certificateId}", Name = "AddParticipantToCertificate")]
+        [HttpPost("{certificateId}/participants", Name = "AddParticipantToCertificate")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult<CertificateParticipantDTO>> AddParticipantToCertificate(int certificateId, [FromBody] ParticipantDTO participantDTO)
@@ -34,7 +34,7 @@ namespace CertificateManagerAPI.Controllers
             return CreatedAtAction("AddParticipantToCertificate", new { certificateId, participantId = participantDTO.UserId }, certificateParticipant);
         }
 
-        [HttpDelete("{certificateId}")]
+        [HttpDelete("{certificateId}/participants/{participantId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> RemoveParticipantFromCertificate(int certificateId, [FromBody] ParticipantDTO participantDTO)

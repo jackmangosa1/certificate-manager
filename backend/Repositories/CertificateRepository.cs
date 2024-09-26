@@ -11,6 +11,7 @@ namespace CertificateManagerAPI.Repositories
         CertificateManagerDbContext _context;
 
         IMapper _mapper;
+
         public CertificateRepository(CertificateManagerDbContext context, IMapper mapper)
         {
             _context = context;
