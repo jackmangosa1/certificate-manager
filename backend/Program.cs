@@ -24,8 +24,10 @@ namespace CertificateManagerAPI
                  options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
              });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddDbContext<CertificateManagerDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString")));
+            builder.Services.AddDbContext<CertificateManagerDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString")));
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
             builder.Services.AddScoped<ICertificateRepository, CertificateRepository>();
             builder.Services.AddScoped<ICertificateService, CertificateService>();
             builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();

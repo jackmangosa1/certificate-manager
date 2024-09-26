@@ -10,6 +10,7 @@ namespace CertificateManagerAPI.Utilities
             {
                 return result;
             }
+
             throw new AutoMapperMappingException($"Unable to convert {source} to DateOnly");
         }
     }

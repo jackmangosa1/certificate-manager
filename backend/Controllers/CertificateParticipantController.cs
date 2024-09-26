@@ -4,11 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CertificateManagerAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/certificate-participants")]
     [ApiController]
     public class CertificateParticipantController : ControllerBase
     {
         private readonly ICertificateParticipantService _certificateParticipantService;
+
         public CertificateParticipantController(ICertificateParticipantService certificateParticipantService)
         {
             _certificateParticipantService = certificateParticipantService;

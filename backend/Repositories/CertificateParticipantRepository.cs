@@ -9,6 +9,7 @@ namespace CertificateManagerAPI.Repositories
     public class CertificateParticipantRepository : ICertificateParticipantRepository
     {
         private readonly CertificateManagerDbContext _context;
+
         private readonly IMapper _mapper;
 
         public CertificateParticipantRepository(CertificateManagerDbContext context, IMapper mapper)
