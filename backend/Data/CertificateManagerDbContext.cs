@@ -1,4 +1,6 @@
-﻿using CertificateManagerAPI.Entities;
+﻿using System;
+using System.Collections.Generic;
+using CertificateManagerAPI.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CertificateManagerAPI.Data;
@@ -171,6 +173,7 @@ public partial class CertificateManagerDbContext : DbContext
                 .HasColumnType("datetime");
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
             entity.Property(e => e.DepartmentId).HasColumnName("DepartmentID");
+            entity.Property(e => e.Email).HasMaxLength(255);
             entity.Property(e => e.FirstName).HasMaxLength(255);
             entity.Property(e => e.Name).HasMaxLength(255);
             entity.Property(e => e.Plant).HasMaxLength(255);

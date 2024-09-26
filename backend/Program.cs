@@ -32,6 +32,8 @@ namespace CertificateManagerAPI
             builder.Services.AddScoped<ISupplierService, SupplierService>();
             builder.Services.AddScoped<IParticipantRespository, ParticipantRepository>();
             builder.Services.AddScoped<IParticipantService, ParticipantService>();
+            builder.Services.AddScoped<ICertificateParticipantRepository, CertificateParticipantRepository>();
+            builder.Services.AddScoped<ICertificateParticipantService, CertificateParticipantService>();
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
