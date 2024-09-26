@@ -10,7 +10,6 @@ namespace CertificateManagerAPI.Mappers
         {
             CreateMap<Participant, ParticipantDTO>()
     .ForMember(dest => dest.Department, opt => opt.MapFrom(src => src.Department.DepartmentName));
-
         }
     }
 }

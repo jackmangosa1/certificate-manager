@@ -11,6 +11,5 @@
         public string Department { get; set; } = null!;
 
         public string Plant { get; set; } = null!;
-
     }
 }
