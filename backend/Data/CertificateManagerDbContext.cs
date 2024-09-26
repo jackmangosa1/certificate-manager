@@ -1,4 +1,4 @@
-using CertificateManagerAPI.Entities;
+﻿using CertificateManagerAPI.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CertificateManagerAPI.Data;
@@ -29,6 +29,9 @@ public partial class CertificateManagerDbContext : DbContext
     public virtual DbSet<Supplier> Suppliers { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseSqlServer("Name=ConnectionStrings:DefaultConnectionString");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -169,7 +172,7 @@ public partial class CertificateManagerDbContext : DbContext
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
             entity.Property(e => e.DepartmentId).HasColumnName("DepartmentID");
             entity.Property(e => e.FirstName).HasMaxLength(255);
-            entity.Property(e => e.LastName).HasMaxLength(255);
+            entity.Property(e => e.Name).HasMaxLength(255);
             entity.Property(e => e.Plant).HasMaxLength(255);
             entity.Property(e => e.RowVersion)
                 .IsRowVersion()
