@@ -9,7 +9,9 @@ namespace CertificateManagerAPI.Repositories
     public class CertificateRepository : ICertificateRepository
     {
         CertificateManagerDbContext _context;
+
         IMapper _mapper;
+
         public CertificateRepository(CertificateManagerDbContext context, IMapper mapper)
         {
             _context = context;
@@ -20,12 +22,18 @@ namespace CertificateManagerAPI.Repositories
             var certificate = _mapper.Map<Certificate>(certificateDTO);
             await _context.Certificates.AddAsync(certificate);
             await _context.SaveChangesAsync();
+
             return _mapper.Map<CreateCertificateDTO>(certificate);
         }
 
         public async Task<CreateCertificateDTO> GetCertificateByIdAsync(int certificateId)
         {
-            var certificate = await _context.Certificates.FindAsync(certificateId);
+            var certificate = await _context.Certificates
+                .Include(c => c.Comments)
+                .Include(c => c.CertificateAssignments)
+                .ThenInclude(ca => ca.Participant)
+                .FirstOrDefaultAsync(c => c.CertificateId == certificateId);
+
             return _mapper.Map<CreateCertificateDTO>(certificate);
         }
 

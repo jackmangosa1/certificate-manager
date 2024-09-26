@@ -6,6 +6,7 @@ namespace CertificateManagerAPI.Services
     public class CertificateService : ICertificateService
     {
         private readonly ICertificateRepository _certificateRepository;
+
         public CertificateService(ICertificateRepository certificateRepository)
         {
             _certificateRepository = certificateRepository;

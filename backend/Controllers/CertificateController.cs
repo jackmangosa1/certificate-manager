@@ -15,6 +15,14 @@ namespace CertificateMangerAPI.Controllers
             _certificateService = certificateService;
         }
 
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<CertificateSummaryDTO>>> GetAllCertificates()
+        {
+            var certificates = await _certificateService.GetAllCertificatesAsync();
+            return Ok(certificates);
+        }
+
         [HttpGet("{id:int}", Name = "GetCertificate")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -34,14 +42,6 @@ namespace CertificateMangerAPI.Controllers
             }
 
             return Ok(certificate);
-        }
-
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<CertificateSummaryDTO>>> GetAllCertificates()
-        {
-            var certificates = await _certificateService.GetAllCertificatesAsync();
-            return Ok(certificates);
         }
 
         [HttpPost]
@@ -78,25 +78,10 @@ namespace CertificateMangerAPI.Controllers
             }
 
             var certificate = await _certificateService.CreateCertificateAsync(certificateDto);
-
             return CreatedAtRoute("GetCertificate", new { id = certificate.CertificateId }, certificate);
         }
 
-        [HttpDelete("{id:int}", Name = "DeleteBook")]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<ActionResult> DeleteCertificate(int id)
-        {
-            if (id <= 0)
-            {
-                return BadRequest("Invalid ID. ID must be greater than zero.");
-            }
-
-            await _certificateService.DeleteCertificateAsync(id);
-            return NoContent();
-        }
-
-        [HttpPut("{id:int}", Name = "UpdateBook")]
+        [HttpPut("{id:int}", Name = "UpdateCertificate")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<ActionResult> UpdateCertificate(int id, UpdateCertficateDTO certificateDTO)
@@ -107,6 +92,20 @@ namespace CertificateMangerAPI.Controllers
             }
 
             await _certificateService.UpdateCertificateAsync(id, certificateDTO);
+            return NoContent();
+        }
+
+        [HttpDelete("{id:int}", Name = "DeleteCertificate")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        public async Task<ActionResult> DeleteCertificate(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest("Invalid ID. ID must be greater than zero.");
+            }
+
+            await _certificateService.DeleteCertificateAsync(id);
             return NoContent();
         }
     }

@@ -1,4 +1,7 @@
-﻿namespace CertificateManagerAPI.Entities;
+﻿using System;
+using System.Collections.Generic;
+
+namespace CertificateManagerAPI.Entities;
 
 public partial class Comment
 {

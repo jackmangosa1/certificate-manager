@@ -9,6 +9,7 @@ namespace CertificateManagerAPI.Controllers
     public class ParticipantController : ControllerBase
     {
         private readonly IParticipantService _participantService;
+
         public ParticipantController(IParticipantService participantService)
         {
             _participantService = participantService;

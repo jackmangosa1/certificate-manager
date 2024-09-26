@@ -1,4 +1,7 @@
-﻿namespace CertificateManagerAPI.Entities;
+﻿using System;
+using System.Collections.Generic;
+
+namespace CertificateManagerAPI.Entities;
 
 public partial class Participant
 {
@@ -19,6 +22,8 @@ public partial class Participant
     public DateTime? DeletedAt { get; set; }
 
     public byte[]? RowVersion { get; set; }
+
+    public string Email { get; set; } = null!;
 
     public virtual ICollection<CertificateAssignment> CertificateAssignments { get; set; } = new List<CertificateAssignment>();
 
