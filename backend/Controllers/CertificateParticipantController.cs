@@ -31,7 +31,7 @@ namespace CertificateManagerAPI.Controllers
             }
 
             var certificateParticipant = await _certificateParticipantService.AddParticipantToCertificate(certificateId, participantDTO);
-            return CreatedAtAction("AddParticipantToCertificate", new { certificateId, participantId = participantDTO.UserId }, certificateParticipant);
+            return CreatedAtAction("AddParticipantToCertificate", new { certificateId, participantId = participantDTO.ParticipantId }, certificateParticipant);
         }
 
         [HttpDelete("{certificateId}/participants/{participantId}")]

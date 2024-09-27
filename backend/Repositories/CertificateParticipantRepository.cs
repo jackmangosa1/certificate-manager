@@ -18,7 +18,7 @@ namespace CertificateManagerAPI.Repositories
         {
             var existingParticipant = await _context.Participants
                 .Include(p => p.Department)
-                .FirstOrDefaultAsync(p => p.ParticipantId == participantDTO.UserId);
+                .FirstOrDefaultAsync(p => p.ParticipantId == participantDTO.ParticipantId);
 
             if (existingParticipant == null)
             {
@@ -26,7 +26,7 @@ namespace CertificateManagerAPI.Repositories
             }
 
             var existingAssignment = await _context.CertificateAssignments
-                .FirstOrDefaultAsync(ca => ca.CertificateId == certificateId && ca.ParticipantId == participantDTO.UserId);
+                .FirstOrDefaultAsync(ca => ca.CertificateId == certificateId && ca.ParticipantId == participantDTO.ParticipantId);
 
             if (existingAssignment != null)
             {
@@ -36,7 +36,7 @@ namespace CertificateManagerAPI.Repositories
             var certificateAssignment = new CertificateAssignment
             {
                 CertificateId = certificateId,
-                ParticipantId = participantDTO.UserId,
+                ParticipantId = participantDTO.ParticipantId,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
@@ -58,7 +58,7 @@ namespace CertificateManagerAPI.Repositories
                 .Include(ca => ca.Participant)
                 .ThenInclude(p => p.Department)
                 .FirstOrDefaultAsync(ca => ca.CertificateId == certificateId
-                                            && ca.ParticipantId == participantDTO.UserId);
+                                            && ca.ParticipantId == participantDTO.ParticipantId);
 
             if (certificateAssignment == null)
             {
