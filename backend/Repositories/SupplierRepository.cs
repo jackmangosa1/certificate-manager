@@ -8,7 +8,6 @@ namespace CertificateManagerAPI.Repositories
     public class SupplierRepository : ISupplierRepository
     {
         private readonly CertificateManagerDbContext _context;
-
         private readonly IMapper _mapper;
 
         public SupplierRepository(CertificateManagerDbContext context, IMapper mapper)
@@ -17,28 +16,28 @@ namespace CertificateManagerAPI.Repositories
             _mapper = mapper;
         }
 
-        public async Task<SupplierDTO> GetSupplierByName(string name)
+
+        public async Task<List<SupplierDTO>> SearchSuppliers(string? name = null, int? index = null, string? city = null)
         {
-            var supplier = await _context.Suppliers
-                .FirstOrDefaultAsync(s => s.Name == name);
+            var query = _context.Suppliers.AsQueryable();
 
-            return _mapper.Map<SupplierDTO>(supplier);
-        }
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                query = query.Where(s => s.Name == name);
+            }
 
-        public async Task<SupplierDTO> GetSupplierByIndex(int index)
-        {
-            var supplier = await _context.Suppliers
-                .FirstOrDefaultAsync(s => s.SupplierIndex == index);
+            if (index.HasValue)
+            {
+                query = query.Where(s => s.SupplierIndex == index.Value);
+            }
 
-            return _mapper.Map<SupplierDTO>(supplier);
-        }
+            if (!string.IsNullOrWhiteSpace(city))
+            {
+                query = query.Where(s => s.City == city);
+            }
 
-        public async Task<SupplierDTO> GetSupplierByCity(string city)
-        {
-            var supplier = await _context.Suppliers
-                .FirstOrDefaultAsync(s => s.City == city);
-
-            return _mapper.Map<SupplierDTO>(supplier);
+            var suppliers = await query.ToListAsync();
+            return _mapper.Map<List<SupplierDTO>>(suppliers);
         }
     }
 }

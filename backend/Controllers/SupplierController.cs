@@ -15,49 +15,22 @@ namespace CertificateManagerAPI.Controllers
             _supplierService = supplierService;
         }
 
-        [HttpGet("name")]
+        [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<SupplierDTO>> GetSupplierByName([FromQuery] string name)
+        public async Task<ActionResult<List<SupplierDTO>>> SearchSuppliers(
+            [FromQuery] string? name = null,
+            [FromQuery] int? index = null,
+            [FromQuery] string? city = null)
         {
-            var supplier = await _supplierService.GetSupplierByName(name);
+            var suppliers = await _supplierService.SearchSuppliers(name, index, city);
 
-            if (supplier == null)
+            if (suppliers == null || suppliers.Count == 0)
             {
                 return NotFound();
             }
 
-            return Ok(supplier);
-        }
-
-        [HttpGet("index")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<SupplierDTO>> GetSupplierByIndex([FromQuery] int index)
-        {
-            var supplier = await _supplierService.GetSupplierByIndex(index);
-
-            if (supplier == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(supplier);
-        }
-
-        [HttpGet("city")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<SupplierDTO>> GetSupplierByCity([FromQuery] string city)
-        {
-            var supplier = await _supplierService.GetSupplierByCity(city);
-
-            if (supplier == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(supplier);
+            return Ok(suppliers);
         }
     }
 }

@@ -12,22 +12,10 @@ namespace CertificateManagerAPI.Services
             _supplierRepository = supplierRepository;
         }
 
-        public async Task<SupplierDTO> GetSupplierByName(string name)
+        public async Task<List<SupplierDTO>> SearchSuppliers(string? name = null, int? index = null, string? city = null)
         {
-            var supplier = await _supplierRepository.GetSupplierByName(name);
-            return supplier;
-        }
-
-        public async Task<SupplierDTO> GetSupplierByIndex(int index)
-        {
-            var supplier = await _supplierRepository.GetSupplierByIndex(index);
-            return supplier;
-        }
-
-        public async Task<SupplierDTO> GetSupplierByCity(string city)
-        {
-            var supplier = await _supplierRepository.GetSupplierByCity(city);
-            return supplier;
+            var suppliers = await _supplierRepository.SearchSuppliers(name, index, city);
+            return suppliers;
         }
     }
 }

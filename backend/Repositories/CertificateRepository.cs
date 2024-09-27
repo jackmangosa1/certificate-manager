@@ -30,10 +30,10 @@ namespace CertificateManagerAPI.Repositories
         {
             var certificate = await _context.Certificates
      .Include(c => c.Comments)
-         .ThenInclude(comment => comment.User) // Include User details for each Comment
+         .ThenInclude(comment => comment.User)
      .Include(c => c.CertificateAssignments)
          .ThenInclude(ca => ca.Participant)
-             .ThenInclude(participant => participant.Department) // Include Department for each Participant
+             .ThenInclude(participant => participant.Department)
      .FirstOrDefaultAsync(c => c.CertificateId == certificateId);
 
             return _mapper.Map<GetCertificateDTO>(certificate);
