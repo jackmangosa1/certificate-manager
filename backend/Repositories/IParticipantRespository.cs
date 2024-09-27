@@ -4,10 +4,11 @@ namespace CertificateManagerAPI.Repositories
 {
     public interface IParticipantRespository
     {
-        Task<ParticipantDTO> GetParticipantByName(string name);
-        Task<ParticipantDTO> GetParticipantByFirstName(string name);
-        Task<ParticipantDTO> GetParticipantByUserId(int id);
-        Task<ParticipantDTO> GetParticipantByDepartment(string department);
-        Task<ParticipantDTO> GetParticipantByPlant(string plant);
+        public Task<List<ParticipantDTO>> SearchParticipants(
+            string? name = null,
+            string? firstName = null,
+            int? userId = null,
+            string? department = null,
+            string? plant = null);
     }
 }

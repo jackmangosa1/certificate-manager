@@ -12,34 +12,15 @@ namespace CertificateManagerAPI.Services
             _participantRespository = participantRespository;
         }
 
-        public async Task<ParticipantDTO> GetParticipantByName(string name)
+        public async Task<List<ParticipantDTO>> SearchParticipants(
+            string? name = null,
+            string? firstName = null,
+            int? userId = null,
+            string? department = null,
+            string? plant = null)
         {
-            var participant = await _participantRespository.GetParticipantByName(name);
-            return participant;
-        }
-
-        public async Task<ParticipantDTO> GetParticipantByFirstName(string name)
-        {
-            var participant = await _participantRespository.GetParticipantByFirstName(name);
-            return participant;
-        }
-
-        public async Task<ParticipantDTO> GetParticipantByUserId(int id)
-        {
-            var participant = await _participantRespository.GetParticipantByUserId(id);
-            return participant;
-        }
-
-        public async Task<ParticipantDTO> GetParticipantByDepartment(string name)
-        {
-            var participant = await _participantRespository.GetParticipantByDepartment(name);
-            return participant;
-        }
-
-        public async Task<ParticipantDTO> GetParticipantByPlant(string plant)
-        {
-            var participant = await _participantRespository.GetParticipantByPlant(plant);
-            return participant;
+            var participants = await _participantRespository.SearchParticipants(name, firstName, userId, department, plant);
+            return participants;
         }
     }
 }
