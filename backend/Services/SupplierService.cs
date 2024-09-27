@@ -12,12 +12,9 @@ namespace CertificateManagerAPI.Services
             _supplierRepository = supplierRepository;
         }
 
-        public async Task<List<SupplierDTO>> SearchSuppliers(
-            string? name = null,
-            int? index = null,
-            string? city = null)
+        public async Task<List<SupplierDTO>> SearchSuppliers(SupplierSearchDTO searchCriteria)
         {
-            var suppliers = await _supplierRepository.SearchSuppliers(name, index, city);
+            var suppliers = await _supplierRepository.SearchSuppliers(searchCriteria);
             return suppliers;
         }
     }

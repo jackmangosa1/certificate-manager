@@ -18,12 +18,9 @@ namespace CertificateManagerAPI.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<List<SupplierDTO>>> SearchSuppliers(
-            [FromQuery] string? name = null,
-            [FromQuery] int? index = null,
-            [FromQuery] string? city = null)
+        public async Task<ActionResult<List<SupplierDTO>>> SearchSuppliers([FromQuery] SupplierSearchDTO searchCriteria)
         {
-            var suppliers = await _supplierService.SearchSuppliers(name, index, city);
+            var suppliers = await _supplierService.SearchSuppliers(searchCriteria);
 
             if (suppliers == null || suppliers.Count == 0)
             {

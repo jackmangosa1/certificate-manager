@@ -8,7 +8,6 @@ namespace CertificateManagerAPI.Repositories
     public class ParticipantRepository : IParticipantRespository
     {
         private readonly CertificateManagerDbContext _context;
-
         private readonly IMapper _mapper;
 
         public ParticipantRepository(CertificateManagerDbContext context, IMapper mapper)
@@ -17,38 +16,33 @@ namespace CertificateManagerAPI.Repositories
             _mapper = mapper;
         }
 
-        public async Task<List<ParticipantDTO>> SearchParticipants(
-             string? name = null,
-             string? firstName = null,
-             int? userId = null,
-             string? department = null,
-             string? plant = null)
+        public async Task<List<ParticipantDTO>> SearchParticipants(ParticipantSearchDTO searchCriteria)
         {
             var query = _context.Participants.Include(p => p.Department).AsQueryable();
 
-            if (!string.IsNullOrEmpty(name))
+            if (!string.IsNullOrEmpty(searchCriteria.Name))
             {
-                query = query.Where(p => p.Name == name);
+                query = query.Where(p => p.Name == searchCriteria.Name);
             }
 
-            if (!string.IsNullOrEmpty(firstName))
+            if (!string.IsNullOrEmpty(searchCriteria.FirstName))
             {
-                query = query.Where(p => p.FirstName == firstName);
+                query = query.Where(p => p.FirstName == searchCriteria.FirstName);
             }
 
-            if (userId.HasValue)
+            if (searchCriteria.ParticipantId > 0)
             {
-                query = query.Where(p => p.ParticipantId == userId);
+                query = query.Where(p => p.ParticipantId == searchCriteria.ParticipantId);
             }
 
-            if (!string.IsNullOrEmpty(department))
+            if (!string.IsNullOrEmpty(searchCriteria.Department))
             {
-                query = query.Where(p => p.Department.DepartmentName == department);
+                query = query.Where(p => p.Department.DepartmentName == searchCriteria.Department);
             }
 
-            if (!string.IsNullOrEmpty(plant))
+            if (!string.IsNullOrEmpty(searchCriteria.Plant))
             {
-                query = query.Where(p => p.Plant == plant);
+                query = query.Where(p => p.Plant == searchCriteria.Plant);
             }
 
             var participants = await query.ToListAsync();
@@ -56,4 +50,3 @@ namespace CertificateManagerAPI.Repositories
         }
     }
 }
-

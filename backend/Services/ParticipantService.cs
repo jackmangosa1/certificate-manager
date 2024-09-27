@@ -12,14 +12,9 @@ namespace CertificateManagerAPI.Services
             _participantRespository = participantRespository;
         }
 
-        public async Task<List<ParticipantDTO>> SearchParticipants(
-            string? name = null,
-            string? firstName = null,
-            int? userId = null,
-            string? department = null,
-            string? plant = null)
+        public async Task<List<ParticipantDTO>> SearchParticipants(ParticipantSearchDTO searchCriteria)
         {
-            var participants = await _participantRespository.SearchParticipants(name, firstName, userId, department, plant);
+            var participants = await _participantRespository.SearchParticipants(searchCriteria);
             return participants;
         }
     }

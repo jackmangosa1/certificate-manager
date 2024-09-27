@@ -16,24 +16,23 @@ namespace CertificateManagerAPI.Repositories
             _mapper = mapper;
         }
 
-
-        public async Task<List<SupplierDTO>> SearchSuppliers(string? name = null, int? index = null, string? city = null)
+        public async Task<List<SupplierDTO>> SearchSuppliers(SupplierSearchDTO searchCriteria)
         {
             var query = _context.Suppliers.AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(name))
+            if (!string.IsNullOrWhiteSpace(searchCriteria.Name))
             {
-                query = query.Where(s => s.Name == name);
+                query = query.Where(s => s.Name == searchCriteria.Name);
             }
 
-            if (index.HasValue)
+            if (searchCriteria.SupplierIndex > 0)
             {
-                query = query.Where(s => s.SupplierIndex == index.Value);
+                query = query.Where(s => s.SupplierIndex == searchCriteria.SupplierIndex);
             }
 
-            if (!string.IsNullOrWhiteSpace(city))
+            if (!string.IsNullOrWhiteSpace(searchCriteria.City))
             {
-                query = query.Where(s => s.City == city);
+                query = query.Where(s => s.City == searchCriteria.City);
             }
 
             var suppliers = await query.ToListAsync();

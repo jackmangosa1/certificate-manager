@@ -18,14 +18,9 @@ namespace CertificateManagerAPI.Controllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<List<ParticipantDTO>>> GetParticipants(
-            [FromQuery] string? name = null,
-            [FromQuery] string? firstName = null,
-            [FromQuery] int? userId = null,
-            [FromQuery] string? department = null,
-            [FromQuery] string? plant = null)
+        public async Task<ActionResult<List<ParticipantDTO>>> SearchParticipants([FromQuery] ParticipantSearchDTO searchCriteria)
         {
-            var participants = await _participantService.SearchParticipants(name, firstName, userId, department, plant);
+            var participants = await _participantService.SearchParticipants(searchCriteria);
 
             if (participants == null || participants.Count == 0)
             {
