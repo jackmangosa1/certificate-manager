@@ -52,13 +52,13 @@ namespace CertificateManagerAPI.Repositories
             };
         }
 
-        public async Task RemoveParticipantFromCertificate(int certificateId, ParticipantDTO participantDTO)
+        public async Task RemoveParticipantFromCertificate(int certificateId, int participantId)
         {
             var certificateAssignment = await _context.CertificateAssignments
                 .Include(ca => ca.Participant)
                 .ThenInclude(p => p.Department)
                 .FirstOrDefaultAsync(ca => ca.CertificateId == certificateId
-                                            && ca.ParticipantId == participantDTO.ParticipantId);
+                                            && ca.ParticipantId == participantId);
 
             if (certificateAssignment == null)
             {

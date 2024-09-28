@@ -18,9 +18,9 @@ namespace CertificateManagerAPI.Services
             return participant;
         }
 
-        public async Task RemoveParticipantFromCertificate(int certificateId, ParticipantDTO participantDTO)
+        public async Task RemoveParticipantFromCertificate(int certificateId, int participantId)
         {
-            await _certificateParticipantRepository.RemoveParticipantFromCertificate(certificateId, participantDTO);
+            await _certificateParticipantRepository.RemoveParticipantFromCertificate(certificateId, participantId);
         }
     }
 }
