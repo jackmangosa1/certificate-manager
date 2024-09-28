@@ -2,9 +2,8 @@
 {
     public class GetCertificateDTO
     {
-        public int SupplierId { get; set; }
-
-        public int CertificateTypeId { get; set; }
+        public string Name { get; set; } = null!;
+        public string CertificateTypeName { get; set; } = null!;
 
         public string ValidFrom { get; set; } = null!;
 

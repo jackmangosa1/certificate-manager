@@ -29,6 +29,8 @@ namespace CertificateManagerAPI.Repositories
         public async Task<GetCertificateDTO> GetCertificateByIdAsync(int certificateId)
         {
             var certificate = await _context.Certificates
+                .Include(c => c.Supplier)
+                .Include(c => c.CertificateType)
                 .Include(c => c.Comments)
                     .ThenInclude(comment => comment.User)
                 .Include(c => c.CertificateAssignments)
@@ -38,6 +40,7 @@ namespace CertificateManagerAPI.Repositories
 
             return _mapper.Map<GetCertificateDTO>(certificate);
         }
+
 
         public async Task<IEnumerable<CertificateSummaryDTO>> GetAllCertificatesAsync()
         {
