@@ -38,6 +38,8 @@ namespace CertificateManagerAPI
             builder.Services.AddScoped<ICertificateParticipantService, CertificateParticipantService>();
             builder.Services.AddScoped<ICertificateCommentRepository, CertificateCommentRepository>();
             builder.Services.AddScoped<ICertificateCommentService, CertificateCommentService>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
