@@ -1,5 +1,6 @@
 ﻿using CertificateManagerAPI.DTO;
 using CertificateManagerAPI.Services;
+using CertificateManagerAPI.Utilities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CertificateManagerAPI.Controllers
@@ -20,6 +21,11 @@ namespace CertificateManagerAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<List<ParticipantDTO>>> SearchParticipants([FromQuery] ParticipantSearchDTO searchCriteria)
         {
+            if (SearchCriteriaValidator.IsSearchCriteriaEmpty(searchCriteria))
+            {
+                return BadRequest("You must pass at least one search criteria");
+            }
+
             var participants = await _participantService.SearchParticipants(searchCriteria);
 
             if (participants == null || participants.Count == 0)

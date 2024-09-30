@@ -1,5 +1,6 @@
 ﻿using CertificateManagerAPI.DTO;
 using CertificateManagerAPI.Services;
+using CertificateManagerAPI.Utilities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CertificateManagerAPI.Controllers
@@ -20,6 +21,11 @@ namespace CertificateManagerAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<List<SupplierDTO>>> SearchSuppliers([FromQuery] SupplierSearchDTO searchCriteria)
         {
+            if (SearchCriteriaValidator.IsSearchCriteriaEmpty(searchCriteria))
+            {
+                return BadRequest("You must pass at least one search criteria");
+            }
+
             var suppliers = await _supplierService.SearchSuppliers(searchCriteria);
 
             if (suppliers == null || suppliers.Count == 0)
