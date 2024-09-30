@@ -2,7 +2,7 @@
 
 namespace CertificateManagerAPI.Utilities
 {
-    public class SearchCriteriaValidator
+    public static class SearchCriteriaValidator
     {
         public static bool IsSearchCriteriaEmpty<T>(T searchCriteria)
         {

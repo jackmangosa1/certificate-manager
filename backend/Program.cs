@@ -55,6 +55,8 @@ namespace CertificateManagerAPI
 
             app.UseHttpsRedirection();
 
+            app.UseCors();
+
             app.UseExceptionHandler(_ => { });
 
             app.UseAuthorization();
