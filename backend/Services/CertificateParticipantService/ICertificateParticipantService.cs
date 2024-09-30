@@ -1,0 +1,10 @@
+﻿using CertificateManagerAPI.DTO;
+
+namespace CertificateManagerAPI.Services.CertificateParticipantService
+{
+    public interface ICertificateParticipantService
+    {
+        Task<CertificateParticipantDTO> AddParticipantToCertificate(int certificateId, ParticipantDTO participantDTO);
+        Task RemoveParticipantFromCertificate(int certificateId, int participantId);
+    }
+}
