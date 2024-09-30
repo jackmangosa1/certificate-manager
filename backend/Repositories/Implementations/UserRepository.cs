@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using CertificateManagerAPI.Data;
 using CertificateManagerAPI.DTO;
+using CertificateManagerAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace CertificateManagerAPI.Repositories
+namespace CertificateManagerAPI.Repositories.Implementations
 {
     public class UserRepository : IUserRepository
     {

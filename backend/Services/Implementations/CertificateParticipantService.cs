@@ -1,7 +1,8 @@
 ﻿using CertificateManagerAPI.DTO;
 using CertificateManagerAPI.Repositories.Interfaces;
+using CertificateManagerAPI.Services.Interfaces;
 
-namespace CertificateManagerAPI.Services
+namespace CertificateManagerAPI.Services.Implementations
 {
     public class CertificateParticipantService : ICertificateParticipantService
     {

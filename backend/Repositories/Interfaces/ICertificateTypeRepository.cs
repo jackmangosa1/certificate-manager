@@ -1,6 +1,6 @@
 ﻿using CertificateManagerAPI.DTO;
 
-namespace CertificateManagerAPI.Repositories
+namespace CertificateManagerAPI.Repositories.Interfaces
 {
     public interface ICertificateTypeRepository
     {

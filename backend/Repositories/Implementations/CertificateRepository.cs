@@ -2,9 +2,10 @@
 using CertificateManagerAPI.Data;
 using CertificateManagerAPI.DTO;
 using CertificateManagerAPI.Entities;
+using CertificateManagerAPI.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace CertificateManagerAPI.Repositories
+namespace CertificateManagerAPI.Repositories.Implementations
 {
     public class CertificateRepository : ICertificateRepository
     {

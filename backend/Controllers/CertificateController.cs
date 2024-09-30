@@ -1,5 +1,5 @@
 ﻿using CertificateManagerAPI.DTO;
-using CertificateManagerAPI.Services;
+using CertificateManagerAPI.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CertificateMangerAPI.Controllers
