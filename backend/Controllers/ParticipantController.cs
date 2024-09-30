@@ -21,7 +21,6 @@ namespace CertificateManagerAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<List<ParticipantDTO>>> SearchParticipants([FromQuery] ParticipantSearchDTO searchCriteria)
         {
-
             if (SearchCriteriaValidator.IsSearchCriteriaEmpty(searchCriteria))
             {
                 return BadRequest("You must pass at least one search criteria");
