@@ -2,6 +2,7 @@
 {
     public class GetCertificateDTO
     {
+        public int CertificateId { get; set; }
         public string Name { get; set; } = null!;
         public string CertificateTypeName { get; set; } = null!;
 

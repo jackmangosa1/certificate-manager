@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CertificateManagerAPI.Controllers
 {
-    [Route("api/certificate-types")]
+    [Route("api/certificates/types")]
     [ApiController]
     public class CertificatesTypesController : ControllerBase
     {
