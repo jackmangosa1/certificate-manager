@@ -1,8 +1,7 @@
 
 using BookAPI.Utilities;
 using CertificateManagerAPI.Data;
-using CertificateManagerAPI.Repositories;
-using CertificateManagerAPI.Services;
+using CertificateManagerAPI.Extensions;
 using CertificateManagerAPI.Utilities;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
@@ -18,29 +17,24 @@ namespace CertificateManagerAPI
             // Add services to the container.
 
             builder.Services.AddControllers()
-             .AddJsonOptions(options =>
-             {
-                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                 options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
-             });
+                .AddJsonOptions(options =>
+                 {
+                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                     options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
+                 });
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddDbContext<CertificateManagerDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString")));
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            builder.Services.AddScoped<ICertificateRepository, CertificateRepository>();
-            builder.Services.AddScoped<ICertificateService, CertificateService>();
-            builder.Services.AddScoped<ISupplierRepository, SupplierRepository>();
-            builder.Services.AddScoped<ISupplierService, SupplierService>();
-            builder.Services.AddScoped<IParticipantRespository, ParticipantRepository>();
-            builder.Services.AddScoped<IParticipantService, ParticipantService>();
-            builder.Services.AddScoped<ICertificateParticipantRepository, CertificateParticipantRepository>();
-            builder.Services.AddScoped<ICertificateParticipantService, CertificateParticipantService>();
-            builder.Services.AddScoped<ICertificateCommentRepository, CertificateCommentRepository>();
-            builder.Services.AddScoped<ICertificateCommentService, CertificateCommentService>();
+            builder.Services.AddRepositoryServices();
+            builder.Services.AddCustomServices();
+
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
 
             var app = builder.Build();
 
@@ -52,6 +46,8 @@ namespace CertificateManagerAPI
             }
 
             app.UseHttpsRedirection();
+
+            app.UseCors();
 
             app.UseExceptionHandler(_ => { });
 

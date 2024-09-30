@@ -1,5 +1,5 @@
 ﻿using CertificateManagerAPI.DTO;
-using CertificateManagerAPI.Services;
+using CertificateManagerAPI.Services.SupplierService;
 using CertificateManagerAPI.Utilities;
 using Microsoft.AspNetCore.Mvc;
 
