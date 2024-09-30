@@ -2,7 +2,7 @@
 {
     public class CertificateSummaryDTO
     {
-        public string SupplierName { get; set; } = null!;
+        public string SupplierDetails { get; set; } = null!;
 
         public string CertificateTypeName { get; set; } = null!;
 

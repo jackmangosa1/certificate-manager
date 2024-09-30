@@ -31,25 +31,25 @@ namespace CertificateManagerAPI.Controllers
             }
 
             var certificateParticipant = await _certificateParticipantService.AddParticipantToCertificate(certificateId, participantDTO);
-            return CreatedAtAction("AddParticipantToCertificate", new { certificateId, participantId = participantDTO.UserId }, certificateParticipant);
+            return CreatedAtAction("AddParticipantToCertificate", new { certificateId, participantId = participantDTO.ParticipantId }, certificateParticipant);
         }
 
         [HttpDelete("{certificateId}/participants/{participantId}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> RemoveParticipantFromCertificate(int certificateId, [FromBody] ParticipantDTO participantDTO)
+        public async Task<ActionResult> RemoveParticipantFromCertificate(int certificateId, int participantId)
         {
             if (certificateId <= 0)
             {
                 return BadRequest("Invalid certificate ID.");
             }
 
-            if (participantDTO == null)
+            if (participantId <= 0)
             {
-                return BadRequest("Participant data is required.");
+                return BadRequest("Invalid participant ID.");
             }
 
-            await _certificateParticipantService.RemoveParticipantFromCertificate(certificateId, participantDTO);
+            await _certificateParticipantService.RemoveParticipantFromCertificate(certificateId, participantId);
             return NoContent();
         }
     }

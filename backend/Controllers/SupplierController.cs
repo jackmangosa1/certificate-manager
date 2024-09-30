@@ -1,5 +1,6 @@
 ﻿using CertificateManagerAPI.DTO;
 using CertificateManagerAPI.Services;
+using CertificateManagerAPI.Utilities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CertificateManagerAPI.Controllers
@@ -15,49 +16,24 @@ namespace CertificateManagerAPI.Controllers
             _supplierService = supplierService;
         }
 
-        [HttpGet("name")]
+        [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<SupplierDTO>> GetSupplierByName([FromQuery] string name)
+        public async Task<ActionResult<List<SupplierDTO>>> SearchSuppliers([FromQuery] SupplierSearchDTO searchCriteria)
         {
-            var supplier = await _supplierService.GetSupplierByName(name);
+            if (SearchCriteriaValidator.IsSearchCriteriaEmpty(searchCriteria))
+            {
+                return BadRequest("You must pass at least one search criteria");
+            }
 
-            if (supplier == null)
+            var suppliers = await _supplierService.SearchSuppliers(searchCriteria);
+
+            if (suppliers == null || suppliers.Count == 0)
             {
                 return NotFound();
             }
 
-            return Ok(supplier);
-        }
-
-        [HttpGet("index")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<SupplierDTO>> GetSupplierByIndex([FromQuery] int index)
-        {
-            var supplier = await _supplierService.GetSupplierByIndex(index);
-
-            if (supplier == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(supplier);
-        }
-
-        [HttpGet("city")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<SupplierDTO>> GetSupplierByCity([FromQuery] string city)
-        {
-            var supplier = await _supplierService.GetSupplierByCity(city);
-
-            if (supplier == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(supplier);
+            return Ok(suppliers);
         }
     }
 }

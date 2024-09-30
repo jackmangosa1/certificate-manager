@@ -2,11 +2,11 @@
 {
     public class ParticipantDTO
     {
+        public int ParticipantId { get; set; }
+
         public string Name { get; set; } = null!;
 
         public string FirstName { get; set; } = null!;
-
-        public int UserId { get; set; }
 
         public string Department { get; set; } = null!;
 

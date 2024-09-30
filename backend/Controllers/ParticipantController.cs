@@ -1,5 +1,6 @@
 ﻿using CertificateManagerAPI.DTO;
 using CertificateManagerAPI.Services;
+using CertificateManagerAPI.Utilities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CertificateManagerAPI.Controllers
@@ -15,72 +16,24 @@ namespace CertificateManagerAPI.Controllers
             _participantService = participantService;
         }
 
-        [HttpGet("name")]
+        [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ParticipantDTO>> GetParticipantByName([FromQuery] string name)
+        public async Task<ActionResult<List<ParticipantDTO>>> SearchParticipants([FromQuery] ParticipantSearchDTO searchCriteria)
         {
-            var participant = await _participantService.GetParticipantByName(name);
+            if (SearchCriteriaValidator.IsSearchCriteriaEmpty(searchCriteria))
+            {
+                return BadRequest("You must pass at least one search criteria");
+            }
 
-            if (participant == null)
+            var participants = await _participantService.SearchParticipants(searchCriteria);
+
+            if (participants == null || participants.Count == 0)
             {
                 return NotFound();
             }
 
-            return Ok(participant);
-        }
-
-        [HttpGet("firstName")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ParticipantDTO>> GetParticipantByFirstName([FromQuery] string name)
-        {
-            var participant = await _participantService.GetParticipantByFirstName(name);
-
-            if (participant == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(participant);
-        }
-
-        [HttpGet("{id:int}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ParticipantDTO>> GetParticipantByUserId([FromQuery] int id)
-        {
-            var participant = await _participantService.GetParticipantByUserId(id);
-
-            if (participant == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(participant);
-        }
-
-        [HttpGet("departmentName")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<ParticipantDTO>> GetParticipantByDepartment([FromQuery] string name)
-        {
-            var participant = await _participantService.GetParticipantByDepartment(name);
-            return Ok(participant);
-        }
-
-        [HttpGet("plantName")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ParticipantDTO>> GetParticipantByPlant([FromQuery] string name)
-        {
-            var participant = await _participantService.GetParticipantByPlant(name);
-
-            if (participant == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(participant);
+            return Ok(participants);
         }
     }
 }

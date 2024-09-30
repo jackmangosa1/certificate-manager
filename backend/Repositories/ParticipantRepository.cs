@@ -8,58 +8,45 @@ namespace CertificateManagerAPI.Repositories
     public class ParticipantRepository : IParticipantRespository
     {
         private readonly CertificateManagerDbContext _context;
-
         private readonly IMapper _mapper;
+
         public ParticipantRepository(CertificateManagerDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
         }
 
-        public async Task<ParticipantDTO> GetParticipantByName(string name)
+        public async Task<List<ParticipantDTO>> SearchParticipants(ParticipantSearchDTO searchCriteria)
         {
-            var participant = await _context.Participants
-                .Include(p => p.Department)
-                .FirstOrDefaultAsync(p => p.Name == name);
+            var query = _context.Participants.Include(p => p.Department).AsQueryable();
 
-            return _mapper.Map<ParticipantDTO>(participant);
-        }
+            if (!string.IsNullOrEmpty(searchCriteria.Name))
+            {
+                query = query.Where(p => p.Name == searchCriteria.Name);
+            }
 
-        public async Task<ParticipantDTO> GetParticipantByFirstName(string name)
-        {
-            var participant = await _context.Participants
-                .Include(p => p.Department)
-                .FirstOrDefaultAsync(p => p.FirstName == name);
+            if (!string.IsNullOrEmpty(searchCriteria.FirstName))
+            {
+                query = query.Where(p => p.FirstName == searchCriteria.FirstName);
+            }
 
-            return _mapper.Map<ParticipantDTO>(participant);
-        }
+            if (searchCriteria.ParticipantId > 0)
+            {
+                query = query.Where(p => p.ParticipantId == searchCriteria.ParticipantId);
+            }
 
-        public async Task<ParticipantDTO> GetParticipantByUserId(int id)
-        {
-            var participant = await _context.Participants
-                    .Include(p => p.Department)
-                    .FirstOrDefaultAsync(p => p.ParticipantId == id);
+            if (!string.IsNullOrEmpty(searchCriteria.Department))
+            {
+                query = query.Where(p => p.Department.DepartmentName == searchCriteria.Department);
+            }
 
-            return _mapper.Map<ParticipantDTO>(participant);
-        }
+            if (!string.IsNullOrEmpty(searchCriteria.Plant))
+            {
+                query = query.Where(p => p.Plant == searchCriteria.Plant);
+            }
 
-        public async Task<ParticipantDTO> GetParticipantByDepartment(string name)
-        {
-            var participant = await _context.Participants
-                    .Include(p => p.Department)
-                    .FirstOrDefaultAsync(p => p.Department.DepartmentName == name);
-
-            return _mapper.Map<ParticipantDTO>(participant);
-        }
-
-        public async Task<ParticipantDTO> GetParticipantByPlant(string plant)
-        {
-            var participant = await _context.Participants
-                    .Include(p => p.Department)
-                    .FirstOrDefaultAsync(p => p.Plant == plant);
-
-            return _mapper.Map<ParticipantDTO>(participant);
+            var participants = await query.ToListAsync();
+            return _mapper.Map<List<ParticipantDTO>>(participants);
         }
     }
 }
-

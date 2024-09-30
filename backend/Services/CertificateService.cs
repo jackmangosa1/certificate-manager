@@ -18,7 +18,7 @@ namespace CertificateManagerAPI.Services
             return certificate;
         }
 
-        public async Task<CreateCertificateDTO> GetCertificateByIdAsync(int certificateId)
+        public async Task<GetCertificateDTO> GetCertificateByIdAsync(int certificateId)
         {
             var certificate = await _certificateRepository.GetCertificateByIdAsync(certificateId);
             return certificate;

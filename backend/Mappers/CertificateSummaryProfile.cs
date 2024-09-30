@@ -9,8 +9,8 @@ namespace CertificateManagerAPI.Mappers
         public CertificateSummaryProfile()
         {
             CreateMap<Certificate, CertificateSummaryDTO>()
-                .ForMember(dest => dest.SupplierName,
-                    opt => opt.MapFrom(src => src.Supplier.Name))
+                .ForMember(dest => dest.SupplierDetails,
+                    opt => opt.MapFrom(src => $"{src.Supplier.Name}, {src.Supplier.SupplierIndex}, {src.Supplier.City}"))
 
                 .ForMember(dest => dest.CertificateTypeName,
                     opt => opt.MapFrom(src => src.CertificateType.CertificateTypeName))
