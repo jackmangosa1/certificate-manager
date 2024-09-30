@@ -1,8 +1,10 @@
 
 using BookAPI.Utilities;
 using CertificateManagerAPI.Data;
-using CertificateManagerAPI.Repositories;
-using CertificateManagerAPI.Services;
+using CertificateManagerAPI.Repositories.Implementations;
+using CertificateManagerAPI.Repositories.Interfaces;
+using CertificateManagerAPI.Services.Implementations;
+using CertificateManagerAPI.Services.Interfaces;
 using CertificateManagerAPI.Utilities;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
@@ -40,9 +42,12 @@ namespace CertificateManagerAPI
             builder.Services.AddScoped<ICertificateCommentService, CertificateCommentService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<ICertificateTypeRepository, CertificateTypeRespository>();
+            builder.Services.AddScoped<ICertificateTypeService, CertificateTypeService>();
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
 
             var app = builder.Build();
 

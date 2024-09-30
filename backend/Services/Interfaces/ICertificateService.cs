@@ -1,6 +1,6 @@
 ﻿using CertificateManagerAPI.DTO;
 
-namespace CertificateManagerAPI.Services
+namespace CertificateManagerAPI.Services.Interfaces
 {
     public interface ICertificateService
     {

@@ -1,5 +1,5 @@
 ﻿using CertificateManagerAPI.DTO;
-using CertificateManagerAPI.Repositories;
+using CertificateManagerAPI.Repositories.Interfaces;
 
 namespace CertificateManagerAPI.Services
 {

@@ -1,8 +1,8 @@
 ﻿using CertificateManagerAPI.DTO;
 
-namespace CertificateManagerAPI.Services
+namespace CertificateManagerAPI.Repositories
 {
-    public interface ISupplierService
+    public interface ISupplierRepository
     {
         Task<List<SupplierDTO>> SearchSuppliers(SupplierSearchDTO searchCriteria);
     }
