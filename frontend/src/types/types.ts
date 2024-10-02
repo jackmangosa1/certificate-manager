@@ -1,54 +1,63 @@
-export enum CertificateType {
-  PermissionOfPrinting = 'Permission of Printing',
-  OHSAS18001 = 'OHSAS 18001',
-}
-
-export type Certificate = {
-  id: number;
-  supplier: string;
-  certificateType: CertificateType | '';
-  validFrom: Date | null;
-  validTo: Date | null;
-  pdfData: string | null;
-  participants?: Participant[];
-  comments?: Comment[] | undefined;
-};
-
-export type Supplier = {
-  id: number;
-  name: string;
-  index: string;
-  city: string;
-};
-
 export enum Language {
   ENGLISH = 'en',
   GERMAN = 'de',
 }
 
-export type Participant = {
-  id: number;
+export type CertificateSummary = {
+  certificateId: number;
+  supplierDetails: string;
+  certificateTypeName: string;
+  validFrom: string;
+  validTo: string;
+};
+
+export type Certificate = {
+  certificateId: number;
+  supplierId: number;
+  certificateTypeId: number;
+  validFrom: string;
+  validTo: string;
+  pdfDocumentData: string;
+  comments?: Comment[];
+  participants?: Participant[];
+};
+
+export type CertificateFormData = {
   name: string;
-  firstName: string;
-  userId: string;
-  department: string;
-  plant: string;
-  email: string;
+  certificateTypeName: string;
+  validFrom: string;
+  validTo: string;
+  pdfDocumentData: string;
+  participants: Participant[];
+  comments: Comment[];
 };
 
 export type Comment = {
-  id: string;
-  userId: number;
-  userName: string;
-  text: string;
-  timestamp: Date;
+  commentId: number;
+  username: string;
+  commentText: string;
+};
+
+export type Participant = {
+  participantId: number;
+  name: string;
+  firstName: string;
+  department: string;
+  plant: string;
 };
 
 export type User = {
-  id: number;
   username: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  language: Language.ENGLISH | Language.GERMAN;
+};
+
+export type CertificateType = {
+  certificateTypeId: number;
+  certificateTypeName: string;
+};
+
+export type Supplier = {
+  supplierId: number;
+  name: string;
+  supplierIndex: string;
+  city: string;
 };

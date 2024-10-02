@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParticipants } from '../../hooks/useParticipants';
-import { initializeDatabase } from '../../db/indexedDb';
 import './ParticipantLookup.css';
 import { Participant } from '../../types/types';
 import { useLanguage } from '../../hooks/useLanguage';
@@ -10,6 +9,7 @@ type ParticipantLookupModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onSelect: (participants: Participant[]) => void;
+  certificateId: number;
 };
 
 const initialSearchCriteria = {
@@ -24,21 +24,16 @@ const ParticipantLookupModal: React.FC<ParticipantLookupModalProps> = ({
   isOpen,
   onClose,
   onSelect,
+  certificateId,
 }) => {
   const { translations } = useLanguage();
-  const { searchParticipants } = useParticipants();
+  const { addParticipant, searchParticipants } = useParticipants();
   const [searchResults, setSearchResults] = useState<Participant[]>([]);
   const [searchCriteria, setSearchCriteria] = useState(initialSearchCriteria);
   const [selectedParticipants, setSelectedParticipants] = useState<
     Participant[]
   >([]);
   const [selectAll, setSelectAll] = useState(false);
-
-  useEffect(() => {
-    if (isOpen) {
-      initializeDatabase();
-    }
-  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -66,8 +61,10 @@ const ParticipantLookupModal: React.FC<ParticipantLookupModalProps> = ({
 
   const handleCheckboxChange = (participant: Participant) => {
     setSelectedParticipants((prev) => {
-      if (prev.some((p) => p.id === participant.id)) {
-        const newSelected = prev.filter((p) => p.id !== participant.id);
+      if (prev.some((p) => p.participantId === participant.participantId)) {
+        const newSelected = prev.filter(
+          (p) => p.participantId !== participant.participantId,
+        );
         setSelectAll(false);
         return newSelected;
       } else {
@@ -88,10 +85,22 @@ const ParticipantLookupModal: React.FC<ParticipantLookupModalProps> = ({
     }
   };
 
-  const handleSelect = () => {
+  const handleSelect = async () => {
     if (selectedParticipants.length > 0) {
-      onSelect(selectedParticipants);
-      handleCloseModal();
+      try {
+        const participant = selectedParticipants.map((participant) => ({
+          participantId: participant.participantId,
+          name: participant.name,
+          firstName: participant.firstName,
+          department: participant.department,
+          plant: participant.plant,
+        }));
+        await addParticipant(certificateId, participant);
+        onSelect(selectedParticipants);
+        handleCloseModal();
+      } catch (error) {
+        console.error('Error adding participants:', error);
+      }
     }
   };
 
@@ -105,10 +114,6 @@ const ParticipantLookupModal: React.FC<ParticipantLookupModalProps> = ({
     {
       header: translations.firstName,
       accessor: (participant) => participant.firstName,
-    },
-    {
-      header: translations.userId,
-      accessor: (participant) => participant.userId,
     },
     {
       header: translations.department,
@@ -135,7 +140,10 @@ const ParticipantLookupModal: React.FC<ParticipantLookupModalProps> = ({
       <input
         type="checkbox"
         checked={
-          selectAll || selectedParticipants.some((p) => p.id === participant.id)
+          selectAll ||
+          selectedParticipants.some(
+            (p) => p.participantId === participant.participantId,
+          )
         }
         onChange={(e) => {
           e.stopPropagation();

@@ -2,7 +2,7 @@ import './Navbar.css';
 import { Link } from 'react-router-dom';
 import CustomSelect from '../custom-select/CustomSelect';
 import { useLanguage } from '../../hooks/useLanguage';
-import { useUsers } from '../../hooks/useUsers'; // Updated import
+import { useUsers } from '../../hooks/useUsers';
 import { Language } from '../../types/types';
 import { useState, useEffect } from 'react';
 import MenuIcon from '../../icons/Menu';
@@ -15,22 +15,20 @@ type NavBarProps = {
 
 const Navbar: React.FC<NavBarProps> = ({ className, toggleSidebar }) => {
   const { language, setLanguage, translations } = useLanguage();
-  const { users, refetch } = useUsers(); // Updated to use users
+  const { users } = useUsers();
   const { setSelectedUser } = useUser();
   const [selectedUser, setSelectedUserLocal] = useState<string>('');
-
-  useEffect(() => {
-    refetch(); // Fetch users on component mount
-  }, [refetch]);
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setLanguage(e.target.value as Language);
   };
 
   const handleUserChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const userId = e.target.value;
-    setSelectedUserLocal(userId);
-    const selectedUserData = users.find((user) => String(user.id) === userId);
+    const userName = e.target.value;
+    setSelectedUserLocal(userName);
+
+    const selectedUserData = users.find((user) => user.username === userName);
+
     if (selectedUserData) {
       setSelectedUser(selectedUserData);
     }
@@ -42,17 +40,17 @@ const Navbar: React.FC<NavBarProps> = ({ className, toggleSidebar }) => {
   ];
 
   const userOptions = users.map((user) => ({
-    value: String(user.id),
-    label: `${user.firstName} ${user.lastName}`,
+    value: user.username,
+    label: user.username,
   }));
 
   useEffect(() => {
     if (users.length > 0 && !selectedUser) {
-      const firstUserId = String(users[0].id);
-      setSelectedUserLocal(firstUserId);
+      const firstUserName = users[0].username;
+      setSelectedUserLocal(firstUserName);
       setSelectedUser(users[0]);
     }
-  }, [users, selectedUser, setSelectedUser]);
+  }, [users, setSelectedUser]);
 
   return (
     <div className={`navbar ${className}`}>

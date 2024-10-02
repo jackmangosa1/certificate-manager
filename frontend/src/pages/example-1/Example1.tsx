@@ -7,7 +7,7 @@ import { useCertificates } from '../../hooks/useCertificates';
 import ActionMenu from '../../components/action-menu/ActionMenu';
 import GearIcon from '../../icons/GearIcon';
 import ConfirmationModal from '../../components/confirmation-modal/ConfirmationModal';
-import { Certificate } from '../../types/types';
+import { CertificateSummary } from '../../types/types';
 import { useLanguage } from '../../hooks/useLanguage';
 
 const Example1: React.FC = () => {
@@ -18,28 +18,28 @@ const Example1: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
 
-  const columns: ColumnConfig<Certificate>[] = [
+  const columns: ColumnConfig<CertificateSummary>[] = [
     {
       header: translations.supplier,
-      accessor: (row) => row.supplier,
+      accessor: (row) => row.supplierDetails,
     },
     {
       header: translations.certificateType,
-      accessor: (row) => row.certificateType,
+      accessor: (row) => row.certificateTypeName,
     },
     {
       header: translations.validFrom,
-      accessor: (row) => new Date(row.validFrom as Date).toLocaleDateString(),
+      accessor: (row) => row.validTo,
     },
     {
       header: translations.validTo,
-      accessor: (row) => new Date(row.validTo as Date).toLocaleDateString(),
+      accessor: (row) => row.validFrom,
     },
   ];
 
   const handleEdit = (index: number) => {
     const certificateToEdit = certificates[index];
-    navigate(`${AppRoutes.AddCertificate}/${certificateToEdit.id}`);
+    navigate(`${AppRoutes.AddCertificate}/${certificateToEdit.certificateId}`);
   };
 
   const handleDelete = (index: number) => {
@@ -50,8 +50,8 @@ const Example1: React.FC = () => {
   const handleConfirmDelete = () => {
     if (deleteIndex !== null) {
       const certificateToDelete = certificates[deleteIndex];
-      if (certificateToDelete.id !== undefined) {
-        deleteCertificate(certificateToDelete.id);
+      if (certificateToDelete.certificateId !== undefined) {
+        deleteCertificate(certificateToDelete.certificateId);
       }
     }
     setIsModalOpen(false);
@@ -59,7 +59,7 @@ const Example1: React.FC = () => {
 
   const actionColumn = {
     header: '',
-    render: (_row: Certificate, index: number) => (
+    render: (_row: CertificateSummary, index: number) => (
       <div className="menu-wrapper">
         <div onClick={() => setActiveMenu(activeMenu === index ? null : index)}>
           <GearIcon className="gear-icon" />

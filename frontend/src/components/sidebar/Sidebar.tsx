@@ -40,14 +40,14 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
 
   const handleUserChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const user = users.find(
-      (user) => String(user.id) === e.target.value,
+      (user) => String(user.username) === e.target.value,
     );
     setSelectedUser(user || null);
   };
 
   const participantOptions = users.map((user) => ({
-    value: String(user.id),
-    label: `${user.firstName} ${user.lastName}`,
+    value: user.username,
+    label: user.username,
   }));
   const menuItems: MenuItem[] = [
     {
@@ -109,7 +109,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
           id="user"
           label={translations.user}
           name="user"
-          value={selectedUser ? String(selectedUser.id) : ''}
+          value={selectedUser ? selectedUser.username : ''}
           onChange={handleUserChange}
           options={participantOptions}
           className="user-select-sidebar"

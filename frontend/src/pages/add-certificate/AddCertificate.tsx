@@ -9,14 +9,15 @@ import PdfViewer from '../../components/pdf-viewer/PdfViewer';
 import {
   Certificate,
   CertificateType,
-  Supplier,
   Participant,
   Comment,
+  Supplier,
+  CertificateFormData,
 } from '../../types/types';
 import { AppRoutes } from '../../routes/routes';
 import { useCertificates } from '../../hooks/useCertificates';
-import { getCertificateById } from '../../db/indexedDb';
 import { useLanguage } from '../../hooks/useLanguage';
+import { useCertificateTypes } from '../../hooks/useCertificateTypes';
 import ParticipantLookupModal from '../../components/participant-lookup-modal/ParticipantLookupModal';
 import Table, { ColumnConfig } from '../../components/table/Table';
 import SearchIcon from '../../icons/SearchIcon';
@@ -24,100 +25,106 @@ import CrossIcon from '../../icons/CrossIcon';
 import { useParticipants } from '../../hooks/useParticipants';
 import CommentSection from '../../components/comment-section/CommentSection';
 import { useUser } from '../../context/UserContext';
+import { formatDate } from '../../utils/convertDate';
+import { isBase64 } from '../../utils/convertPDF';
 
 type FormError = {
-  supplier: string;
-  certificateType: string;
+  name: string;
+  certificateTypeName: string;
   validFrom: string;
   validTo: string;
   validRange: string;
-  pdfData: string;
+  pdfDocumentURL: string;
 };
 
 const initialErrorData: FormError = {
-  supplier: '',
-  certificateType: '',
+  name: '',
+  certificateTypeName: '',
   validFrom: '',
   validTo: '',
   validRange: '',
-  pdfData: '',
+  pdfDocumentURL: '',
 };
 
-const initialCertificateData: Omit<Certificate, 'id'> = {
-  supplier: '',
-  certificateType: '',
-  validFrom: null,
-  validTo: null,
-  pdfData: null,
+const initialCertificateData: CertificateFormData = {
+  name: '',
+  certificateTypeName: '',
+  validFrom: '',
+  validTo: '',
+  pdfDocumentData: '',
   participants: [],
   comments: [],
 };
 
 const AddCertificate: React.FC = () => {
   const { translations } = useLanguage();
+  const { certificateTypes } = useCertificateTypes();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
-  const { addCertificate, updateCertificate } = useCertificates();
+  const { addCertificate, updateCertificate, getCertificateById } =
+    useCertificates();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isParticipantModalOpen, setIsParticipantModalOpen] = useState(false);
   const [selectedParticipants, setSelectedParticipants] = useState<
     Participant[]
   >([]);
+  const [comments, setComments] = useState<Comment[]>([]);
   const { selectedUser } = useUser();
+  const [certificateData, setCertificateData] = useState<CertificateFormData>(
+    initialCertificateData,
+  );
+  const [editMode, setEditMode] = useState(false);
+  const [pdfBase64, setPdfBase64] = useState<string | null>(null);
+  const [errors, setErrors] = useState<FormError>(initialErrorData);
+  const { removeParticipant } = useParticipants();
+  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(
+    null,
+  );
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const [certificateData, setCertificateData] = useState<
-    Omit<Certificate, 'id'>
-  >(initialCertificateData);
-  const [editMode, setEditMode] = useState(false);
-  const [pdfPreview, setPdfPreview] = useState<string | null>(null);
-  const [errors, setErrors] = useState<FormError>(initialErrorData);
-  const { deleteParticipant } = useParticipants();
-  const [comments, setComments] = useState<Comment[] | undefined>([]);
+  const handleSupplierSelect = (supplier: Supplier) => {
+    setSelectedSupplier(supplier);
+    setCertificateData((prevData) => ({
+      ...prevData,
+      name: supplier.name,
+    }));
+    closeModal();
+  };
 
   useEffect(() => {
     const fetchCertificate = async () => {
       if (id) {
         const fetchedCertificate = await getCertificateById(parseInt(id));
+
         if (fetchedCertificate) {
-          setCertificateData(fetchedCertificate);
+          setCertificateData((prevData) => ({
+            ...prevData,
+            ...fetchedCertificate,
+            comments: fetchedCertificate.comments || [],
+            participants: fetchedCertificate.participants || [],
+          }));
           setSelectedParticipants(fetchedCertificate.participants || []);
-          setComments(fetchedCertificate.comments);
+          setComments(fetchedCertificate.comments || []);
           setEditMode(true);
-          setPdfPreview(fetchedCertificate.pdfData);
+
+          if (fetchedCertificate.pdfDocumentData) {
+            try {
+              const isPDFBase64 = isBase64(fetchedCertificate.pdfDocumentData);
+              const base64Data = isPDFBase64
+                ? fetchedCertificate.pdfDocumentData
+                : btoa(fetchedCertificate.pdfDocumentData);
+              setPdfBase64(`data:application/pdf;base64,${base64Data}`);
+            } catch (error) {
+              console.error('Error processing PDF data:', error);
+            }
+          }
         }
       }
     };
     fetchCertificate();
   }, [id]);
-
-  const validateForm = (): boolean => {
-    const newErrors: FormError = { ...initialErrorData };
-
-    if (!certificateData.supplier)
-      newErrors.supplier = translations.errors.required.supplier;
-    if (!certificateData.certificateType)
-      newErrors.certificateType = translations.errors.required.certificateType;
-    if (!certificateData.validFrom)
-      newErrors.validFrom = translations.errors.required.validFrom;
-    if (!certificateData.validTo)
-      newErrors.validTo = translations.errors.required.validTo;
-    if (
-      certificateData.validFrom &&
-      certificateData.validTo &&
-      certificateData.validFrom > certificateData.validTo
-    ) {
-      newErrors.validRange = translations.errors.validRange;
-    }
-    if (!certificateData.pdfData) {
-      newErrors.pdfData = translations.errors.required.pdfData;
-    }
-    setErrors(newErrors);
-
-    return Object.values(newErrors).every((error) => error === '');
-  };
 
   const handleInput = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -125,66 +132,134 @@ const AddCertificate: React.FC = () => {
     const { name, value } = e.target;
     setCertificateData((prevData) => ({
       ...prevData,
-      [name]: name === 'certificateType' ? (value as CertificateType) : value,
+      [name]:
+        name === 'certificateTypeName'
+          ? (value as CertificateType['certificateTypeName'])
+          : value,
     }));
   };
 
   const handleDateChange = (name: string, date: Date | null) => {
     setCertificateData((prevData) => ({
       ...prevData,
-      [name]: date,
+      [name]: date ? date.toISOString() : '',
     }));
   };
 
-  const handleSave = async () => {
-    if (validateForm()) {
-      try {
-        const certificateToSave = {
-          ...certificateData,
-          participants: selectedParticipants,
-          comments: comments,
-        };
-
-        if (editMode && id) {
-          await updateCertificate(parseInt(id), certificateToSave);
-        } else {
-          await addCertificate(certificateToSave);
-        }
-        setErrors(initialErrorData);
-        navigate(AppRoutes.Example1);
-      } catch (error) {
-        console.error('Error saving certificate:', error);
-      }
+  const handlePdfChange = (pdfFile: File | null) => {
+    if (pdfFile) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64 = reader.result as string;
+        setPdfBase64(base64);
+      };
+      reader.readAsDataURL(pdfFile);
+    } else {
+      setPdfBase64(null);
     }
   };
 
-  const handlePdfChange = (pdfData: string | null) => {
-    setCertificateData((prevData) => ({
-      ...prevData,
-      pdfData,
-    }));
+  const validateForm = (): boolean => {
+    const newErrors: FormError = { ...initialErrorData };
+    let isValid = true;
+
+    if (!selectedSupplier) {
+      newErrors.name = translations.errors.required.supplier;
+      isValid = false;
+    }
+    if (!certificateData.certificateTypeName) {
+      newErrors.certificateTypeName =
+        translations.errors.required.certificateType;
+      isValid = false;
+    }
+    if (!certificateData.validFrom) {
+      newErrors.validFrom = translations.errors.required.validFrom;
+      isValid = false;
+    }
+    if (!certificateData.validTo) {
+      newErrors.validTo = translations.errors.required.validTo;
+      isValid = false;
+    }
+    if (
+      certificateData.validFrom &&
+      certificateData.validTo &&
+      new Date(certificateData.validFrom) > new Date(certificateData.validTo)
+    ) {
+      newErrors.validRange = translations.errors.validRange;
+      isValid = false;
+    }
+    if (!pdfBase64) {
+      newErrors.pdfDocumentURL = translations.errors.required.pdfData;
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
   };
 
-  const handleSupplierSelect = (supplier: Supplier) => {
-    setCertificateData((prevData) => ({
-      ...prevData,
-      supplier: supplier.name,
-    }));
-    closeModal();
+  const handleSave = async () => {
+    if (!validateForm()) {
+      const firstErrorField = Object.keys(errors).find(
+        (key) => errors[key as keyof FormError] !== '',
+      );
+      if (firstErrorField) {
+        const element = document.getElementById(firstErrorField);
+        element?.focus();
+      }
+      return;
+    }
+
+    try {
+      const certificateType = certificateTypes.find(
+        (type) =>
+          type.certificateTypeName === certificateData.certificateTypeName,
+      );
+
+      if (!certificateType) {
+        throw new Error('Invalid certificate type');
+      }
+
+      const certificateToSave: Certificate = {
+        certificateId: editMode && id ? Number(id) : 0,
+        supplierId: selectedSupplier?.supplierId || 0,
+        certificateTypeId: certificateType.certificateTypeId,
+        validFrom: formatDate(certificateData.validFrom),
+        validTo: formatDate(certificateData.validTo),
+        pdfDocumentData: pdfBase64 ? pdfBase64.split(',')[1] : '',
+      };
+
+      console.log('Certificate to save:', certificateToSave);
+
+      if (editMode && id) {
+        await updateCertificate(parseInt(id), certificateToSave);
+      } else {
+        await addCertificate(certificateToSave);
+      }
+
+      setErrors(initialErrorData);
+      navigate(AppRoutes.Example1);
+    } catch (error) {
+      console.error('Error saving certificate:', error);
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        general: 'Failed to save certificate. Please try again.',
+      }));
+    }
   };
 
   const handleClearSupplier = () => {
     setCertificateData((prevData) => ({
       ...prevData,
-      supplier: '',
+      name: '',
     }));
+    setSelectedSupplier(null);
   };
 
   const handleReset = () => {
     setCertificateData(initialCertificateData);
     setSelectedParticipants([]);
-    setComments([]);
-    setPdfPreview(null);
+    setPdfBase64(null);
+    setSelectedSupplier(null);
   };
 
   const handleOpenParticipantModal = () => {
@@ -199,12 +274,16 @@ const AddCertificate: React.FC = () => {
     setSelectedParticipants(participants);
   };
 
-  const handleRemoveParticipant = async (participantId: number) => {
+  const handleRemoveParticipant = async (
+    certificateId: number,
+    participantId: number,
+  ) => {
     try {
-      await deleteParticipant(participantId);
+      await removeParticipant(certificateId, participantId);
+
       setSelectedParticipants((prevParticipants) =>
         prevParticipants.filter(
-          (participant) => participant.id !== participantId,
+          (participant) => participant.participantId !== participantId,
         ),
       );
     } catch (error) {
@@ -212,22 +291,22 @@ const AddCertificate: React.FC = () => {
     }
   };
 
-  const handleCommentsChange = (newComments: Comment[] | undefined) => {
+  const handleCommentsChange = (newComments: Comment[]) => {
     setComments(newComments);
   };
 
   const participantColumns: ColumnConfig<Participant>[] = [
     {
       header: translations.name,
-      accessor: (row) => row.name,
+      accessor: (row) => `${row.firstName} ${row.name}`,
     },
     {
       header: translations.department,
       accessor: (row) => row.department,
     },
     {
-      header: translations.email,
-      accessor: (row) => row.userId,
+      header: translations.plant,
+      accessor: (row) => row.plant,
     },
   ];
 
@@ -235,9 +314,9 @@ const AddCertificate: React.FC = () => {
     <div className="certificate-form-container">
       <div className="left-side">
         <SupplierLookup
-          value={certificateData.supplier}
+          value={certificateData.name}
           onChange={handleInput}
-          error={errors.supplier}
+          error={errors.name}
           onSearch={openModal}
           onClear={handleClearSupplier}
         />
@@ -250,14 +329,14 @@ const AddCertificate: React.FC = () => {
         <CustomSelect
           id="certificate-type"
           label={translations.certificateType}
-          name="certificateType"
-          value={certificateData.certificateType}
+          name="certificateTypeName"
+          value={certificateData.certificateTypeName}
           onChange={handleInput}
-          options={Object.values(CertificateType).map((value) => ({
-            value,
-            label: value,
+          options={certificateTypes.map((type) => ({
+            value: type.certificateTypeName,
+            label: type.certificateTypeName,
           }))}
-          error={errors.certificateType}
+          error={errors.certificateTypeName}
           className="certificate-select"
         />
 
@@ -265,7 +344,11 @@ const AddCertificate: React.FC = () => {
           id="start-date"
           label={translations.validFrom}
           name="validFrom"
-          value={certificateData.validFrom}
+          value={
+            certificateData.validFrom
+              ? new Date(certificateData.validFrom)
+              : null
+          }
           onChange={(date) => handleDateChange('validFrom', date)}
           error={errors.validFrom}
         />
@@ -274,7 +357,9 @@ const AddCertificate: React.FC = () => {
           id="end-date"
           label={translations.validTo}
           name="validTo"
-          value={certificateData.validTo}
+          value={
+            certificateData.validTo ? new Date(certificateData.validTo) : null
+          }
           onChange={(date) => handleDateChange('validTo', date)}
           error={errors.validTo}
         />
@@ -285,8 +370,8 @@ const AddCertificate: React.FC = () => {
 
         {selectedUser ? (
           <CommentSection
-            currentUserId={selectedUser.id}
-            currentUserName={selectedUser.firstName}
+            certificateId={Number(id)}
+            currentUserName={selectedUser.username}
             initialComments={comments}
             onCommentsChange={handleCommentsChange}
           />
@@ -313,7 +398,11 @@ const AddCertificate: React.FC = () => {
               actionColumn={{
                 header: '',
                 render: (row) => (
-                  <div onClick={() => handleRemoveParticipant(row.id)}>
+                  <div
+                    onClick={() => {
+                      handleRemoveParticipant(Number(id), row.participantId);
+                    }}
+                  >
                     <CrossIcon className="cross-icon" />
                   </div>
                 ),
@@ -326,15 +415,16 @@ const AddCertificate: React.FC = () => {
             isOpen={isParticipantModalOpen}
             onClose={handleCloseParticipantModal}
             onSelect={handleSelectParticipant}
+            certificateId={Number(id)}
           />
         </div>
       </div>
       <div className="right-side">
         <PdfViewer
-          pdfPreview={pdfPreview}
-          setPdfPreview={setPdfPreview}
+          pdfPreview={pdfBase64}
+          setPdfPreview={setPdfBase64}
           onPdfChange={handlePdfChange}
-          error={errors.pdfData}
+          error={errors.pdfDocumentURL}
         />
 
         <div className="button-container">

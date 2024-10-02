@@ -1,20 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Certificate } from '../types/types';
-import {
-  addCertificate as addCertificateDB,
-  getCertificates as getCertificatesDB,
-  updateCertificate as updateCertificateDB,
-  deleteCertificate as deleteCertificateDB,
-  getCertificateById,
-} from '../db/indexedDb';
+import { Certificate, CertificateSummary } from '../types/types';
+import axios from 'axios';
+import { certificatesEndpoint } from '../endpoints/endpoints';
 
 export const useCertificates = () => {
-  const [certificates, setCertificates] = useState<Certificate[]>([]);
+  const [certificates, setCertificates] = useState<CertificateSummary[]>([]);
 
   const fetchCertificates = useCallback(async () => {
     try {
-      const fetchedCertificates = await getCertificatesDB();
-      setCertificates(fetchedCertificates);
+      const response = await axios.get(certificatesEndpoint);
+      setCertificates(response.data);
     } catch (error) {
       console.error('Error fetching certificates:', error);
     }
@@ -24,13 +19,25 @@ export const useCertificates = () => {
     fetchCertificates();
   }, [fetchCertificates]);
 
-  const addCertificate = async (certificate: Omit<Certificate, 'id'>) => {
+  const getCertificateById = async (
+    id: number,
+  ): Promise<Certificate | null> => {
     try {
-      const id = await addCertificateDB(certificate);
-      const newCertificate = await getCertificateById(id);
-      if (newCertificate) {
-        setCertificates((prev) => [...prev, newCertificate]);
-      }
+      const response = await axios.get<Certificate>(
+        `${certificatesEndpoint}/${id}`,
+      );
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching certificate with id ${id}:`, error);
+      return null;
+    }
+  };
+
+  const addCertificate = async (
+    certificate: Omit<Certificate, 'certificateId'>,
+  ) => {
+    try {
+      await axios.post<Certificate>(certificatesEndpoint, certificate);
     } catch (error) {
       console.error('Error adding certificate:', error);
       throw error;
@@ -39,11 +46,18 @@ export const useCertificates = () => {
 
   const updateCertificate = async (
     id: number,
-    updatedCertificate: Omit<Certificate, 'id'>,
+    updatedCertificate: Omit<Certificate, 'certificateId'>,
   ) => {
     try {
-      await updateCertificateDB(id, updatedCertificate);
-      fetchCertificates();
+      await axios.put<Certificate>(
+        `${certificatesEndpoint}/${id}`,
+        updatedCertificate,
+      );
+      setCertificates((prev) =>
+        prev.map((cert) =>
+          cert.certificateId === id ? { ...cert, ...updatedCertificate } : cert,
+        ),
+      );
     } catch (error) {
       console.error('Error updating certificate:', error);
       throw error;
@@ -52,12 +66,21 @@ export const useCertificates = () => {
 
   const deleteCertificate = async (id: number) => {
     try {
-      await deleteCertificateDB(id);
-      setCertificates((prev) => prev.filter((cert) => cert.id !== id));
+      await axios.delete(`${certificatesEndpoint}/${id}`);
+      setCertificates((prev) =>
+        prev.filter((cert) => cert.certificateId !== id),
+      );
     } catch (error) {
       console.error('Error deleting certificate:', error);
+      throw error;
     }
   };
 
-  return { certificates, addCertificate, updateCertificate, deleteCertificate };
+  return {
+    certificates,
+    addCertificate,
+    updateCertificate,
+    deleteCertificate,
+    getCertificateById,
+  };
 };
