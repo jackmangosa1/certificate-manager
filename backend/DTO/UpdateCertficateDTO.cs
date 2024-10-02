@@ -16,8 +16,8 @@ namespace CertificateManagerAPI.DTO
         [Required]
         public string ValidTo { get; set; } = null!;
 
+
         [Required]
-        [Url(ErrorMessage = "Invalid URL format for PDF document.")]
-        public string PdfDocumentUrl { get; set; } = null!;
+        public byte[] PdfDocumentData { get; set; } = null!;
     }
 }

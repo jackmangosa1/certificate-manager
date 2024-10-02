@@ -12,10 +12,10 @@ namespace CertificateManagerAPI.Services.CertificateParticipantService
             _certificateParticipantRepository = certificateParticipantRepository;
         }
 
-        public async Task<CertificateParticipantDTO> AddParticipantToCertificate(int certificateId, ParticipantDTO participantDTO)
+        public async Task<IEnumerable<CertificateParticipantDTO>> AddParticipantsToCertificate(int certificateId, IEnumerable<ParticipantDTO> participantDTOs)
         {
-            var participant = await _certificateParticipantRepository.AddParticipantToCertificate(certificateId, participantDTO);
-            return participant;
+            var participants = await _certificateParticipantRepository.AddParticipantsToCertificate(certificateId, participantDTOs);
+            return participants;
         }
 
         public async Task RemoveParticipantFromCertificate(int certificateId, int participantId)

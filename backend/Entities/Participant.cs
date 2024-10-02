@@ -15,6 +15,8 @@ public partial class Participant
 
     public string Plant { get; set; } = null!;
 
+    public string Email { get; set; } = null!;
+
     public DateTime CreatedAt { get; set; }
 
     public DateTime UpdatedAt { get; set; }
@@ -22,8 +24,6 @@ public partial class Participant
     public DateTime? DeletedAt { get; set; }
 
     public byte[]? RowVersion { get; set; }
-
-    public string Email { get; set; } = null!;
 
     public virtual ICollection<CertificateAssignment> CertificateAssignments { get; set; } = new List<CertificateAssignment>();
 

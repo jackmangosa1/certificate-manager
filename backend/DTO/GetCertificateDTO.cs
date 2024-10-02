@@ -10,7 +10,7 @@
 
         public string ValidTo { get; set; } = null!;
 
-        public string PdfDocumentUrl { get; set; } = null!;
+        public byte[] PdfDocumentData { get; set; } = null!;
 
         public List<CommentDTO> Comments { get; set; } = null!;
 
