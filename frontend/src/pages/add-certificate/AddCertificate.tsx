@@ -228,8 +228,6 @@ const AddCertificate: React.FC = () => {
         pdfDocumentData: pdfBase64 ? pdfBase64.split(',')[1] : '',
       };
 
-      console.log('Certificate to save:', certificateToSave);
-
       if (editMode && id) {
         await updateCertificate(parseInt(id), certificateToSave);
       } else {

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using CertificateManagerAPI.Entities;
+﻿using CertificateManagerAPI.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CertificateManagerAPI.Data;
@@ -31,9 +29,6 @@ public partial class CertificateManagerDbContext : DbContext
     public virtual DbSet<Supplier> Suppliers { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Name=ConnectionStrings:DefaultConnectionString");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
