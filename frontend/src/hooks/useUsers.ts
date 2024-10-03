@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { User } from '../types/types';
-import { getUsers, initializeDatabase } from '../db/indexedDb';
+import { usersEndpoint } from '../endpoints/endpoints';
 
 export const useUsers = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -10,12 +11,15 @@ export const useUsers = () => {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      await initializeDatabase();
-      const fetchedUsers = await getUsers();
-      setUsers(fetchedUsers);
+      const response = await axios.get<User[]>(usersEndpoint);
+      setUsers(response.data);
       setError(null);
     } catch (err) {
-      setError(err instanceof Error ? err : new Error('An error occurred while fetching users'));
+      setError(
+        err instanceof Error
+          ? err
+          : new Error('An error occurred while fetching users'),
+      );
     } finally {
       setLoading(false);
     }

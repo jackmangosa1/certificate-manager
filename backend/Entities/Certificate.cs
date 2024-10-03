@@ -15,7 +15,7 @@ public partial class Certificate
 
     public DateOnly ValidTo { get; set; }
 
-    public string PdfDocumentUrl { get; set; } = null!;
+    public byte[] PdfDocumentData { get; set; } = null!;
 
     public DateTime CreatedAt { get; set; }
 

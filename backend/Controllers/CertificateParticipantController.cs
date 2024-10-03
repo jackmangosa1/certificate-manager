@@ -15,23 +15,23 @@ namespace CertificateManagerAPI.Controllers
             _certificateParticipantService = certificateParticipantService;
         }
 
-        [HttpPost("{certificateId}/participants", Name = "AddParticipantToCertificate")]
+        [HttpPost("{certificateId}/participants", Name = "AddParticipantsToCertificate")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<ActionResult<CertificateParticipantDTO>> AddParticipantToCertificate(int certificateId, [FromBody] ParticipantDTO participantDTO)
+        public async Task<ActionResult<IEnumerable<CertificateParticipantDTO>>> AddParticipantsToCertificate(int certificateId, [FromBody] IEnumerable<ParticipantDTO> participantDTOs)
         {
             if (certificateId <= 0)
             {
                 return BadRequest("Invalid certificate ID.");
             }
 
-            if (participantDTO == null)
+            if (participantDTOs == null || !participantDTOs.Any())
             {
                 return BadRequest("Participant data is required.");
             }
 
-            var certificateParticipant = await _certificateParticipantService.AddParticipantToCertificate(certificateId, participantDTO);
-            return CreatedAtAction("AddParticipantToCertificate", new { certificateId, participantId = participantDTO.ParticipantId }, certificateParticipant);
+            var addedParticipants = await _certificateParticipantService.AddParticipantsToCertificate(certificateId, participantDTOs);
+            return CreatedAtAction("AddParticipantsToCertificate", new { certificateId }, addedParticipants);
         }
 
         [HttpDelete("{certificateId}/participants/{participantId}")]

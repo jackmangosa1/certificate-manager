@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useSuppliers } from '../../hooks/useSuppliers';
-import { initializeDatabase } from '../../db/indexedDb';
 import './SearchSupplierModal.css';
-import { Supplier } from '@/types/types';
+import { Supplier } from '../../types/types';
 import Table, { ColumnConfig } from '../../components/table/Table';
 import { useLanguage } from '../../hooks/useLanguage';
 
@@ -40,7 +39,6 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
   };
 
   const handleSearch = async () => {
-    await initializeDatabase();
     const results = await searchSuppliers(searchCriteria);
     setSearchResults(results);
   };
@@ -74,7 +72,7 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
     },
     {
       header: translations.supplierIndex,
-      accessor: (supplier) => supplier.index,
+      accessor: (supplier) => supplier.supplierIndex,
     },
     { header: translations.city, accessor: (supplier) => supplier.city },
   ];
@@ -85,8 +83,8 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
       <input
         type="radio"
         name="selectedSupplier"
-        value={supplier.id}
-        checked={selectedSupplier?.id === supplier.id}
+        value={supplier.supplierId}
+        checked={selectedSupplier?.supplierId === supplier.supplierId}
         onChange={() => handleRadioChange(supplier)}
       />
     ),

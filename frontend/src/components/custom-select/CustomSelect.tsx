@@ -7,7 +7,7 @@ type CustomSelectProps = {
   name: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  options: { value: string; label: string }[];
+  options: { value: string | number; label: string }[];
   error?: string;
   className?: string;
 };
@@ -38,15 +38,16 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
         >
           {translations.selectYourOption}
         </option>
-        {options.map((option) => (
+        {options.map((option, index) => (
           <option
-            key={option.value}
+            key={`${option.value}-${index}`}
             value={option.value}
           >
             {option.label}
           </option>
         ))}
       </select>
+
       {error && <p className="select-error-message">{error}</p>}
     </div>
   );

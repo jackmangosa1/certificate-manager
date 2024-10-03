@@ -35,6 +35,19 @@ namespace CertificateManagerAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            var provider = builder.Services.BuildServiceProvider();
+            var configuration = provider.GetService<IConfiguration>();
+
+            builder.Services.AddCors(options =>
+            {
+                var frontendURL = configuration.GetValue<string>("FrontendURL");
+
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins(frontendURL).AllowAnyMethod().AllowAnyHeader();
+                });
+            });
+
 
             var app = builder.Build();
 

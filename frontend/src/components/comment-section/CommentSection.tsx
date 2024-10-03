@@ -1,46 +1,61 @@
-import React, { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { Comment } from '../../types/types';
+import React, { useState, useEffect } from 'react';
 import './CommentSection.css';
+import { useComments } from '../../hooks/useComments';
+
+export type Comment = {
+  commentId: number;
+  username: string;
+  commentText: string;
+};
 
 type CommentSectionProps = {
-  currentUserId: number;
+  certificateId: number;
   currentUserName: string;
-  initialComments: Comment[] | undefined;
-  onCommentsChange: (comments: Comment[]) => void;
+  initialComments: Comment[];
+  onCommentsChange: (newComments: Comment[]) => void;
 };
 
 const CommentSection: React.FC<CommentSectionProps> = ({
-  currentUserId,
+  certificateId,
   currentUserName,
   initialComments,
   onCommentsChange,
 }) => {
   const [showCommentInput, setShowCommentInput] = useState(false);
-  const [newComment, setNewComment] = useState('');
+  const [newCommentText, setNewCommentText] = useState('');
+  const [comments, setComments] = useState<Comment[]>(initialComments);
+  const { addComment } = useComments();
+
+  useEffect(() => {
+    setComments(initialComments);
+  }, [initialComments]);
 
   const handleNewCommentClick = () => {
     setShowCommentInput(true);
   };
 
   const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setNewComment(e.target.value);
+    setNewCommentText(e.target.value);
   };
 
-  const handleSendComment = () => {
-    if (newComment.trim()) {
-      const comment: Comment = {
-        id: uuidv4(),
-        userId: currentUserId,
-        userName: currentUserName,
-        text: newComment.trim(),
-        timestamp: new Date(),
+  const handleSendComment = async () => {
+    if (newCommentText.trim()) {
+      const newComment: Comment = {
+        commentId: 0,
+        username: currentUserName,
+        commentText: newCommentText.trim(),
       };
-      const updatedComments = [...(initialComments || []), comment];
 
-      onCommentsChange(updatedComments);
-      setNewComment('');
-      setShowCommentInput(false);
+      try {
+        await addComment(certificateId, newComment);
+        const updatedComments = [...comments, newComment];
+        setComments(updatedComments);
+        onCommentsChange(updatedComments);
+        setNewCommentText('');
+        setShowCommentInput(false);
+      } catch (error) {
+        console.error('Failed to send comment:', error);
+      }
     }
   };
 
@@ -55,36 +70,27 @@ const CommentSection: React.FC<CommentSectionProps> = ({
         </button>
       </div>
 
-      <div className="comments">
-        {initialComments?.map((comment) => (
-          <div
-            key={comment.id}
-            className="comment"
-          >
-            <div className="user">
-              <span>User:</span>
-              <span>{comment.userName}</span>
-            </div>
-
-            <div className="comment-text">
-              <span>Comment:</span>
-              <span>{comment.text}</span>
-            </div>
-          </div>
-        ))}
-      </div>
+      {comments.map((comment) => (
+        <div
+          key={comment.commentId}
+          className="comment"
+        >
+          <div className="user-info">User: {comment.username}</div>
+          <div className="comment-text">Comment: {comment.commentText}</div>
+        </div>
+      ))}
 
       {showCommentInput && (
         <div className="comment-input">
           <textarea
-            value={newComment}
+            value={newCommentText}
             onChange={handleCommentChange}
-            placeholder="Comment"
+            placeholder="Type your comment here..."
           />
           <button
             onClick={handleSendComment}
-            disabled={!newComment.trim()}
-            className={!newComment.trim() ? 'disabled' : ''}
+            disabled={!newCommentText.trim()}
+            className={!newCommentText.trim() ? 'disabled' : ''}
           >
             Send
           </button>

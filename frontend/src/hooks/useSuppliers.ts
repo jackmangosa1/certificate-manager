@@ -1,42 +1,29 @@
-import { useState } from 'react';
-import { Supplier } from '@/types/types';
-import {
-  addSupplier as addSupplierToDB,
-  getSuppliers,
-  searchSuppliers as searchSuppliersInDB,
-  initializeDatabase,
-} from '../db/indexedDb';
+import { useState, useCallback } from 'react';
+import axios from 'axios';
+import { Supplier } from '../types/types';
+import { suppliersEndpoint } from '../endpoints/endpoints';
 
 export const useSuppliers = () => {
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
 
-  const initializeAndFetchSuppliers = async () => {
+  const fetchSuppliers = useCallback(async () => {
     try {
-      await initializeDatabase();
-      const fetchedSuppliers = await getSuppliers();
-      setSuppliers(fetchedSuppliers);
-      return fetchedSuppliers;
+      const response = await axios.get<Supplier[]>(suppliersEndpoint);
+      setSuppliers(response.data);
+      return response.data;
     } catch (error) {
-      console.error('Failed to initialize and fetch suppliers:', error);
+      console.error('Failed to fetch suppliers:', error);
       return [];
     }
-  };
-
-  const addSupplier = async (supplier: Omit<Supplier, 'id'>) => {
-    try {
-      const id = await addSupplierToDB(supplier);
-      setSuppliers((prev) => [...prev, { id, ...supplier }]);
-      return id;
-    } catch (error) {
-      console.error('Failed to add supplier:', error);
-      throw error;
-    }
-  };
+  }, []);
 
   const searchSuppliers = async (criteria: Partial<Supplier>) => {
     try {
-      const results = await searchSuppliersInDB(criteria);
-      return results;
+      const queryString = new URLSearchParams(criteria as any).toString();
+      const response = await axios.get<Supplier[]>(
+        `${suppliersEndpoint}?${queryString}`,
+      );
+      return response.data;
     } catch (error) {
       console.error('Failed to search suppliers:', error);
       throw error;
@@ -45,9 +32,8 @@ export const useSuppliers = () => {
 
   const refreshSuppliers = async () => {
     try {
-      const fetchedSuppliers = await getSuppliers();
-      setSuppliers(fetchedSuppliers);
-      return fetchedSuppliers;
+      const suppliersList = await fetchSuppliers();
+      return suppliersList;
     } catch (error) {
       console.error('Failed to refresh suppliers:', error);
       return [];
@@ -56,9 +42,8 @@ export const useSuppliers = () => {
 
   return {
     suppliers,
-    addSupplier,
     searchSuppliers,
     refreshSuppliers,
-    initializeAndFetchSuppliers,
+    fetchSuppliers,
   };
 };

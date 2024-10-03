@@ -4,7 +4,7 @@ namespace CertificateManagerAPI.Repositories.CertificateParticipantRepository
 {
     public interface ICertificateParticipantRepository
     {
-        Task<CertificateParticipantDTO> AddParticipantToCertificate(int certificateId, ParticipantDTO participantDTO);
+        Task<IEnumerable<CertificateParticipantDTO>> AddParticipantsToCertificate(int certificateId, IEnumerable<ParticipantDTO> articipantDTOs);
         Task RemoveParticipantFromCertificate(int certificateId, int participantId);
     }
 }

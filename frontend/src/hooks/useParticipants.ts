@@ -1,62 +1,54 @@
 import { useState } from 'react';
-import { Participant } from '@/types/types';
+import axios from 'axios';
+import { Participant } from '../types/types';
 import {
-  addParticipant as addParticipantToDB,
-  getParticipants,
-  updateParticipant as updateParticipantInDB,
-  deleteParticipant as deleteParticipantInDB,
-  initializeDatabase,
-  searchParticipants as searchParticipantsInDB,
-} from '../db/indexedDb';
+  certificatesEndpoint,
+  participantEndpoint,
+} from '../endpoints/endpoints';
 
 export const useParticipants = () => {
   const [participants, setParticipants] = useState<Participant[]>([]);
 
-  const initializeAndFetchParticipants = async () => {
+  const searchParticipants = async (criteria: Partial<Participant>) => {
     try {
-      await initializeDatabase();
-      const fetchedParticipants = await getParticipants();
-      setParticipants(fetchedParticipants);
-      return fetchedParticipants;
+      const response = await axios.get(participantEndpoint, {
+        params: criteria,
+      });
+      return response.data;
     } catch (error) {
-      console.error('Failed to initialize and fetch participants:', error);
+      console.error('Failed to search participants:', error);
       return [];
     }
   };
 
-  const addParticipant = async (participant: Omit<Participant, 'id'>) => {
-    try {
-      const id = await addParticipantToDB(participant);
-      setParticipants((prev) => [...prev, { id, ...participant }]);
-      return id;
-    } catch (error) {
-      console.error('Failed to add participant:', error);
-      throw error;
-    }
-  };
-
-  const updateParticipant = async (
-    id: number,
-    updatedParticipant: Omit<Participant, 'id'>,
+  const addParticipant = async (
+    certificateId: number,
+    participants: Participant[],
   ) => {
     try {
-      await updateParticipantInDB(id, updatedParticipant);
-      setParticipants((prev) =>
-        prev.map((participant) =>
-          participant.id === id ? { id, ...updatedParticipant } : participant,
-        ),
+      const response = await axios.post(
+        `${certificatesEndpoint}/${certificateId}/participants`,
+        participants,
       );
+      setParticipants((prev) => [...prev, ...response.data]);
     } catch (error) {
-      console.error('Failed to update participant:', error);
+      console.error('Failed to add participants:', error);
       throw error;
     }
   };
 
-  const deleteParticipant = async (id: number) => {
+  const removeParticipant = async (
+    certificateId: number,
+    participantId: number,
+  ) => {
     try {
-      await deleteParticipantInDB(id);
+      await axios.delete(
+        `${certificatesEndpoint}/${certificateId}/participants/${participantId}`,
+      );
       setParticipants((prev) =>
-        prev.filter((participant) => participant.id !== id),
+        prev.filter(
+          (participant) => participant.participantId !== participantId,
+        ),
       );
     } catch (error) {
       console.error('Failed to delete participant:', error);
@@ -64,34 +56,10 @@ export const useParticipants = () => {
     }
   };
 
-  const searchParticipants = async (criteria: Partial<Participant>) => {
-    try {
-      const results = await searchParticipantsInDB(criteria);
-      return results;
-    } catch (error) {
-      console.error('Failed to search participants:', error);
-      throw error;
-    }
-  };
-
-  const refreshParticipants = async () => {
-    try {
-      const fetchedParticipants = await getParticipants();
-      setParticipants(fetchedParticipants);
-      return fetchedParticipants;
-    } catch (error) {
-      console.error('Failed to refresh participants:', error);
-      return [];
-    }
-  };
-
   return {
     participants,
-    addParticipant,
-    updateParticipant,
-    deleteParticipant,
     searchParticipants,
-    refreshParticipants,
-    initializeAndFetchParticipants,
+    addParticipant,
+    removeParticipant,
   };
 };

@@ -1,4 +1,6 @@
 # ===FRONTEND===
+# Environment variables
+.env.development
 # Logs
 logs
 *.log
