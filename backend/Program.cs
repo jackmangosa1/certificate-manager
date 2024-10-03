@@ -35,16 +35,20 @@ namespace CertificateManagerAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            var provider = builder.Services.BuildServiceProvider();
-            var configuration = provider.GetService<IConfiguration>();
+            var frontendURL = builder.Configuration["FrontendURL"];
+
+            if (string.IsNullOrWhiteSpace(frontendURL))
+            {
+                throw new InvalidOperationException("Frontend URL is not configured properly.");
+            }
 
             builder.Services.AddCors(options =>
             {
-                var frontendURL = configuration.GetValue<string>("FrontendURL");
-
-                options.AddDefaultPolicy(builder =>
+                options.AddDefaultPolicy(policy =>
                 {
-                    builder.WithOrigins(frontendURL).AllowAnyMethod().AllowAnyHeader();
+                    policy.WithOrigins(frontendURL)
+                          .AllowAnyMethod()
+                          .AllowAnyHeader();
                 });
             });
 
