@@ -1,22 +1,19 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { CertificateType } from '../types/types';
-import { certificateTypesEndpoint } from '../endpoints/endpoints';
+import { ApiClient } from '../api/apiClient';
+
 
 export const useCertificateTypes = () => {
-  const [certificateTypes, setCertificateTypes] = useState<CertificateType[]>(
-    [],
-  );
+  const baseURL = process.env.REACT_APP_API_URL
+  const [certificateTypes, setCertificateTypes] = useState<ApiClient.CertificateTypeDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchCertificateTypes = async () => {
+    const client = new ApiClient.Client(baseURL);
     try {
       setLoading(true);
-      const response = await axios.get<CertificateType[]>(
-        certificateTypesEndpoint,
-      );
-      setCertificateTypes(response.data);
+      const types = await client.types(); 
+      setCertificateTypes(types);
       setError(null);
     } catch (err) {
       setError(

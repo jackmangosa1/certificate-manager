@@ -1,9 +1,9 @@
 import { createContext, useState, useContext, ReactNode } from 'react';
-import { User } from '../types/types';
+import { ApiClient } from '../api/apiClient';
 
 type UserContextType = {
-  selectedUser: User | null;
-  setSelectedUser: (user: User | null) => void;
+  selectedUser: ApiClient.UserDTO | null;
+  setSelectedUser: (user: ApiClient.UserDTO | null) => void;
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -19,7 +19,7 @@ export const useUser = () => {
 export const UserProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<ApiClient.UserDTO | null>(null);
 
   return (
     <UserContext.Provider value={{ selectedUser, setSelectedUser }}>

@@ -7,8 +7,9 @@ import { useCertificates } from '../../hooks/useCertificates';
 import ActionMenu from '../../components/action-menu/ActionMenu';
 import GearIcon from '../../icons/GearIcon';
 import ConfirmationModal from '../../components/confirmation-modal/ConfirmationModal';
-import { CertificateSummary } from '../../types/types';
+
 import { useLanguage } from '../../hooks/useLanguage';
+import { ApiClient } from '../../api/apiClient';
 
 const Example1: React.FC = () => {
   const { translations } = useLanguage();
@@ -18,7 +19,7 @@ const Example1: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
 
-  const columns: ColumnConfig<CertificateSummary>[] = [
+  const columns: ColumnConfig<ApiClient.CertificateSummaryDTO>[] = [
     {
       header: translations.supplier,
       accessor: (row) => row.supplierDetails,
@@ -59,7 +60,7 @@ const Example1: React.FC = () => {
 
   const actionColumn = {
     header: '',
-    render: (_row: CertificateSummary, index: number) => (
+    render: (_row: ApiClient.CertificateSummaryDTO, index: number) => (
       <div className="menu-wrapper">
         <div onClick={() => setActiveMenu(activeMenu === index ? null : index)}>
           <GearIcon className="gear-icon" />

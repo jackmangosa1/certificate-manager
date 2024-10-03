@@ -1,18 +1,18 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { User } from '../types/types';
-import { usersEndpoint } from '../endpoints/endpoints';
+import { ApiClient } from '../api/apiClient';
 
 export const useUsers = () => {
-  const [users, setUsers] = useState<User[]>([]);
+  const baseURL = process.env.REACT_APP_API_URL;
+  const client = new ApiClient.Client(baseURL);
+  const [users, setUsers] = useState<ApiClient.UserDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const response = await axios.get<User[]>(usersEndpoint);
-      setUsers(response.data);
+      const response = await client.users();
+      setUsers(response);
       setError(null);
     } catch (err) {
       setError(

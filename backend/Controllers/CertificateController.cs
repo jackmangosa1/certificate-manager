@@ -27,7 +27,7 @@ namespace CertificateMangerAPI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<CreateCertificateDTO>> GetCertificate(int id)
+        public async Task<ActionResult<GetCertificateDTO>> GetCertificate(int id)
         {
             var certificate = await _certificateService.GetCertificateByIdAsync(id);
 

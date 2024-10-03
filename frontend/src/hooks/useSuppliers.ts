@@ -1,49 +1,28 @@
 import { useState, useCallback } from 'react';
-import axios from 'axios';
-import { Supplier } from '../types/types';
-import { suppliersEndpoint } from '../endpoints/endpoints';
+import { ApiClient } from '../api/apiClient';
 
 export const useSuppliers = () => {
-  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const baseURL = process.env.REACT_APP_API_URL
+  const [suppliers, setSuppliers] = useState<ApiClient.SupplierDTO[]>([]);
 
-  const fetchSuppliers = useCallback(async () => {
-    try {
-      const response = await axios.get<Supplier[]>(suppliersEndpoint);
-      setSuppliers(response.data);
-      return response.data;
-    } catch (error) {
-      console.error('Failed to fetch suppliers:', error);
-      return [];
-    }
-  }, []);
+  const searchSuppliers = useCallback(
+    async (name?: string, supplierIndex?: number, city?: string) => {
+      const client = new ApiClient.Client(baseURL);
+      try {
+        const response = await client.suppliers(name, supplierIndex, city);
+        setSuppliers(response);
 
-  const searchSuppliers = async (criteria: Partial<Supplier>) => {
-    try {
-      const queryString = new URLSearchParams(criteria as any).toString();
-      const response = await axios.get<Supplier[]>(
-        `${suppliersEndpoint}?${queryString}`,
-      );
-      return response.data;
-    } catch (error) {
-      console.error('Failed to search suppliers:', error);
-      throw error;
-    }
-  };
-
-  const refreshSuppliers = async () => {
-    try {
-      const suppliersList = await fetchSuppliers();
-      return suppliersList;
-    } catch (error) {
-      console.error('Failed to refresh suppliers:', error);
-      return [];
-    }
-  };
+        return response;
+      } catch (error) {
+        console.error('Failed to fetch suppliers:', error);
+        return [];
+      }
+    },
+    [],
+  );
 
   return {
     suppliers,
     searchSuppliers,
-    refreshSuppliers,
-    fetchSuppliers,
   };
 };

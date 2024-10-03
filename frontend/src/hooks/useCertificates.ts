@@ -1,15 +1,18 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Certificate, CertificateSummary } from '../types/types';
-import axios from 'axios';
-import { certificatesEndpoint } from '../endpoints/endpoints';
+import { ApiClient } from '../api/apiClient';
 
 export const useCertificates = () => {
-  const [certificates, setCertificates] = useState<CertificateSummary[]>([]);
+  const baseURL = process.env.REACT_APP_API_URL
+  const client = new ApiClient.Client(baseURL);
+
+  const [certificates, setCertificates] = useState<
+    ApiClient.CertificateSummaryDTO[]
+  >([]);
 
   const fetchCertificates = useCallback(async () => {
     try {
-      const response = await axios.get(certificatesEndpoint);
-      setCertificates(response.data);
+      const response = await client.certificatesAll();
+      setCertificates(response);
     } catch (error) {
       console.error('Error fetching certificates:', error);
     }
@@ -21,12 +24,10 @@ export const useCertificates = () => {
 
   const getCertificateById = async (
     id: number,
-  ): Promise<Certificate | null> => {
+  ): Promise<ApiClient.GetCertificateDTO | null> => {
     try {
-      const response = await axios.get<Certificate>(
-        `${certificatesEndpoint}/${id}`,
-      );
-      return response.data;
+      const response = await client.getCertificate(id);
+      return response;
     } catch (error) {
       console.error(`Error fetching certificate with id ${id}:`, error);
       return null;
@@ -34,10 +35,11 @@ export const useCertificates = () => {
   };
 
   const addCertificate = async (
-    certificate: Omit<Certificate, 'certificateId'>,
+    certificate: ApiClient.CreateCertificateDTO,
   ) => {
     try {
-      await axios.post<Certificate>(certificatesEndpoint, certificate);
+      const response = await client.certificates(certificate);
+      return response;
     } catch (error) {
       console.error('Error adding certificate:', error);
       throw error;
@@ -46,18 +48,10 @@ export const useCertificates = () => {
 
   const updateCertificate = async (
     id: number,
-    updatedCertificate: Omit<Certificate, 'certificateId'>,
+    updatedCertificate: ApiClient.UpdateCertficateDTO,
   ) => {
     try {
-      await axios.put<Certificate>(
-        `${certificatesEndpoint}/${id}`,
-        updatedCertificate,
-      );
-      setCertificates((prev) =>
-        prev.map((cert) =>
-          cert.certificateId === id ? { ...cert, ...updatedCertificate } : cert,
-        ),
-      );
+      await client.updateCertificate(id, updatedCertificate);
     } catch (error) {
       console.error('Error updating certificate:', error);
       throw error;
@@ -66,7 +60,7 @@ export const useCertificates = () => {
 
   const deleteCertificate = async (id: number) => {
     try {
-      await axios.delete(`${certificatesEndpoint}/${id}`);
+      await client.deleteCertificate(id);
       setCertificates((prev) =>
         prev.filter((cert) => cert.certificateId !== id),
       );

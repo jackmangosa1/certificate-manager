@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './CommentSection.css';
 import { useComments } from '../../hooks/useComments';
+import { ApiClient } from '../../api/apiClient';
 
 export type Comment = {
   commentId: number;
@@ -10,9 +11,9 @@ export type Comment = {
 
 type CommentSectionProps = {
   certificateId: number;
-  currentUserName: string;
-  initialComments: Comment[];
-  onCommentsChange: (newComments: Comment[]) => void;
+  currentUserName: string | undefined;
+  initialComments: ApiClient.CommentDTO[];
+  onCommentsChange: (newComments: ApiClient.CommentDTO[]) => void;
 };
 
 const CommentSection: React.FC<CommentSectionProps> = ({
@@ -23,7 +24,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
 }) => {
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [newCommentText, setNewCommentText] = useState('');
-  const [comments, setComments] = useState<Comment[]>(initialComments);
+  const [comments, setComments] = useState<ApiClient.CommentDTO[]>(initialComments);
   const { addComment } = useComments();
 
   useEffect(() => {
@@ -40,15 +41,15 @@ const CommentSection: React.FC<CommentSectionProps> = ({
 
   const handleSendComment = async () => {
     if (newCommentText.trim()) {
-      const newComment: Comment = {
-        commentId: 0,
+      const newCommentDTO = ApiClient.CommentDTO.fromJS({
+        commentId: undefined, 
         username: currentUserName,
         commentText: newCommentText.trim(),
-      };
-
+      });
+  
       try {
-        await addComment(certificateId, newComment);
-        const updatedComments = [...comments, newComment];
+        await addComment(certificateId, newCommentDTO);
+        const updatedComments = [...comments, newCommentDTO];
         setComments(updatedComments);
         onCommentsChange(updatedComments);
         setNewCommentText('');
@@ -58,6 +59,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
       }
     }
   };
+  
 
   return (
     <div className="comment-section">

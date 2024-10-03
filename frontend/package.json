@@ -11,7 +11,8 @@
     "lint:fix": "eslint src --fix",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss}\"",
     "type-check": "tsc --noEmit",
-    "ci": "npm run lint && npm run type-check && npm test"
+    "ci": "npm run lint && npm run type-check && npm test",
+    "generate-api-client": "nswag openapi2tsclient /input:https://localhost:7203/swagger/v1/swagger.json /output:src/api/apiClient.ts /namespace:ApiClient"
   },
   "keywords": [
     "certificate",

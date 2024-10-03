@@ -17,7 +17,7 @@ const Navbar: React.FC<NavBarProps> = ({ className, toggleSidebar }) => {
   const { language, setLanguage, translations } = useLanguage();
   const { users } = useUsers();
   const { setSelectedUser } = useUser();
-  const [selectedUser, setSelectedUserLocal] = useState<string>('');
+  const [selectedUser, setSelectedUserLocal] = useState<string | undefined>('');
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setLanguage(e.target.value as Language);
@@ -39,10 +39,12 @@ const Navbar: React.FC<NavBarProps> = ({ className, toggleSidebar }) => {
     { value: Language.GERMAN, label: 'Deutsch' },
   ];
 
-  const userOptions = users.map((user) => ({
-    value: user.username,
-    label: user.username,
-  }));
+  const userOptions = users
+    .filter((user) => user.username !== undefined)
+    .map((user) => ({
+      value: user.username as string,
+      label: user.username as string,
+    }));
 
   useEffect(() => {
     if (users.length > 0 && !selectedUser) {
