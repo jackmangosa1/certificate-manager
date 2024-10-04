@@ -1,9 +1,9 @@
 import { useState } from 'react';
+import { useApi } from './useApi';
 import { ApiClient } from '../api/apiClient';
 
 export const useParticipants = () => {
-  const baseURL = process.env.REACT_APP_API_URL;
-  const client = new ApiClient.Client(baseURL);
+  const client = useApi();
 
   const [participants, setParticipants] = useState<ApiClient.ParticipantDTO[]>(
     [],
@@ -34,11 +34,11 @@ export const useParticipants = () => {
 
   const addParticipant = async (
     certificateId: number,
-    participants: ApiClient.ParticipantDTO[],
+    newParticipants: ApiClient.ParticipantDTO[],
   ) => {
     try {
-      await client.addParticipantsToCertificate(certificateId, participants);
-      setParticipants((prev) => [...prev, ...participants]);
+      await client.addParticipantsToCertificate(certificateId, newParticipants);
+      setParticipants((prev) => [...prev, ...newParticipants]);
     } catch (error) {
       console.error('Failed to add participants:', error);
       throw error;
@@ -51,7 +51,6 @@ export const useParticipants = () => {
   ) => {
     try {
       await client.participants(certificateId, participantId);
-
       setParticipants((prev) =>
         prev.filter(
           (participant) => participant.participantId !== participantId,
@@ -62,6 +61,7 @@ export const useParticipants = () => {
       throw error;
     }
   };
+
   return {
     participants,
     searchParticipants,

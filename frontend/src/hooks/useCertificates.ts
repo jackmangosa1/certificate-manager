@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useApi } from './useApi';
 import { ApiClient } from '../api/apiClient';
 
 export const useCertificates = () => {
-  const baseURL = process.env.REACT_APP_API_URL
-  const client = new ApiClient.Client(baseURL);
+  const client = useApi();
 
   const [certificates, setCertificates] = useState<
     ApiClient.CertificateSummaryDTO[]
@@ -16,7 +16,7 @@ export const useCertificates = () => {
     } catch (error) {
       console.error('Error fetching certificates:', error);
     }
-  }, []);
+  }, [client]);
 
   useEffect(() => {
     fetchCertificates();

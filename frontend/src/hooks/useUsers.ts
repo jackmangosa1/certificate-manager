@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useApi } from './useApi';
 import { ApiClient } from '../api/apiClient';
 
 export const useUsers = () => {
-  const baseURL = process.env.REACT_APP_API_URL;
-  const client = new ApiClient.Client(baseURL);
+  const client = useApi();
   const [users, setUsers] = useState<ApiClient.UserDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -27,7 +27,7 @@ export const useUsers = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [client]); 
 
   return { users, loading, error, refetch: fetchUsers };
 };
