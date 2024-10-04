@@ -1,20 +1,31 @@
 import { useState } from 'react';
-import axios from 'axios';
-import { Participant } from '../types/types';
-import {
-  certificatesEndpoint,
-  participantEndpoint,
-} from '../endpoints/endpoints';
+import { useApi } from './useApi';
+import { ApiClient } from '../api/apiClient';
 
 export const useParticipants = () => {
-  const [participants, setParticipants] = useState<Participant[]>([]);
+  const client = useApi();
 
-  const searchParticipants = async (criteria: Partial<Participant>) => {
+  const [participants, setParticipants] = useState<ApiClient.ParticipantDTO[]>(
+    [],
+  );
+
+  const searchParticipants = async (
+    participantId: number | undefined,
+    name: string | undefined,
+    firstName: string | undefined,
+    department: string | undefined,
+    plant: string | undefined,
+  ) => {
     try {
-      const response = await axios.get(participantEndpoint, {
-        params: criteria,
-      });
-      return response.data;
+      const response = await client.participantsAll(
+        participantId,
+        name,
+        firstName,
+        department,
+        plant,
+      );
+      setParticipants(response);
+      return response;
     } catch (error) {
       console.error('Failed to search participants:', error);
       return [];
@@ -23,14 +34,11 @@ export const useParticipants = () => {
 
   const addParticipant = async (
     certificateId: number,
-    participants: Participant[],
+    newParticipants: ApiClient.ParticipantDTO[],
   ) => {
     try {
-      const response = await axios.post(
-        `${certificatesEndpoint}/${certificateId}/participants`,
-        participants,
-      );
-      setParticipants((prev) => [...prev, ...response.data]);
+      await client.addParticipantsToCertificate(certificateId, newParticipants);
+      setParticipants((prev) => [...prev, ...newParticipants]);
     } catch (error) {
       console.error('Failed to add participants:', error);
       throw error;
@@ -42,9 +50,7 @@ export const useParticipants = () => {
     participantId: number,
   ) => {
     try {
-      await axios.delete(
-        `${certificatesEndpoint}/${certificateId}/participants/${participantId}`,
-      );
+      await client.participants(certificateId, participantId);
       setParticipants((prev) =>
         prev.filter(
           (participant) => participant.participantId !== participantId,

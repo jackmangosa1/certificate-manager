@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
 import { useParticipants } from '../../hooks/useParticipants';
 import './ParticipantLookup.css';
-import { Participant } from '../../types/types';
 import { useLanguage } from '../../hooks/useLanguage';
 import Table, { ColumnConfig } from '../table/Table';
+import { ApiClient } from '../../api/apiClient';
 
 type ParticipantLookupModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSelect: (participants: Participant[]) => void;
+  onSelect: (participants: ApiClient.ParticipantDTO[]) => void;
   certificateId: number;
 };
 
 const initialSearchCriteria = {
   name: '',
   firstName: '',
-  userId: '',
+  userId: undefined,
   department: '',
   plant: '',
 };
@@ -28,10 +28,12 @@ const ParticipantLookupModal: React.FC<ParticipantLookupModalProps> = ({
 }) => {
   const { translations } = useLanguage();
   const { addParticipant, searchParticipants } = useParticipants();
-  const [searchResults, setSearchResults] = useState<Participant[]>([]);
+  const [searchResults, setSearchResults] = useState<
+    ApiClient.ParticipantDTO[]
+  >([]);
   const [searchCriteria, setSearchCriteria] = useState(initialSearchCriteria);
   const [selectedParticipants, setSelectedParticipants] = useState<
-    Participant[]
+    ApiClient.ParticipantDTO[]
   >([]);
   const [selectAll, setSelectAll] = useState(false);
 
@@ -46,7 +48,14 @@ const ParticipantLookupModal: React.FC<ParticipantLookupModalProps> = ({
   };
 
   const handleSearch = async () => {
-    const results = await searchParticipants(searchCriteria);
+    const { name, firstName, userId, department, plant } = searchCriteria;
+    const results = await searchParticipants(
+      userId,
+      name,
+      firstName,
+      department,
+      plant,
+    );
     setSearchResults(results);
     setSelectAll(false);
     setSelectedParticipants([]);
@@ -59,7 +68,7 @@ const ParticipantLookupModal: React.FC<ParticipantLookupModalProps> = ({
     setSelectAll(false);
   };
 
-  const handleCheckboxChange = (participant: Participant) => {
+  const handleCheckboxChange = (participant: ApiClient.ParticipantDTO) => {
     setSelectedParticipants((prev) => {
       if (prev.some((p) => p.participantId === participant.participantId)) {
         const newSelected = prev.filter(
@@ -88,14 +97,11 @@ const ParticipantLookupModal: React.FC<ParticipantLookupModalProps> = ({
   const handleSelect = async () => {
     if (selectedParticipants.length > 0) {
       try {
-        const participant = selectedParticipants.map((participant) => ({
-          participantId: participant.participantId,
-          name: participant.name,
-          firstName: participant.firstName,
-          department: participant.department,
-          plant: participant.plant,
-        }));
-        await addParticipant(certificateId, participant);
+        const participantDTOs = selectedParticipants.map((participant) => ({
+          ...participant,
+        })) as ApiClient.ParticipantDTO[];
+
+        await addParticipant(certificateId, participantDTOs);
         onSelect(selectedParticipants);
         handleCloseModal();
       } catch (error) {
@@ -109,7 +115,7 @@ const ParticipantLookupModal: React.FC<ParticipantLookupModalProps> = ({
     onClose();
   };
 
-  const columns: ColumnConfig<Participant>[] = [
+  const columns: ColumnConfig<ApiClient.ParticipantDTO>[] = [
     { header: translations.name, accessor: (participant) => participant.name },
     {
       header: translations.firstName,
@@ -136,7 +142,7 @@ const ParticipantLookupModal: React.FC<ParticipantLookupModalProps> = ({
         />
       </div>
     ),
-    render: (participant: Participant) => (
+    render: (participant: ApiClient.ParticipantDTO) => (
       <input
         type="checkbox"
         checked={

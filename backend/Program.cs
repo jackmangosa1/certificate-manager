@@ -35,19 +35,15 @@ namespace CertificateManagerAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            var provider = builder.Services.BuildServiceProvider();
-            var configuration = provider.GetService<IConfiguration>();
-
             builder.Services.AddCors(options =>
             {
-                var frontendURL = configuration.GetValue<string>("FrontendURL");
-
-                options.AddDefaultPolicy(builder =>
+                options.AddPolicy("AllowAllOrigins", builder =>
                 {
-                    builder.WithOrigins(frontendURL).AllowAnyMethod().AllowAnyHeader();
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader();
                 });
             });
-
 
             var app = builder.Build();
 
@@ -60,7 +56,7 @@ namespace CertificateManagerAPI
 
             app.UseHttpsRedirection();
 
-            app.UseCors();
+            app.UseCors("AllowAllOrigins");
 
             app.UseExceptionHandler(_ => { });
 

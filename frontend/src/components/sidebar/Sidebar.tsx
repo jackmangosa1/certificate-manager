@@ -39,16 +39,17 @@ const Sidebar: React.FC<SidebarProps> = ({ className }) => {
   };
 
   const handleUserChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const user = users.find(
-      (user) => String(user.username) === e.target.value,
-    );
+    const user = users.find((user) => String(user.username) === e.target.value);
     setSelectedUser(user || null);
   };
 
-  const participantOptions = users.map((user) => ({
-    value: user.username,
-    label: user.username,
-  }));
+  const participantOptions = users
+    .filter((user) => user.username)
+    .map((user) => ({
+      value: user.username as string,
+      label: user.username as string,
+    }));
+
   const menuItems: MenuItem[] = [
     {
       title: translations.start,

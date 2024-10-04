@@ -5,7 +5,7 @@ import './SupplierLookup.css';
 import { useLanguage } from '../../hooks/useLanguage';
 
 type SupplierLookupProps = {
-  value: string;
+  value: string | undefined;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   error: string;
   onSearch: () => void;

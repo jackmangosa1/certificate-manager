@@ -6,14 +6,7 @@ import CustomSelect from '../../components/custom-select/CustomSelect';
 import SupplierSearchModal from '../../components/search-supplier-modal/SearchSupplierModal';
 import SupplierLookup from '../../components/supplier-lookup/SupplierLookup';
 import PdfViewer from '../../components/pdf-viewer/PdfViewer';
-import {
-  Certificate,
-  CertificateType,
-  Participant,
-  Comment,
-  Supplier,
-  CertificateFormData,
-} from '../../types/types';
+import { CertificateType } from '../../types/types';
 import { AppRoutes } from '../../routes/routes';
 import { useCertificates } from '../../hooks/useCertificates';
 import { useLanguage } from '../../hooks/useLanguage';
@@ -27,6 +20,7 @@ import CommentSection from '../../components/comment-section/CommentSection';
 import { useUser } from '../../context/UserContext';
 import { formatDate } from '../../utils/convertDate';
 import { isBase64 } from '../../utils/convertPDF';
+import { ApiClient } from '../../api/apiClient';
 
 type FormError = {
   name: string;
@@ -46,15 +40,16 @@ const initialErrorData: FormError = {
   pdfDocumentURL: '',
 };
 
-const initialCertificateData: CertificateFormData = {
-  name: '',
-  certificateTypeName: '',
-  validFrom: '',
-  validTo: '',
-  pdfDocumentData: '',
-  participants: [],
-  comments: [],
-};
+const initialCertificateData: ApiClient.GetCertificateDTO =
+  new ApiClient.GetCertificateDTO();
+initialCertificateData.certificateId = undefined;
+initialCertificateData.certificateTypeName = '';
+initialCertificateData.name = '';
+initialCertificateData.validTo = '';
+initialCertificateData.validFrom = '';
+initialCertificateData.pdfDocumentData = '';
+initialCertificateData.comments = [];
+initialCertificateData.participants = [];
 
 const AddCertificate: React.FC = () => {
   const { translations } = useLanguage();
@@ -66,63 +61,86 @@ const AddCertificate: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isParticipantModalOpen, setIsParticipantModalOpen] = useState(false);
   const [selectedParticipants, setSelectedParticipants] = useState<
-    Participant[]
+    ApiClient.ParticipantDTO[]
   >([]);
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState<ApiClient.CommentDTO[]>([]);
   const { selectedUser } = useUser();
-  const [certificateData, setCertificateData] = useState<CertificateFormData>(
-    initialCertificateData,
-  );
+  const [certificateData, setCertificateData] =
+    useState<ApiClient.GetCertificateDTO>(initialCertificateData);
   const [editMode, setEditMode] = useState(false);
   const [pdfBase64, setPdfBase64] = useState<string | null>(null);
   const [errors, setErrors] = useState<FormError>(initialErrorData);
   const { removeParticipant } = useParticipants();
-  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(
-    null,
-  );
+  const [selectedSupplier, setSelectedSupplier] =
+    useState<ApiClient.SupplierDTO | null>(null);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const handleSupplierSelect = (supplier: Supplier) => {
+  const handleSupplierSelect = (supplier: ApiClient.SupplierDTO) => {
     setSelectedSupplier(supplier);
-    setCertificateData((prevData) => ({
-      ...prevData,
-      name: supplier.name,
-    }));
+
+    setCertificateData((prevData) => {
+      const updatedCertificate = new ApiClient.GetCertificateDTO();
+
+      updatedCertificate.certificateId = prevData.certificateId;
+      updatedCertificate.name = supplier.name;
+      updatedCertificate.certificateTypeName = prevData.certificateTypeName; // Retain existing certificateTypeName
+      updatedCertificate.validFrom = prevData.validFrom; // Retain existing validFrom
+      updatedCertificate.validTo = prevData.validTo; // Retain existing validTo
+      updatedCertificate.pdfDocumentData = prevData.pdfDocumentData; // Retain existing pdfDocumentData
+      updatedCertificate.comments = prevData.comments || [];
+      updatedCertificate.participants = prevData.participants || [];
+
+      return updatedCertificate;
+    });
+
     closeModal();
   };
 
   useEffect(() => {
     const fetchCertificate = async () => {
       if (id) {
-        const fetchedCertificate = await getCertificateById(parseInt(id));
+        try {
+          const fetchedCertificate = await getCertificateById(parseInt(id));
 
-        if (fetchedCertificate) {
-          setCertificateData((prevData) => ({
-            ...prevData,
-            ...fetchedCertificate,
-            comments: fetchedCertificate.comments || [],
-            participants: fetchedCertificate.participants || [],
-          }));
-          setSelectedParticipants(fetchedCertificate.participants || []);
-          setComments(fetchedCertificate.comments || []);
-          setEditMode(true);
+          if (fetchedCertificate) {
+            // Create a new instance of GetCertificateDTO using fetched data
+            const newCertificate = new ApiClient.GetCertificateDTO();
+            newCertificate.certificateId = fetchedCertificate.certificateId;
+            newCertificate.name = fetchedCertificate.name;
+            newCertificate.certificateTypeName =
+              fetchedCertificate.certificateTypeName;
+            newCertificate.validFrom = fetchedCertificate.validFrom;
+            newCertificate.validTo = fetchedCertificate.validTo;
+            newCertificate.pdfDocumentData = fetchedCertificate.pdfDocumentData;
+            newCertificate.comments = fetchedCertificate.comments || [];
+            newCertificate.participants = fetchedCertificate.participants || [];
 
-          if (fetchedCertificate.pdfDocumentData) {
-            try {
-              const isPDFBase64 = isBase64(fetchedCertificate.pdfDocumentData);
-              const base64Data = isPDFBase64
-                ? fetchedCertificate.pdfDocumentData
-                : btoa(fetchedCertificate.pdfDocumentData);
-              setPdfBase64(`data:application/pdf;base64,${base64Data}`);
-            } catch (error) {
-              console.error('Error processing PDF data:', error);
+            setCertificateData(newCertificate);
+
+            setSelectedParticipants(newCertificate.participants || []);
+            setComments(newCertificate.comments || []);
+            setEditMode(true);
+
+            if (newCertificate.pdfDocumentData) {
+              try {
+                const isPDFBase64 = isBase64(newCertificate.pdfDocumentData);
+                const base64Data = isPDFBase64
+                  ? newCertificate.pdfDocumentData
+                  : btoa(newCertificate.pdfDocumentData);
+                setPdfBase64(`data:application/pdf;base64,${base64Data}`);
+              } catch (error) {
+                console.error('Error processing PDF data:', error);
+              }
             }
           }
+        } catch (error) {
+          console.error('Error fetching certificate by ID:', error);
         }
       }
     };
+
     fetchCertificate();
   }, [id]);
 
@@ -130,20 +148,53 @@ const AddCertificate: React.FC = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
-    setCertificateData((prevData) => ({
-      ...prevData,
-      [name]:
+
+    setCertificateData((prevData) => {
+      const updatedCertificate = new ApiClient.GetCertificateDTO();
+      updatedCertificate.certificateId = prevData.certificateId;
+      updatedCertificate.name = name === 'name' ? value : prevData.name;
+      updatedCertificate.certificateTypeName =
         name === 'certificateTypeName'
           ? (value as CertificateType['certificateTypeName'])
-          : value,
-    }));
+          : prevData.certificateTypeName;
+      updatedCertificate.validFrom = prevData.validFrom;
+      updatedCertificate.validTo = prevData.validTo;
+      updatedCertificate.pdfDocumentData = prevData.pdfDocumentData;
+      updatedCertificate.comments = prevData.comments;
+      updatedCertificate.participants = prevData.participants;
+
+      return updatedCertificate;
+    });
   };
 
-  const handleDateChange = (name: string, date: Date | null) => {
-    setCertificateData((prevData) => ({
-      ...prevData,
-      [name]: date ? date.toISOString() : '',
-    }));
+  const handleDateChange = (
+    name: 'validFrom' | 'validTo',
+    date: Date | null,
+  ) => {
+    setCertificateData((prevData) => {
+      const updatedCertificate = new ApiClient.GetCertificateDTO();
+
+      updatedCertificate.certificateId = prevData.certificateId;
+      updatedCertificate.name = prevData.name;
+      updatedCertificate.certificateTypeName = prevData.certificateTypeName;
+      updatedCertificate.validFrom =
+        name === 'validFrom'
+          ? date
+            ? date.toISOString()
+            : ''
+          : prevData.validFrom;
+      updatedCertificate.validTo =
+        name === 'validTo'
+          ? date
+            ? date.toISOString()
+            : ''
+          : prevData.validTo;
+      updatedCertificate.pdfDocumentData = prevData.pdfDocumentData;
+      updatedCertificate.comments = prevData.comments;
+      updatedCertificate.participants = prevData.participants;
+
+      return updatedCertificate;
+    });
   };
 
   const handlePdfChange = (pdfFile: File | null) => {
@@ -215,18 +266,28 @@ const AddCertificate: React.FC = () => {
           type.certificateTypeName === certificateData.certificateTypeName,
       );
 
-      if (!certificateType) {
+      if (!certificateType || certificateType.certificateTypeId === undefined) {
         throw new Error('Invalid certificate type');
       }
 
-      const certificateToSave: Certificate = {
-        certificateId: editMode && id ? Number(id) : 0,
-        supplierId: selectedSupplier?.supplierId || 0,
-        certificateTypeId: certificateType.certificateTypeId,
-        validFrom: formatDate(certificateData.validFrom),
-        validTo: formatDate(certificateData.validTo),
-        pdfDocumentData: pdfBase64 ? pdfBase64.split(',')[1] : '',
-      };
+      if (!selectedSupplier || selectedSupplier.supplierId === undefined) {
+        throw new Error('Invalid supplier');
+      }
+
+      const certificateToSave = new ApiClient.CreateCertificateDTO();
+      certificateToSave.certificateId = editMode && id ? Number(id) : 0;
+      certificateToSave.supplierId = selectedSupplier.supplierId;
+      certificateToSave.certificateTypeId = certificateType.certificateTypeId;
+      certificateToSave.validFrom = certificateData.validFrom
+        ? formatDate(certificateData.validFrom)
+        : '';
+      certificateToSave.validTo = certificateData.validTo
+        ? formatDate(certificateData.validTo)
+        : '';
+      certificateToSave.pdfDocumentData =
+        pdfBase64 && pdfBase64.includes(',')
+          ? pdfBase64.split(',')[1]
+          : pdfBase64 || '';
 
       if (editMode && id) {
         await updateCertificate(parseInt(id), certificateToSave);
@@ -238,18 +299,26 @@ const AddCertificate: React.FC = () => {
       navigate(AppRoutes.Example1);
     } catch (error) {
       console.error('Error saving certificate:', error);
+
       setErrors((prevErrors) => ({
         ...prevErrors,
-        general: 'Failed to save certificate. Please try again.',
+        general:
+          error instanceof Error
+            ? error.message
+            : 'Failed to save certificate. Please try again.',
       }));
     }
   };
-
   const handleClearSupplier = () => {
-    setCertificateData((prevData) => ({
-      ...prevData,
-      name: '',
-    }));
+    setCertificateData((prevData) => {
+      const updatedData = {
+        ...prevData,
+        name: '',
+      } as ApiClient.GetCertificateDTO;
+
+      return updatedData;
+    });
+
     setSelectedSupplier(null);
   };
 
@@ -268,7 +337,9 @@ const AddCertificate: React.FC = () => {
     setIsParticipantModalOpen(false);
   };
 
-  const handleSelectParticipant = (participants: Participant[]) => {
+  const handleSelectParticipant = (
+    participants: ApiClient.ParticipantDTO[],
+  ) => {
     setSelectedParticipants(participants);
   };
 
@@ -289,11 +360,11 @@ const AddCertificate: React.FC = () => {
     }
   };
 
-  const handleCommentsChange = (newComments: Comment[]) => {
+  const handleCommentsChange = (newComments: ApiClient.CommentDTO[]) => {
     setComments(newComments);
   };
 
-  const participantColumns: ColumnConfig<Participant>[] = [
+  const participantColumns: ColumnConfig<ApiClient.ParticipantDTO>[] = [
     {
       header: translations.name,
       accessor: (row) => `${row.firstName} ${row.name}`,
@@ -331,8 +402,8 @@ const AddCertificate: React.FC = () => {
           value={certificateData.certificateTypeName}
           onChange={handleInput}
           options={certificateTypes.map((type) => ({
-            value: type.certificateTypeName,
-            label: type.certificateTypeName,
+            value: type.certificateTypeName as string,
+            label: type.certificateTypeName as string,
           }))}
           error={errors.certificateTypeName}
           className="certificate-select"
@@ -398,7 +469,8 @@ const AddCertificate: React.FC = () => {
                 render: (row) => (
                   <div
                     onClick={() => {
-                      handleRemoveParticipant(Number(id), row.participantId);
+                      if (row.participantId !== undefined)
+                        handleRemoveParticipant(Number(id), row.participantId);
                     }}
                   >
                     <CrossIcon className="cross-icon" />

@@ -4,6 +4,6 @@ namespace CertificateManagerAPI.Repositories.SupplierRespository
 {
     public interface ISupplierRepository
     {
-        Task<List<SupplierDTO>> SearchSuppliers(SupplierSearchDTO searchCriteria);
+        Task<IEnumerable<SupplierDTO>> SearchSuppliers(SupplierSearchDTO searchCriteria);
     }
 }

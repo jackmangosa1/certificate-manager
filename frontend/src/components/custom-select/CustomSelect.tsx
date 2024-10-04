@@ -5,7 +5,7 @@ type CustomSelectProps = {
   id: string;
   label: string;
   name: string;
-  value: string;
+  value: string | undefined;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   options: { value: string | number; label: string }[];
   error?: string;

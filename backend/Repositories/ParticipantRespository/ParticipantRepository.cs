@@ -16,18 +16,18 @@ namespace CertificateManagerAPI.Repositories.ParticipantRespository
             _mapper = mapper;
         }
 
-        public async Task<List<ParticipantDTO>> SearchParticipants(ParticipantSearchDTO searchCriteria)
+        public async Task<IEnumerable<ParticipantDTO>> SearchParticipants(ParticipantSearchDTO searchCriteria)
         {
             var query = _context.Participants.Include(p => p.Department).AsQueryable();
 
             if (!string.IsNullOrEmpty(searchCriteria.Name))
             {
-                query = query.Where(p => p.Name == searchCriteria.Name);
+                query = query.Where(p => p.Name.Contains(searchCriteria.Name));
             }
 
             if (!string.IsNullOrEmpty(searchCriteria.FirstName))
             {
-                query = query.Where(p => p.FirstName == searchCriteria.FirstName);
+                query = query.Where(p => p.FirstName.Contains(searchCriteria.FirstName));
             }
 
             if (searchCriteria.ParticipantId > 0)
@@ -37,16 +37,17 @@ namespace CertificateManagerAPI.Repositories.ParticipantRespository
 
             if (!string.IsNullOrEmpty(searchCriteria.Department))
             {
-                query = query.Where(p => p.Department.DepartmentName == searchCriteria.Department);
+
+                query = query.Where(p => p.Department.DepartmentName.Contains(searchCriteria.Department));
             }
 
             if (!string.IsNullOrEmpty(searchCriteria.Plant))
             {
-                query = query.Where(p => p.Plant == searchCriteria.Plant);
+                query = query.Where(p => p.Plant.Contains(searchCriteria.Plant));
             }
 
             var participants = await query.ToListAsync();
-            return _mapper.Map<List<ParticipantDTO>>(participants);
+            return _mapper.Map<IEnumerable<ParticipantDTO>>(participants);
         }
     }
 }

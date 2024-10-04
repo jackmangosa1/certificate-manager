@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { useSuppliers } from '../../hooks/useSuppliers';
 import './SearchSupplierModal.css';
-import { Supplier } from '../../types/types';
+//import { Supplier } from '../../types/types';
 import Table, { ColumnConfig } from '../../components/table/Table';
 import { useLanguage } from '../../hooks/useLanguage';
+import { ApiClient } from '../../api/apiClient';
 
 type SupplierSearchModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSelect: (supplier: Supplier) => void;
+  onSelect: (supplier: ApiClient.SupplierDTO) => void;
 };
 
 const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
@@ -18,15 +19,16 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
 }) => {
   const { translations } = useLanguage();
   const { searchSuppliers } = useSuppliers();
-  const [searchResults, setSearchResults] = useState<Supplier[]>([]);
+  const [searchResults, setSearchResults] = useState<ApiClient.SupplierDTO[]>(
+    [],
+  );
   const [searchCriteria, setSearchCriteria] = useState({
     name: '',
     index: '',
     city: '',
   });
-  const [selectedSupplier, setSelectedSupplier] = useState<Supplier | null>(
-    null,
-  );
+  const [selectedSupplier, setSelectedSupplier] =
+    useState<ApiClient.SupplierDTO | null>(null);
 
   if (!isOpen) return null;
 
@@ -39,7 +41,9 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
   };
 
   const handleSearch = async () => {
-    const results = await searchSuppliers(searchCriteria);
+    const { name, index, city } = searchCriteria;
+    const supplierIndex = index ? parseInt(index, 10) : undefined;
+    const results = await searchSuppliers(name, supplierIndex, city);
     setSearchResults(results);
   };
 
@@ -49,7 +53,7 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
     setSelectedSupplier(null);
   };
 
-  const handleRadioChange = (supplier: Supplier) => {
+  const handleRadioChange = (supplier: ApiClient.SupplierDTO) => {
     setSelectedSupplier(supplier);
   };
 
@@ -65,7 +69,7 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
     onClose();
   };
 
-  const columns: ColumnConfig<Supplier>[] = [
+  const columns: ColumnConfig<ApiClient.SupplierDTO>[] = [
     {
       header: translations.supplierName,
       accessor: (supplier) => supplier.name,
@@ -79,7 +83,7 @@ const SupplierSearchModal: React.FC<SupplierSearchModalProps> = ({
 
   const actionColumn = {
     header: translations.select,
-    render: (supplier: Supplier) => (
+    render: (supplier: ApiClient.SupplierDTO) => (
       <input
         type="radio"
         name="selectedSupplier"

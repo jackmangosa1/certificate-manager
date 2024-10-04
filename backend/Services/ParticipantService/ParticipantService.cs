@@ -12,7 +12,7 @@ namespace CertificateManagerAPI.Services.ParticipantService
             _participantRespository = participantRespository;
         }
 
-        public async Task<List<ParticipantDTO>> SearchParticipants(ParticipantSearchDTO searchCriteria)
+        public async Task<IEnumerable<ParticipantDTO>> SearchParticipants(ParticipantSearchDTO searchCriteria)
         {
             var participants = await _participantRespository.SearchParticipants(searchCriteria);
             return participants;

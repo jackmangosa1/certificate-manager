@@ -4,6 +4,6 @@ namespace CertificateManagerAPI.Services.ParticipantService
 {
     public interface IParticipantService
     {
-        public Task<List<ParticipantDTO>> SearchParticipants(ParticipantSearchDTO searchCriteria);
+        public Task<IEnumerable<ParticipantDTO>> SearchParticipants(ParticipantSearchDTO searchCriteria);
     }
 }

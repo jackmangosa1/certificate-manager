@@ -1,20 +1,18 @@
 import { useState } from 'react';
-import axios from 'axios';
-import { Comment } from '../types/types';
-import { certificatesEndpoint } from '../endpoints/endpoints';
+import { useApi } from './useApi';
+import { ApiClient } from '../api/apiClient';
 
 export const useComments = () => {
-  const [comments, setComments] = useState<Comment[]>([]);
+  const client = useApi();
+  const [comments, setComments] = useState<ApiClient.CommentDTO[]>([]);
 
-  const addComment = async (certificateId: number, comment: Comment) => {
+  const addComment = async (
+    certificateId: number,
+    comment: ApiClient.CommentDTO,
+  ) => {
     try {
-      const response = await axios.post(
-        `${certificatesEndpoint}/${certificateId}/comments`,
-        comment,
-      );
-
-      const newComment: Comment = response.data;
-      setComments((prev) => [...prev, newComment]);
+      await client.addCommentToCertificate(certificateId, comment);
+      setComments((prev) => [...prev, comment]);
     } catch (error) {
       console.error('Failed to add comment:', error);
       throw error;
