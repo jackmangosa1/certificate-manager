@@ -117,15 +117,12 @@ const AddCertificate: React.FC = () => {
             newCertificate.comments = fetchedCertificate.comments || [];
             newCertificate.participants = fetchedCertificate.participants || [];
 
-            // Update the certificate data state
             setCertificateData(newCertificate);
 
-            // Update additional states
             setSelectedParticipants(newCertificate.participants || []);
             setComments(newCertificate.comments || []);
             setEditMode(true);
 
-            // Handle PDF base64 data processing
             if (newCertificate.pdfDocumentData) {
               try {
                 const isPDFBase64 = isBase64(newCertificate.pdfDocumentData);
@@ -153,13 +150,12 @@ const AddCertificate: React.FC = () => {
     const { name, value } = e.target;
 
     setCertificateData((prevData) => {
-      const updatedCertificate = new ApiClient.GetCertificateDTO(); // Create a new instance
-      // Copy previous data to the new instance
+      const updatedCertificate = new ApiClient.GetCertificateDTO();
       updatedCertificate.certificateId = prevData.certificateId;
-      updatedCertificate.name = name === 'name' ? value : prevData.name; // Update name if the input name is "name"
+      updatedCertificate.name = name === 'name' ? value : prevData.name;
       updatedCertificate.certificateTypeName =
         name === 'certificateTypeName'
-          ? (value as CertificateType['certificateTypeName']) // Ensure value is of the right type
+          ? (value as CertificateType['certificateTypeName'])
           : prevData.certificateTypeName;
       updatedCertificate.validFrom = prevData.validFrom;
       updatedCertificate.validTo = prevData.validTo;
@@ -167,7 +163,7 @@ const AddCertificate: React.FC = () => {
       updatedCertificate.comments = prevData.comments;
       updatedCertificate.participants = prevData.participants;
 
-      return updatedCertificate; // Return the new instance
+      return updatedCertificate;
     });
   };
 
@@ -176,9 +172,8 @@ const AddCertificate: React.FC = () => {
     date: Date | null,
   ) => {
     setCertificateData((prevData) => {
-      const updatedCertificate = new ApiClient.GetCertificateDTO(); // Create a new instance
+      const updatedCertificate = new ApiClient.GetCertificateDTO();
 
-      // Copy previous data to the new instance
       updatedCertificate.certificateId = prevData.certificateId;
       updatedCertificate.name = prevData.name;
       updatedCertificate.certificateTypeName = prevData.certificateTypeName;
@@ -198,7 +193,7 @@ const AddCertificate: React.FC = () => {
       updatedCertificate.comments = prevData.comments;
       updatedCertificate.participants = prevData.participants;
 
-      return updatedCertificate; // Return the new instance
+      return updatedCertificate;
     });
   };
 
