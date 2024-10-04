@@ -35,23 +35,15 @@ namespace CertificateManagerAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            var frontendURL = builder.Configuration["FrontendURL"];
-
-            if (string.IsNullOrWhiteSpace(frontendURL))
-            {
-                throw new InvalidOperationException("Frontend URL is not configured properly.");
-            }
-
             builder.Services.AddCors(options =>
             {
-                options.AddDefaultPolicy(policy =>
+                options.AddPolicy("AllowAllOrigins", builder =>
                 {
-                    policy.WithOrigins(frontendURL)
-                          .AllowAnyMethod()
-                          .AllowAnyHeader();
+                    builder.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader();
                 });
             });
-
 
             var app = builder.Build();
 
@@ -64,7 +56,7 @@ namespace CertificateManagerAPI
 
             app.UseHttpsRedirection();
 
-            app.UseCors();
+            app.UseCors("AllowAllOrigins");
 
             app.UseExceptionHandler(_ => { });
 
