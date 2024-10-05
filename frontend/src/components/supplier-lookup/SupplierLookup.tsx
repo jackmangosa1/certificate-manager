@@ -20,6 +20,7 @@ const SupplierLookup: React.FC<SupplierLookupProps> = ({
   onClear,
 }) => {
   const { translations } = useLanguage();
+  
   return (
     <div className="row">
       <label htmlFor="supplier">{translations.supplier}</label>
@@ -28,7 +29,7 @@ const SupplierLookup: React.FC<SupplierLookupProps> = ({
           type="text"
           id="supplier"
           name="supplier"
-          value={value}
+          value={value || ''} 
           onChange={onChange}
           className="supplier-input"
           readOnly
