@@ -8,11 +8,11 @@ namespace CertificateManagerAPI.Mappers
     {
         public UpdateCertificateProfile()
         {
-            CreateMap<UpdateCertficateDTO, Certificate>()
+            CreateMap<UpdateCertificateDTO, Certificate>()
                .ForMember(dest => dest.ValidFrom, opt => opt.MapFrom(src => DateOnly.Parse(src.ValidFrom)))
                .ForMember(dest => dest.ValidTo, opt => opt.MapFrom(src => DateOnly.Parse(src.ValidTo)));
 
-            CreateMap<CreateCertificateDTO, UpdateCertficateDTO>().ReverseMap();
+            CreateMap<CreateCertificateDTO, UpdateCertificateDTO>().ReverseMap();
         }
     }
 }

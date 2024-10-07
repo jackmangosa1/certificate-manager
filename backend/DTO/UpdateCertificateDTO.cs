@@ -2,7 +2,7 @@
 
 namespace CertificateManagerAPI.DTO
 {
-    public class UpdateCertficateDTO
+    public class UpdateCertificateDTO
     {
         [Required]
         public int SupplierId { get; set; }
@@ -16,8 +16,15 @@ namespace CertificateManagerAPI.DTO
         [Required]
         public string ValidTo { get; set; } = null!;
 
-
         [Required]
         public byte[] PdfDocumentData { get; set; } = null!;
+
+        public List<int> ParticipantsToAdd { get; set; } = new List<int>();
+
+        public List<int> ParticipantsToRemove { get; set; } = new List<int>();
+
+        public List<CommentDTO> CommentsToAdd { get; set; } = new List<CommentDTO>();
     }
+
+
 }

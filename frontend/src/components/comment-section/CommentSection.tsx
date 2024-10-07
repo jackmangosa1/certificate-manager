@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import './CommentSection.css';
-import { useComments } from '../../hooks/useComments';
 import { ApiClient } from '../../api/apiClient';
 
 export type Comment = {
@@ -17,15 +16,14 @@ type CommentSectionProps = {
 };
 
 const CommentSection: React.FC<CommentSectionProps> = ({
-  certificateId,
   currentUserName,
   initialComments,
   onCommentsChange,
 }) => {
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [newCommentText, setNewCommentText] = useState('');
-  const [comments, setComments] = useState<ApiClient.CommentDTO[]>(initialComments);
-  const { addComment } = useComments();
+  const [comments, setComments] =
+    useState<ApiClient.CommentDTO[]>(initialComments);
 
   useEffect(() => {
     setComments(initialComments);
@@ -39,27 +37,20 @@ const CommentSection: React.FC<CommentSectionProps> = ({
     setNewCommentText(e.target.value);
   };
 
-  const handleSendComment = async () => {
-    if (newCommentText.trim()) {
-      const newCommentDTO = ApiClient.CommentDTO.fromJS({
-        commentId: undefined, 
-        username: currentUserName,
+  const handleSendComment = () => {
+    if (newCommentText.trim() && currentUserName) {
+      const newCommentDTO = new ApiClient.CommentDTO({
         commentText: newCommentText.trim(),
+        username: currentUserName,
       });
-  
-      try {
-        await addComment(certificateId, newCommentDTO);
-        const updatedComments = [...comments, newCommentDTO];
-        setComments(updatedComments);
-        onCommentsChange(updatedComments);
-        setNewCommentText('');
-        setShowCommentInput(false);
-      } catch (error) {
-        console.error('Failed to send comment:', error);
-      }
+
+      const updatedComments = [...comments, newCommentDTO];
+      setComments(updatedComments);
+      onCommentsChange(updatedComments);
+      setNewCommentText('');
+      setShowCommentInput(false);
     }
   };
-  
 
   return (
     <div className="comment-section">
@@ -72,9 +63,9 @@ const CommentSection: React.FC<CommentSectionProps> = ({
         </button>
       </div>
 
-      {comments.map((comment) => (
+      {comments.map((comment, index) => (
         <div
-          key={comment.commentId}
+          key={comment.commentId || `temp-${index}`}
           className="comment"
         >
           <div className="user-info">User: {comment.username}</div>

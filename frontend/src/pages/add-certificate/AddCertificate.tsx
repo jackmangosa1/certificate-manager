@@ -71,7 +71,6 @@ const AddCertificate: React.FC = () => {
   const [editMode, setEditMode] = useState(false);
   const [pdfBase64, setPdfBase64] = useState<string | null>(null);
   const [errors, setErrors] = useState<FormError>(initialErrorData);
-  const { removeParticipant } = useParticipants();
   const [selectedSupplier, setSelectedSupplier] = useState<
     ApiClient.SupplierDTO | undefined
   >(undefined);
@@ -158,8 +157,11 @@ const AddCertificate: React.FC = () => {
     setCertificateData((prevData) => {
       const updatedCertificate = new ApiClient.GetCertificateDTO();
       updatedCertificate.certificateId = prevData.certificateId;
-      updatedCertificate.supplier!.name =
-        name === 'name' ? value : prevData.supplier?.name;
+
+      if (updatedCertificate.supplier) {
+        updatedCertificate.supplier.name = prevData.supplier?.name;
+      }
+
       updatedCertificate.certificateTypeName =
         name === 'certificateTypeName'
           ? (value as CertificateType['certificateTypeName'])
@@ -182,7 +184,10 @@ const AddCertificate: React.FC = () => {
       const updatedCertificate = new ApiClient.GetCertificateDTO();
 
       updatedCertificate.certificateId = prevData.certificateId;
-      updatedCertificate.supplier!.name = prevData.supplier?.name;
+      if(updatedCertificate.supplier){
+        updatedCertificate.supplier.name = prevData.supplier?.name;
+      }
+
       updatedCertificate.certificateTypeName = prevData.certificateTypeName;
       updatedCertificate.validFrom =
         name === 'validFrom'
@@ -266,63 +271,78 @@ const AddCertificate: React.FC = () => {
       }
       return;
     }
-
+  
     try {
       const certificateType = certificateTypes.find(
-        (type) =>
-          type.certificateTypeName === certificateData.certificateTypeName,
+        (type) => type.certificateTypeName === certificateData.certificateTypeName,
       );
-
+  
       if (!certificateType || certificateType.certificateTypeId === undefined) {
         throw new Error('Invalid certificate type');
       }
-
+  
       if (!selectedSupplier || selectedSupplier.supplierId === undefined) {
         throw new Error('Invalid supplier');
       }
+  
+      if (editMode && id) {
+        const newComments = comments.filter(comment => {
+          return !certificateData.comments?.some(
+            initialComment => initialComment.commentId === comment.commentId
+          );
+        });
 
-      const certificateToSave = new ApiClient.CreateCertificateDTO();
-      certificateToSave.certificateId = editMode && id ? Number(id) : 0;
-      certificateToSave.supplierId = selectedSupplier.supplierId;
-      certificateToSave.certificateTypeId = certificateType.certificateTypeId;
-      certificateToSave.validFrom = certificateData.validFrom
-        ? formatDate(certificateData.validFrom)
-        : '';
-      certificateToSave.validTo = certificateData.validTo
-        ? formatDate(certificateData.validTo)
-        : '';
-      certificateToSave.pdfDocumentData =
-        pdfBase64 && pdfBase64.includes(',')
+        const updateDto = new ApiClient.UpdateCertificateDTO({
+          supplierId: selectedSupplier.supplierId,
+          certificateTypeId: certificateType.certificateTypeId,
+          validFrom: certificateData.validFrom ? formatDate(certificateData.validFrom) : '',
+          validTo: certificateData.validTo ? formatDate(certificateData.validTo) : '',
+          pdfDocumentData: pdfBase64 && pdfBase64.includes(',')
+            ? pdfBase64.split(',')[1]
+            : pdfBase64 || '',
+          participantsToAdd: selectedParticipants
+            .filter(p => p.participantId !== undefined)
+            .map(p => p.participantId!)
+            .filter(id => !(certificateData.participants || [])
+              .map(p => p.participantId)
+              .includes(id)),
+          participantsToRemove: participantsToRemove,
+          commentsToAdd: newComments.map(comment => new ApiClient.CommentDTO({
+            commentText: comment.commentText,
+            userId: selectedUser?.userId, 
+            username: selectedUser?.username
+          }))
+        });
+  
+        await updateCertificate(parseInt(id), updateDto);
+        navigate(AppRoutes.Example1);
+      } else {
+        const createDto = new ApiClient.CreateCertificateDTO();
+        createDto.supplierId = selectedSupplier.supplierId;
+        createDto.certificateTypeId = certificateType.certificateTypeId;
+        createDto.validFrom = certificateData.validFrom ? formatDate(certificateData.validFrom) : '';
+        createDto.validTo = certificateData.validTo ? formatDate(certificateData.validTo) : '';
+        createDto.pdfDocumentData = pdfBase64 && pdfBase64.includes(',')
           ? pdfBase64.split(',')[1]
           : pdfBase64 || '';
-
-      let savedCertificateId: number;
-      if (editMode && id) {
-        await updateCertificate(parseInt(id), certificateToSave);
-        for (const participantId of participantsToRemove) {
-          await removeParticipant(parseInt(id), participantId);
+  
+        const newCertificate = await addCertificate(createDto);
+        
+        if (selectedParticipants.length > 0) {
+          await addParticipant(newCertificate!.certificateId, selectedParticipants);
         }
-        savedCertificateId = parseInt(id);
-      } else {
-        const newCertificateId = await addCertificate(certificateToSave);
-        savedCertificateId = newCertificateId.certificateId;
+  
+        navigate(AppRoutes.Example1);
       }
-
-      if (selectedParticipants.length > 0) {
-        await addParticipant(savedCertificateId, selectedParticipants);
-      }
-
+  
       setErrors(initialErrorData);
-      navigate(AppRoutes.Example1);
     } catch (error) {
       console.error('Error saving certificate:', error);
-
       setErrors((prevErrors) => ({
         ...prevErrors,
-        general:
-          error instanceof Error
-            ? error.message
-            : 'Failed to save certificate. Please try again.',
+        general: error instanceof Error
+          ? error.message
+          : 'Failed to save certificate. Please try again.',
       }));
     }
   };
