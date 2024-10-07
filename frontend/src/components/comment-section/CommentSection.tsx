@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './CommentSection.css';
 import { ApiClient } from '../../api/apiClient';
+import { useLanguage } from '../../hooks/useLanguage';
 
 export type Comment = {
   commentId: number;
@@ -20,6 +21,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   initialComments,
   onCommentsChange,
 }) => {
+  const { translations } = useLanguage();
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [newCommentText, setNewCommentText] = useState('');
   const [comments, setComments] =
@@ -59,7 +61,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
           className="comment-btn"
           onClick={handleNewCommentClick}
         >
-          New comment
+          {translations.newComment}
         </button>
       </div>
 
@@ -68,8 +70,12 @@ const CommentSection: React.FC<CommentSectionProps> = ({
           key={comment.commentId || `temp-${index}`}
           className="comment"
         >
-          <div className="user-info">User: {comment.username}</div>
-          <div className="comment-text">Comment: {comment.commentText}</div>
+          <div className="user-info">
+            {`${translations.user}:`} {comment.username}
+          </div>
+          <div className="comment-text">
+            {`${translations.comment}:`} {comment.commentText}
+          </div>
         </div>
       ))}
 
@@ -78,14 +84,14 @@ const CommentSection: React.FC<CommentSectionProps> = ({
           <textarea
             value={newCommentText}
             onChange={handleCommentChange}
-            placeholder="Type your comment here..."
+            placeholder={`${translations.commentPlaceHolder}...`}
           />
           <button
             onClick={handleSendComment}
             disabled={!newCommentText.trim()}
             className={!newCommentText.trim() ? 'disabled' : ''}
           >
-            Send
+            {translations.send}
           </button>
         </div>
       )}
