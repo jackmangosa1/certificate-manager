@@ -19,9 +19,7 @@ namespace CertificateManagerAPI.DTO
         [Required]
         public byte[] PdfDocumentData { get; set; } = null!;
 
-        public List<int> ParticipantsToAdd { get; set; } = new List<int>();
-
-        public List<int> ParticipantsToRemove { get; set; } = new List<int>();
+        public List<int> ParticipantIds { get; set; } = new List<int>();
 
         public List<CommentDTO> CommentsToAdd { get; set; } = new List<CommentDTO>();
     }

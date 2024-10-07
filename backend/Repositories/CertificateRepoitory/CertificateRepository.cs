@@ -26,6 +26,7 @@ namespace CertificateManagerAPI.Repositories.CertificateRepoitory
             return _mapper.Map<CreateCertificateDTO>(certificate);
         }
 
+
         public async Task<GetCertificateDTO> GetCertificateByIdAsync(int certificateId)
         {
             var certificate = await _context.Certificates
@@ -41,7 +42,6 @@ namespace CertificateManagerAPI.Repositories.CertificateRepoitory
             return _mapper.Map<GetCertificateDTO>(certificate);
         }
 
-
         public async Task<IEnumerable<CertificateSummaryDTO>> GetAllCertificatesAsync()
         {
             var certificates = await _context.Certificates
@@ -51,6 +51,7 @@ namespace CertificateManagerAPI.Repositories.CertificateRepoitory
 
             return _mapper.Map<IEnumerable<CertificateSummaryDTO>>(certificates);
         }
+
 
         public async Task UpdateCertificateAsync(int certificateId, UpdateCertificateDTO certificateDTO)
         {
@@ -71,26 +72,32 @@ namespace CertificateManagerAPI.Repositories.CertificateRepoitory
             certificate.PdfDocumentData = certificateDTO.PdfDocumentData;
             certificate.UpdatedAt = DateTime.UtcNow;
 
-            foreach (var participantId in certificateDTO.ParticipantsToRemove)
+            var existingParticipantIds = certificate.CertificateAssignments
+                .Select(a => a.ParticipantId)
+                .ToList();
+
+            var participantsToAdd = certificateDTO.ParticipantIds
+                .Except(existingParticipantIds)
+                .ToList();
+
+            var participantsToRemove = existingParticipantIds
+                .Except(certificateDTO.ParticipantIds)
+                .ToList();
+
+            foreach (var participantId in participantsToRemove)
             {
                 var assignmentToRemove = certificate.CertificateAssignments
-                    .FirstOrDefault(a => a.ParticipantId == participantId);
-                if (assignmentToRemove != null)
-                {
-                    _context.CertificateAssignments.Remove(assignmentToRemove);
-                }
+                    .First(a => a.ParticipantId == participantId);
+                _context.CertificateAssignments.Remove(assignmentToRemove);
             }
 
-            foreach (var participantId in certificateDTO.ParticipantsToAdd)
+            foreach (var participantId in participantsToAdd)
             {
-                if (!certificate.CertificateAssignments.Any(a => a.ParticipantId == participantId))
+                certificate.CertificateAssignments.Add(new CertificateAssignment
                 {
-                    certificate.CertificateAssignments.Add(new CertificateAssignment
-                    {
-                        CertificateId = certificate.CertificateId,
-                        ParticipantId = participantId
-                    });
-                }
+                    CertificateId = certificate.CertificateId,
+                    ParticipantId = participantId
+                });
             }
 
             foreach (var comment in certificateDTO.CommentsToAdd)
@@ -109,15 +116,30 @@ namespace CertificateManagerAPI.Repositories.CertificateRepoitory
 
         public async Task DeleteCertificateAsync(int certificateId)
         {
-            var certificate = await _context.Certificates.FindAsync(certificateId);
+            var certificate = await _context.Certificates
+                .Include(c => c.CertificateAssignments)
+                .Include(c => c.Comments)
+                .FirstOrDefaultAsync(c => c.CertificateId == certificateId);
 
             if (certificate == null)
             {
                 throw new KeyNotFoundException($"Certificate with ID {certificateId} not found.");
             }
 
+            if (certificate.CertificateAssignments != null)
+            {
+                _context.CertificateAssignments.RemoveRange(certificate.CertificateAssignments);
+            }
+
+            if (certificate.Comments != null)
+            {
+                _context.Comments.RemoveRange(certificate.Comments);
+            }
+
             _context.Certificates.Remove(certificate);
+
             await _context.SaveChangesAsync();
         }
+
     }
 }

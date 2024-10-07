@@ -15,7 +15,6 @@ import ParticipantLookupModal from '../../components/participant-lookup-modal/Pa
 import Table, { ColumnConfig } from '../../components/table/Table';
 import SearchIcon from '../../icons/SearchIcon';
 import CrossIcon from '../../icons/CrossIcon';
-import { useParticipants } from '../../hooks/useParticipants';
 import CommentSection from '../../components/comment-section/CommentSection';
 import { useUser } from '../../context/UserContext';
 import { formatDate } from '../../utils/convertDate';
@@ -60,7 +59,6 @@ const AddCertificate: React.FC = () => {
     useCertificates();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isParticipantModalOpen, setIsParticipantModalOpen] = useState(false);
-  const { addParticipant } = useParticipants();
   const [selectedParticipants, setSelectedParticipants] = useState<
     ApiClient.ParticipantDTO[]
   >([]);
@@ -74,10 +72,6 @@ const AddCertificate: React.FC = () => {
   const [selectedSupplier, setSelectedSupplier] = useState<
     ApiClient.SupplierDTO | undefined
   >(undefined);
-
-  const [participantsToRemove, setParticipantsToRemove] = useState<number[]>(
-    [],
-  );
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -184,7 +178,7 @@ const AddCertificate: React.FC = () => {
       const updatedCertificate = new ApiClient.GetCertificateDTO();
 
       updatedCertificate.certificateId = prevData.certificateId;
-      if(updatedCertificate.supplier){
+      if (updatedCertificate.supplier) {
         updatedCertificate.supplier.name = prevData.supplier?.name;
       }
 
@@ -271,78 +265,92 @@ const AddCertificate: React.FC = () => {
       }
       return;
     }
-  
+
     try {
       const certificateType = certificateTypes.find(
-        (type) => type.certificateTypeName === certificateData.certificateTypeName,
+        (type) =>
+          type.certificateTypeName === certificateData.certificateTypeName,
       );
-  
+
       if (!certificateType || certificateType.certificateTypeId === undefined) {
         throw new Error('Invalid certificate type');
       }
-  
+
       if (!selectedSupplier || selectedSupplier.supplierId === undefined) {
         throw new Error('Invalid supplier');
       }
-  
+
+      const processedPdfData =
+        pdfBase64 && pdfBase64.includes(',')
+          ? pdfBase64.split(',')[1]
+          : pdfBase64 || '';
+
       if (editMode && id) {
-        const newComments = comments.filter(comment => {
+        const newComments = comments.filter((comment) => {
           return !certificateData.comments?.some(
-            initialComment => initialComment.commentId === comment.commentId
+            (initialComment) => initialComment.commentId === comment.commentId,
           );
         });
 
         const updateDto = new ApiClient.UpdateCertificateDTO({
           supplierId: selectedSupplier.supplierId,
           certificateTypeId: certificateType.certificateTypeId,
-          validFrom: certificateData.validFrom ? formatDate(certificateData.validFrom) : '',
-          validTo: certificateData.validTo ? formatDate(certificateData.validTo) : '',
-          pdfDocumentData: pdfBase64 && pdfBase64.includes(',')
-            ? pdfBase64.split(',')[1]
-            : pdfBase64 || '',
-          participantsToAdd: selectedParticipants
-            .filter(p => p.participantId !== undefined)
-            .map(p => p.participantId!)
-            .filter(id => !(certificateData.participants || [])
-              .map(p => p.participantId)
-              .includes(id)),
-          participantsToRemove: participantsToRemove,
-          commentsToAdd: newComments.map(comment => new ApiClient.CommentDTO({
-            commentText: comment.commentText,
-            userId: selectedUser?.userId, 
-            username: selectedUser?.username
-          }))
+          validFrom: certificateData.validFrom
+            ? formatDate(certificateData.validFrom)
+            : '',
+          validTo: certificateData.validTo
+            ? formatDate(certificateData.validTo)
+            : '',
+          pdfDocumentData: processedPdfData,
+
+          participantIds: selectedParticipants
+            .filter((p) => p.participantId !== undefined)
+            .map((p) => p.participantId!),
+          commentsToAdd: newComments.map(
+            (comment) =>
+              new ApiClient.CommentDTO({
+                commentText: comment.commentText,
+                userId: selectedUser?.userId,
+                username: selectedUser?.username,
+              }),
+          ),
         });
-  
+
         await updateCertificate(parseInt(id), updateDto);
         navigate(AppRoutes.Example1);
       } else {
         const createDto = new ApiClient.CreateCertificateDTO();
         createDto.supplierId = selectedSupplier.supplierId;
         createDto.certificateTypeId = certificateType.certificateTypeId;
-        createDto.validFrom = certificateData.validFrom ? formatDate(certificateData.validFrom) : '';
-        createDto.validTo = certificateData.validTo ? formatDate(certificateData.validTo) : '';
-        createDto.pdfDocumentData = pdfBase64 && pdfBase64.includes(',')
-          ? pdfBase64.split(',')[1]
-          : pdfBase64 || '';
-  
-        const newCertificate = await addCertificate(createDto);
-        
+        createDto.validFrom = certificateData.validFrom
+          ? formatDate(certificateData.validFrom)
+          : '';
+        createDto.validTo = certificateData.validTo
+          ? formatDate(certificateData.validTo)
+          : '';
+        createDto.pdfDocumentData =
+          pdfBase64 && pdfBase64.includes(',')
+            ? pdfBase64.split(',')[1]
+            : pdfBase64 || '';
+
+         await addCertificate(createDto);
+
         if (selectedParticipants.length > 0) {
-          await addParticipant(newCertificate!.certificateId, selectedParticipants);
+            selectedParticipants 
         }
-  
+
         navigate(AppRoutes.Example1);
       }
-  
+
       setErrors(initialErrorData);
     } catch (error) {
       console.error('Error saving certificate:', error);
       setErrors((prevErrors) => ({
         ...prevErrors,
-        general: error instanceof Error
-          ? error.message
-          : 'Failed to save certificate. Please try again.',
+        general:
+          error instanceof Error
+            ? error.message
+            : 'Failed to save certificate. Please try again.',
       }));
     }
   };
@@ -385,7 +393,6 @@ const AddCertificate: React.FC = () => {
     setSelectedParticipants((prevParticipants) =>
       prevParticipants.filter((p) => p.participantId !== participantId),
     );
-    setParticipantsToRemove((prevToRemove) => [...prevToRemove, participantId]);
   };
 
   const handleCommentsChange = (newComments: ApiClient.CommentDTO[]) => {

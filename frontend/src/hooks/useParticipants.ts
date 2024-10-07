@@ -32,40 +32,8 @@ export const useParticipants = () => {
     }
   };
 
-  const addParticipant = async (
-    certificateId: number,
-    newParticipants: ApiClient.ParticipantDTO[],
-  ) => {
-    try {
-      await client.addParticipantsToCertificate(certificateId, newParticipants);
-      setParticipants((prev) => [...prev, ...newParticipants]);
-    } catch (error) {
-      console.error('Failed to add participants:', error);
-      throw error;
-    }
-  };
-
-  const removeParticipant = async (
-    certificateId: number,
-    participantId: number,
-  ) => {
-    try {
-      await client.participants(certificateId, participantId);
-      setParticipants((prev) =>
-        prev.filter(
-          (participant) => participant.participantId !== participantId,
-        ),
-      );
-    } catch (error) {
-      console.error('Failed to delete participant:', error);
-      throw error;
-    }
-  };
-
   return {
     participants,
     searchParticipants,
-    addParticipant,
-    removeParticipant,
   };
 };
