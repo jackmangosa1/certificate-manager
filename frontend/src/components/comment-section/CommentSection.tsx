@@ -31,14 +31,21 @@ const CommentSection: React.FC<CommentSectionProps> = ({
     setComments(initialComments);
   }, [initialComments]);
 
+  // Toggle the comment input visibility
   const handleNewCommentClick = () => {
-    setShowCommentInput(true);
+    // If showCommentInput is true, it means we are cancelling, so reset the comment text
+    if (showCommentInput) {
+      setNewCommentText('');
+    }
+    setShowCommentInput(!showCommentInput);
   };
 
+  // Handle changes in the textarea input
   const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setNewCommentText(e.target.value);
   };
 
+  // Handle the logic to send a new comment
   const handleSendComment = () => {
     if (newCommentText.trim() && currentUserName) {
       const newCommentDTO = new ApiClient.CommentDTO({
@@ -61,10 +68,12 @@ const CommentSection: React.FC<CommentSectionProps> = ({
           className="comment-btn"
           onClick={handleNewCommentClick}
         >
-          {translations.newComment}
+          {/* Show "Cancel" when input is visible, otherwise "New Comment" */}
+          {showCommentInput ? translations.cancel : translations.newComment}
         </button>
       </div>
 
+      {/* Render comments */}
       {comments.map((comment, index) => (
         <div
           key={comment.commentId || `temp-${index}`}
@@ -79,6 +88,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
         </div>
       ))}
 
+      {/* Show comment input if showCommentInput is true */}
       {showCommentInput && (
         <div className="comment-input">
           <textarea
@@ -91,7 +101,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
             disabled={!newCommentText.trim()}
             className={!newCommentText.trim() ? 'disabled' : ''}
           >
-            {translations.send}
+            {translations.add}
           </button>
         </div>
       )}
