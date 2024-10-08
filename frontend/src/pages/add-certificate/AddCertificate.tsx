@@ -17,9 +17,13 @@ import SearchIcon from '../../icons/SearchIcon';
 import CrossIcon from '../../icons/CrossIcon';
 import CommentSection from '../../components/comment-section/CommentSection';
 import { useUser } from '../../context/UserContext';
-import { formatDate } from '../../utils/convertDate';
 import { isBase64 } from '../../utils/convertPDF';
 import { ApiClient } from '../../api/apiClient';
+import {
+  formatDate,
+  formatDateToYYYYMMDD,
+  parseUTCDate,
+} from '../../utils/convertDate';
 
 type FormError = {
   name: string;
@@ -102,21 +106,21 @@ const AddCertificate: React.FC = () => {
       if (id) {
         try {
           const fetchedCertificate = await getCertificateById(parseInt(id));
-
           if (fetchedCertificate) {
             const newCertificate = new ApiClient.GetCertificateDTO();
             newCertificate.certificateId = fetchedCertificate.certificateId;
             newCertificate.supplier = fetchedCertificate.supplier;
             newCertificate.certificateTypeName =
               fetchedCertificate.certificateTypeName;
-            newCertificate.validFrom = fetchedCertificate.validFrom;
-            newCertificate.validTo = fetchedCertificate.validTo;
+
+            newCertificate.validFrom = formatDate(fetchedCertificate.validFrom);
+            newCertificate.validTo = formatDate(fetchedCertificate.validTo);
+
             newCertificate.pdfDocumentData = fetchedCertificate.pdfDocumentData;
             newCertificate.comments = fetchedCertificate.comments || [];
             newCertificate.participants = fetchedCertificate.participants || [];
 
             setCertificateData(newCertificate);
-
             setSelectedParticipants(newCertificate.participants || []);
             setComments(newCertificate.comments || []);
             setSelectedSupplier(newCertificate.supplier);
@@ -176,25 +180,13 @@ const AddCertificate: React.FC = () => {
   ) => {
     setCertificateData((prevData) => {
       const updatedCertificate = new ApiClient.GetCertificateDTO();
-
       updatedCertificate.certificateId = prevData.certificateId;
-      if (updatedCertificate.supplier) {
-        updatedCertificate.supplier.name = prevData.supplier?.name;
-      }
-
+      updatedCertificate.supplier = prevData.supplier;
       updatedCertificate.certificateTypeName = prevData.certificateTypeName;
       updatedCertificate.validFrom =
-        name === 'validFrom'
-          ? date
-            ? date.toISOString()
-            : ''
-          : prevData.validFrom;
+        name === 'validFrom' ? formatDateToYYYYMMDD(date) : prevData.validFrom;
       updatedCertificate.validTo =
-        name === 'validTo'
-          ? date
-            ? date.toISOString()
-            : ''
-          : prevData.validTo;
+        name === 'validTo' ? formatDateToYYYYMMDD(date) : prevData.validTo;
       updatedCertificate.pdfDocumentData = prevData.pdfDocumentData;
       updatedCertificate.comments = prevData.comments;
       updatedCertificate.participants = prevData.participants;
@@ -237,13 +229,14 @@ const AddCertificate: React.FC = () => {
       newErrors.validTo = translations.errors.required.validTo;
       isValid = false;
     }
-    if (
-      certificateData.validFrom &&
-      certificateData.validTo &&
-      new Date(certificateData.validFrom) > new Date(certificateData.validTo)
-    ) {
-      newErrors.validRange = translations.errors.validRange;
-      isValid = false;
+    if (certificateData.validFrom && certificateData.validTo) {
+      const fromDate = parseUTCDate(certificateData.validFrom);
+      const toDate = parseUTCDate(certificateData.validTo);
+
+      if (fromDate && toDate && fromDate > toDate) {
+        newErrors.validRange = translations.errors.validRange;
+        isValid = false;
+      }
     }
     if (!pdfBase64) {
       newErrors.pdfDocumentURL = translations.errors.required.pdfData;
@@ -333,10 +326,10 @@ const AddCertificate: React.FC = () => {
             ? pdfBase64.split(',')[1]
             : pdfBase64 || '';
 
-         await addCertificate(createDto);
+        await addCertificate(createDto);
 
         if (selectedParticipants.length > 0) {
-            selectedParticipants 
+          selectedParticipants;
         }
 
         navigate(AppRoutes.Example1);
@@ -357,12 +350,17 @@ const AddCertificate: React.FC = () => {
 
   const handleClearSupplier = () => {
     setCertificateData((prevData) => {
-      const updatedData = {
-        ...prevData,
-        supplier: undefined,
-      } as ApiClient.GetCertificateDTO;
+      const updatedCertificate = new ApiClient.GetCertificateDTO();
+      updatedCertificate.certificateId = prevData.certificateId;
+      updatedCertificate.certificateTypeName = prevData.certificateTypeName;
+      updatedCertificate.validFrom = prevData.validFrom;
+      updatedCertificate.validTo = prevData.validTo;
+      updatedCertificate.pdfDocumentData = prevData.pdfDocumentData;
+      updatedCertificate.comments = prevData.comments;
+      updatedCertificate.participants = prevData.participants;
+      updatedCertificate.supplier = undefined;
 
-      return updatedData;
+      return updatedCertificate;
     });
 
     setSelectedSupplier(undefined);
