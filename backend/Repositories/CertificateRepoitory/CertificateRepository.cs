@@ -26,6 +26,7 @@ namespace CertificateManagerAPI.Repositories.CertificateRepoitory
             return _mapper.Map<CreateCertificateDTO>(certificate);
         }
 
+
         public async Task<GetCertificateDTO> GetCertificateByIdAsync(int certificateId)
         {
             var certificate = await _context.Certificates
@@ -41,7 +42,6 @@ namespace CertificateManagerAPI.Repositories.CertificateRepoitory
             return _mapper.Map<GetCertificateDTO>(certificate);
         }
 
-
         public async Task<IEnumerable<CertificateSummaryDTO>> GetAllCertificatesAsync()
         {
             var certificates = await _context.Certificates
@@ -52,30 +52,94 @@ namespace CertificateManagerAPI.Repositories.CertificateRepoitory
             return _mapper.Map<IEnumerable<CertificateSummaryDTO>>(certificates);
         }
 
-        public async Task UpdateCertificateAsync(int certificateId, UpdateCertficateDTO certificateDTO)
+
+        public async Task UpdateCertificateAsync(int certificateId, UpdateCertificateDTO certificateDTO)
         {
-            var certificate = await _context.Certificates.FindAsync(certificateId);
+            var certificate = await _context.Certificates
+                .Include(c => c.CertificateAssignments)
+                .Include(c => c.Comments)
+                .FirstOrDefaultAsync(c => c.CertificateId == certificateId);
 
             if (certificate == null)
             {
                 throw new KeyNotFoundException($"Certificate with ID {certificateId} not found.");
             }
 
-            _mapper.Map(certificateDTO, certificate);
+            certificate.SupplierId = certificateDTO.SupplierId;
+            certificate.CertificateTypeId = certificateDTO.CertificateTypeId;
+            certificate.ValidFrom = DateOnly.Parse(certificateDTO.ValidFrom);
+            certificate.ValidTo = DateOnly.Parse(certificateDTO.ValidTo);
+            certificate.PdfDocumentData = certificateDTO.PdfDocumentData;
+            certificate.UpdatedAt = DateTime.UtcNow;
+
+            var existingParticipantIds = certificate.CertificateAssignments
+                .Select(a => a.ParticipantId)
+                .ToList();
+
+            var participantsToAdd = certificateDTO.ParticipantIds
+                .Except(existingParticipantIds)
+                .ToList();
+
+            var participantsToRemove = existingParticipantIds
+                .Except(certificateDTO.ParticipantIds)
+                .ToList();
+
+            foreach (var participantId in participantsToRemove)
+            {
+                var assignmentToRemove = certificate.CertificateAssignments
+                    .First(a => a.ParticipantId == participantId);
+                _context.CertificateAssignments.Remove(assignmentToRemove);
+            }
+
+            foreach (var participantId in participantsToAdd)
+            {
+                certificate.CertificateAssignments.Add(new CertificateAssignment
+                {
+                    CertificateId = certificate.CertificateId,
+                    ParticipantId = participantId
+                });
+            }
+
+            foreach (var comment in certificateDTO.CommentsToAdd)
+            {
+                certificate.Comments.Add(new Comment
+                {
+                    CertificateId = certificate.CertificateId,
+                    CommentText = comment.CommentText,
+                    UserId = comment.UserId,
+                });
+            }
+
             await _context.SaveChangesAsync();
         }
+
 
         public async Task DeleteCertificateAsync(int certificateId)
         {
-            var certificate = await _context.Certificates.FindAsync(certificateId);
+            var certificate = await _context.Certificates
+                .Include(c => c.CertificateAssignments)
+                .Include(c => c.Comments)
+                .FirstOrDefaultAsync(c => c.CertificateId == certificateId);
 
             if (certificate == null)
             {
                 throw new KeyNotFoundException($"Certificate with ID {certificateId} not found.");
             }
 
+            if (certificate.CertificateAssignments != null)
+            {
+                _context.CertificateAssignments.RemoveRange(certificate.CertificateAssignments);
+            }
+
+            if (certificate.Comments != null)
+            {
+                _context.Comments.RemoveRange(certificate.Comments);
+            }
+
             _context.Certificates.Remove(certificate);
+
             await _context.SaveChangesAsync();
         }
+
     }
 }

@@ -48,7 +48,7 @@ export const useCertificates = () => {
 
   const updateCertificate = async (
     id: number,
-    updatedCertificate: ApiClient.UpdateCertficateDTO,
+    updatedCertificate: ApiClient.UpdateCertificateDTO,
   ) => {
     try {
       await client.updateCertificate(id, updatedCertificate);

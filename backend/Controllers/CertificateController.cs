@@ -84,7 +84,7 @@ namespace CertificateMangerAPI.Controllers
         [HttpPut("{id:int}", Name = "UpdateCertificate")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<ActionResult> UpdateCertificate(int id, UpdateCertficateDTO certificateDTO)
+        public async Task<ActionResult> UpdateCertificate(int id, UpdateCertificateDTO certificateDTO)
         {
             if (id <= 0)
             {

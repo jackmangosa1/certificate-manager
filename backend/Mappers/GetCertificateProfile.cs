@@ -14,8 +14,8 @@ namespace CertificateManagerAPI.Mappers
                .ForMember(dest => dest.Participants,
                    opt => opt.MapFrom(src => src.CertificateAssignments.Select(ca => ca.Participant)))
 
-               .ForMember(dest => dest.Name,
-                   opt => opt.MapFrom(src => src.Supplier.Name))
+               .ForMember(dest => dest.Supplier,
+                   opt => opt.MapFrom(src => src.Supplier))
 
                .ForMember(dest => dest.CertificateTypeName,
                    opt => opt.MapFrom(src => src.CertificateType.CertificateTypeName));

@@ -29,7 +29,7 @@ namespace CertificateManagerAPI.Services.CertificateService
             var certificates = await _certificateRepository.GetAllCertificatesAsync();
             return certificates;
         }
-        public async Task UpdateCertificateAsync(int certificateId, UpdateCertficateDTO certificateDTO)
+        public async Task UpdateCertificateAsync(int certificateId, UpdateCertificateDTO certificateDTO)
         {
             await _certificateRepository.UpdateCertificateAsync(certificateId, certificateDTO);
         }

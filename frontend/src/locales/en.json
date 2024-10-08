@@ -51,5 +51,9 @@
   "plant": "Plant",
   "personList": "Person list",
   "noDataAvailable": "No data available",
-  "user": "User"
+  "user": "User",
+  "newComment": "New Comment",
+  "commentPlaceHolder": "Type your comment here",
+  "send": "Send",
+  "comment": "Comment"
 }

@@ -15,7 +15,6 @@ import ParticipantLookupModal from '../../components/participant-lookup-modal/Pa
 import Table, { ColumnConfig } from '../../components/table/Table';
 import SearchIcon from '../../icons/SearchIcon';
 import CrossIcon from '../../icons/CrossIcon';
-import { useParticipants } from '../../hooks/useParticipants';
 import CommentSection from '../../components/comment-section/CommentSection';
 import { useUser } from '../../context/UserContext';
 import { formatDate } from '../../utils/convertDate';
@@ -44,7 +43,7 @@ const initialCertificateData: ApiClient.GetCertificateDTO =
   new ApiClient.GetCertificateDTO();
 initialCertificateData.certificateId = undefined;
 initialCertificateData.certificateTypeName = '';
-initialCertificateData.name = '';
+initialCertificateData.supplier = undefined;
 initialCertificateData.validTo = '';
 initialCertificateData.validFrom = '';
 initialCertificateData.pdfDocumentData = '';
@@ -70,9 +69,9 @@ const AddCertificate: React.FC = () => {
   const [editMode, setEditMode] = useState(false);
   const [pdfBase64, setPdfBase64] = useState<string | null>(null);
   const [errors, setErrors] = useState<FormError>(initialErrorData);
-  const { removeParticipant } = useParticipants();
-  const [selectedSupplier, setSelectedSupplier] =
-    useState<ApiClient.SupplierDTO | null>(null);
+  const [selectedSupplier, setSelectedSupplier] = useState<
+    ApiClient.SupplierDTO | undefined
+  >(undefined);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -84,11 +83,11 @@ const AddCertificate: React.FC = () => {
       const updatedCertificate = new ApiClient.GetCertificateDTO();
 
       updatedCertificate.certificateId = prevData.certificateId;
-      updatedCertificate.name = supplier.name;
-      updatedCertificate.certificateTypeName = prevData.certificateTypeName; // Retain existing certificateTypeName
-      updatedCertificate.validFrom = prevData.validFrom; // Retain existing validFrom
-      updatedCertificate.validTo = prevData.validTo; // Retain existing validTo
-      updatedCertificate.pdfDocumentData = prevData.pdfDocumentData; // Retain existing pdfDocumentData
+      updatedCertificate.supplier = supplier;
+      updatedCertificate.certificateTypeName = prevData.certificateTypeName;
+      updatedCertificate.validFrom = prevData.validFrom;
+      updatedCertificate.validTo = prevData.validTo;
+      updatedCertificate.pdfDocumentData = prevData.pdfDocumentData;
       updatedCertificate.comments = prevData.comments || [];
       updatedCertificate.participants = prevData.participants || [];
 
@@ -105,10 +104,9 @@ const AddCertificate: React.FC = () => {
           const fetchedCertificate = await getCertificateById(parseInt(id));
 
           if (fetchedCertificate) {
-            // Create a new instance of GetCertificateDTO using fetched data
             const newCertificate = new ApiClient.GetCertificateDTO();
             newCertificate.certificateId = fetchedCertificate.certificateId;
-            newCertificate.name = fetchedCertificate.name;
+            newCertificate.supplier = fetchedCertificate.supplier;
             newCertificate.certificateTypeName =
               fetchedCertificate.certificateTypeName;
             newCertificate.validFrom = fetchedCertificate.validFrom;
@@ -121,6 +119,7 @@ const AddCertificate: React.FC = () => {
 
             setSelectedParticipants(newCertificate.participants || []);
             setComments(newCertificate.comments || []);
+            setSelectedSupplier(newCertificate.supplier);
             setEditMode(true);
 
             if (newCertificate.pdfDocumentData) {
@@ -152,7 +151,11 @@ const AddCertificate: React.FC = () => {
     setCertificateData((prevData) => {
       const updatedCertificate = new ApiClient.GetCertificateDTO();
       updatedCertificate.certificateId = prevData.certificateId;
-      updatedCertificate.name = name === 'name' ? value : prevData.name;
+
+      if (updatedCertificate.supplier) {
+        updatedCertificate.supplier.name = prevData.supplier?.name;
+      }
+
       updatedCertificate.certificateTypeName =
         name === 'certificateTypeName'
           ? (value as CertificateType['certificateTypeName'])
@@ -175,7 +178,10 @@ const AddCertificate: React.FC = () => {
       const updatedCertificate = new ApiClient.GetCertificateDTO();
 
       updatedCertificate.certificateId = prevData.certificateId;
-      updatedCertificate.name = prevData.name;
+      if (updatedCertificate.supplier) {
+        updatedCertificate.supplier.name = prevData.supplier?.name;
+      }
+
       updatedCertificate.certificateTypeName = prevData.certificateTypeName;
       updatedCertificate.validFrom =
         name === 'validFrom'
@@ -274,32 +280,71 @@ const AddCertificate: React.FC = () => {
         throw new Error('Invalid supplier');
       }
 
-      const certificateToSave = new ApiClient.CreateCertificateDTO();
-      certificateToSave.certificateId = editMode && id ? Number(id) : 0;
-      certificateToSave.supplierId = selectedSupplier.supplierId;
-      certificateToSave.certificateTypeId = certificateType.certificateTypeId;
-      certificateToSave.validFrom = certificateData.validFrom
-        ? formatDate(certificateData.validFrom)
-        : '';
-      certificateToSave.validTo = certificateData.validTo
-        ? formatDate(certificateData.validTo)
-        : '';
-      certificateToSave.pdfDocumentData =
+      const processedPdfData =
         pdfBase64 && pdfBase64.includes(',')
           ? pdfBase64.split(',')[1]
           : pdfBase64 || '';
 
       if (editMode && id) {
-        await updateCertificate(parseInt(id), certificateToSave);
+        const newComments = comments.filter((comment) => {
+          return !certificateData.comments?.some(
+            (initialComment) => initialComment.commentId === comment.commentId,
+          );
+        });
+
+        const updateDto = new ApiClient.UpdateCertificateDTO({
+          supplierId: selectedSupplier.supplierId,
+          certificateTypeId: certificateType.certificateTypeId,
+          validFrom: certificateData.validFrom
+            ? formatDate(certificateData.validFrom)
+            : '',
+          validTo: certificateData.validTo
+            ? formatDate(certificateData.validTo)
+            : '',
+          pdfDocumentData: processedPdfData,
+
+          participantIds: selectedParticipants
+            .filter((p) => p.participantId !== undefined)
+            .map((p) => p.participantId!),
+          commentsToAdd: newComments.map(
+            (comment) =>
+              new ApiClient.CommentDTO({
+                commentText: comment.commentText,
+                userId: selectedUser?.userId,
+                username: selectedUser?.username,
+              }),
+          ),
+        });
+
+        await updateCertificate(parseInt(id), updateDto);
+        navigate(AppRoutes.Example1);
       } else {
-        await addCertificate(certificateToSave);
+        const createDto = new ApiClient.CreateCertificateDTO();
+        createDto.supplierId = selectedSupplier.supplierId;
+        createDto.certificateTypeId = certificateType.certificateTypeId;
+        createDto.validFrom = certificateData.validFrom
+          ? formatDate(certificateData.validFrom)
+          : '';
+        createDto.validTo = certificateData.validTo
+          ? formatDate(certificateData.validTo)
+          : '';
+        createDto.pdfDocumentData =
+          pdfBase64 && pdfBase64.includes(',')
+            ? pdfBase64.split(',')[1]
+            : pdfBase64 || '';
+
+         await addCertificate(createDto);
+
+        if (selectedParticipants.length > 0) {
+            selectedParticipants 
+        }
+
+        navigate(AppRoutes.Example1);
       }
 
       setErrors(initialErrorData);
-      navigate(AppRoutes.Example1);
     } catch (error) {
       console.error('Error saving certificate:', error);
-
       setErrors((prevErrors) => ({
         ...prevErrors,
         general:
@@ -309,24 +354,25 @@ const AddCertificate: React.FC = () => {
       }));
     }
   };
+
   const handleClearSupplier = () => {
     setCertificateData((prevData) => {
       const updatedData = {
         ...prevData,
-        name: '',
+        supplier: undefined,
       } as ApiClient.GetCertificateDTO;
 
       return updatedData;
     });
 
-    setSelectedSupplier(null);
+    setSelectedSupplier(undefined);
   };
 
   const handleReset = () => {
     setCertificateData(initialCertificateData);
     setSelectedParticipants([]);
     setPdfBase64(null);
-    setSelectedSupplier(null);
+    setSelectedSupplier(undefined);
   };
 
   const handleOpenParticipantModal = () => {
@@ -343,21 +389,10 @@ const AddCertificate: React.FC = () => {
     setSelectedParticipants(participants);
   };
 
-  const handleRemoveParticipant = async (
-    certificateId: number,
-    participantId: number,
-  ) => {
-    try {
-      await removeParticipant(certificateId, participantId);
-
-      setSelectedParticipants((prevParticipants) =>
-        prevParticipants.filter(
-          (participant) => participant.participantId !== participantId,
-        ),
-      );
-    } catch (error) {
-      console.error('Failed to delete participant:', error);
-    }
+  const handleRemoveParticipant = (participantId: number) => {
+    setSelectedParticipants((prevParticipants) =>
+      prevParticipants.filter((p) => p.participantId !== participantId),
+    );
   };
 
   const handleCommentsChange = (newComments: ApiClient.CommentDTO[]) => {
@@ -383,7 +418,7 @@ const AddCertificate: React.FC = () => {
     <div className="certificate-form-container">
       <div className="left-side">
         <SupplierLookup
-          value={certificateData.name}
+          value={selectedSupplier?.name || ''}
           onChange={handleInput}
           error={errors.name}
           onSearch={openModal}
@@ -470,7 +505,7 @@ const AddCertificate: React.FC = () => {
                   <div
                     onClick={() => {
                       if (row.participantId !== undefined)
-                        handleRemoveParticipant(Number(id), row.participantId);
+                        handleRemoveParticipant(row.participantId);
                     }}
                   >
                     <CrossIcon className="cross-icon" />
@@ -485,7 +520,6 @@ const AddCertificate: React.FC = () => {
             isOpen={isParticipantModalOpen}
             onClose={handleCloseParticipantModal}
             onSelect={handleSelectParticipant}
-            certificateId={Number(id)}
           />
         </div>
       </div>

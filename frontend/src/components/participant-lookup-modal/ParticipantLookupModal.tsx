@@ -9,7 +9,6 @@ type ParticipantLookupModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onSelect: (participants: ApiClient.ParticipantDTO[]) => void;
-  certificateId: number;
 };
 
 const initialSearchCriteria = {
@@ -24,10 +23,9 @@ const ParticipantLookupModal: React.FC<ParticipantLookupModalProps> = ({
   isOpen,
   onClose,
   onSelect,
-  certificateId,
 }) => {
   const { translations } = useLanguage();
-  const { addParticipant, searchParticipants } = useParticipants();
+  const { searchParticipants } = useParticipants();
   const [searchResults, setSearchResults] = useState<
     ApiClient.ParticipantDTO[]
   >([]);
@@ -94,19 +92,10 @@ const ParticipantLookupModal: React.FC<ParticipantLookupModalProps> = ({
     }
   };
 
-  const handleSelect = async () => {
+  const handleSelect = () => {
     if (selectedParticipants.length > 0) {
-      try {
-        const participantDTOs = selectedParticipants.map((participant) => ({
-          ...participant,
-        })) as ApiClient.ParticipantDTO[];
-
-        await addParticipant(certificateId, participantDTOs);
-        onSelect(selectedParticipants);
-        handleCloseModal();
-      } catch (error) {
-        console.error('Error adding participants:', error);
-      }
+      onSelect(selectedParticipants);
+      handleCloseModal();
     }
   };
 

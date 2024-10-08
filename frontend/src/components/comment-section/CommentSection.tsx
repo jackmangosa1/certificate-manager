@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './CommentSection.css';
-import { useComments } from '../../hooks/useComments';
 import { ApiClient } from '../../api/apiClient';
+import { useLanguage } from '../../hooks/useLanguage';
 
 export type Comment = {
   commentId: number;
@@ -17,15 +17,15 @@ type CommentSectionProps = {
 };
 
 const CommentSection: React.FC<CommentSectionProps> = ({
-  certificateId,
   currentUserName,
   initialComments,
   onCommentsChange,
 }) => {
+  const { translations } = useLanguage();
   const [showCommentInput, setShowCommentInput] = useState(false);
   const [newCommentText, setNewCommentText] = useState('');
-  const [comments, setComments] = useState<ApiClient.CommentDTO[]>(initialComments);
-  const { addComment } = useComments();
+  const [comments, setComments] =
+    useState<ApiClient.CommentDTO[]>(initialComments);
 
   useEffect(() => {
     setComments(initialComments);
@@ -39,27 +39,20 @@ const CommentSection: React.FC<CommentSectionProps> = ({
     setNewCommentText(e.target.value);
   };
 
-  const handleSendComment = async () => {
-    if (newCommentText.trim()) {
-      const newCommentDTO = ApiClient.CommentDTO.fromJS({
-        commentId: undefined, 
-        username: currentUserName,
+  const handleSendComment = () => {
+    if (newCommentText.trim() && currentUserName) {
+      const newCommentDTO = new ApiClient.CommentDTO({
         commentText: newCommentText.trim(),
+        username: currentUserName,
       });
-  
-      try {
-        await addComment(certificateId, newCommentDTO);
-        const updatedComments = [...comments, newCommentDTO];
-        setComments(updatedComments);
-        onCommentsChange(updatedComments);
-        setNewCommentText('');
-        setShowCommentInput(false);
-      } catch (error) {
-        console.error('Failed to send comment:', error);
-      }
+
+      const updatedComments = [...comments, newCommentDTO];
+      setComments(updatedComments);
+      onCommentsChange(updatedComments);
+      setNewCommentText('');
+      setShowCommentInput(false);
     }
   };
-  
 
   return (
     <div className="comment-section">
@@ -68,17 +61,21 @@ const CommentSection: React.FC<CommentSectionProps> = ({
           className="comment-btn"
           onClick={handleNewCommentClick}
         >
-          New comment
+          {translations.newComment}
         </button>
       </div>
 
-      {comments.map((comment) => (
+      {comments.map((comment, index) => (
         <div
-          key={comment.commentId}
+          key={comment.commentId || `temp-${index}`}
           className="comment"
         >
-          <div className="user-info">User: {comment.username}</div>
-          <div className="comment-text">Comment: {comment.commentText}</div>
+          <div className="user-info">
+            {`${translations.user}:`} {comment.username}
+          </div>
+          <div className="comment-text">
+            {`${translations.comment}:`} {comment.commentText}
+          </div>
         </div>
       ))}
 
@@ -87,14 +84,14 @@ const CommentSection: React.FC<CommentSectionProps> = ({
           <textarea
             value={newCommentText}
             onChange={handleCommentChange}
-            placeholder="Type your comment here..."
+            placeholder={`${translations.commentPlaceHolder}...`}
           />
           <button
             onClick={handleSendComment}
             disabled={!newCommentText.trim()}
             className={!newCommentText.trim() ? 'disabled' : ''}
           >
-            Send
+            {translations.send}
           </button>
         </div>
       )}

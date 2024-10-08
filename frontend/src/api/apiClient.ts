@@ -68,50 +68,75 @@ export class Client {
      * @param body (optional) 
      * @return Success
      */
-    certificates(body: CreateCertificateDTO | undefined): Promise<CreateCertificateDTO> {
-        let url_ = this.baseUrl + "/api/certificates";
-        url_ = url_.replace(/[?&]$/, "");
-
+    certificates(
+        body: CreateCertificateDTO | undefined,
+      ): Promise<CreateCertificateDTO> {
+        let url_ = this.baseUrl + '/api/certificates';
+        url_ = url_.replace(/[?&]$/, '');
+  
         const content_ = JSON.stringify(body);
-
+  
         let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            }
+          body: content_,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'text/plain',
+          },
         };
-
+  
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCertificates(_response);
+          return this.processCertificates(_response);
         });
-    }
-
-    protected processCertificates(response: Response): Promise<CreateCertificateDTO> {
+      }
+  
+      protected processCertificates(
+        response: Response,
+      ): Promise<CreateCertificateDTO> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200 || status === 201) {
-            return response.text().then((_responseText) => {
+        let _headers: any = {};
+        if (response.headers && response.headers.forEach) {
+          response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+        }
+        if (status === 200 || status == 201) {
+          return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            let resultData200 =
+              _responseText === ''
+                ? null
+                : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = CreateCertificateDTO.fromJS(resultData200);
             return result200;
-            });
+          });
         } else if (status === 400) {
-            return response.text().then((_responseText) => {
+          return response.text().then((_responseText) => {
             let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            let resultData400 =
+              _responseText === ''
+                ? null
+                : JSON.parse(_responseText, this.jsonParseReviver);
             result400 = ProblemDetails.fromJS(resultData400);
-            return throwException("Bad Request", status, _responseText, _headers, result400);
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
+            return throwException(
+              'Bad Request',
+              status,
+              _responseText,
+              _headers,
+              result400,
+            );
+          });
+        } else if (status !== 200 && status !== 204 && status !== 201) {
+          return response.text().then((_responseText) => {
+            return throwException(
+              'An unexpected server error occurred.',
+              status,
+              _responseText,
+              _headers,
+            );
+          });
         }
         return Promise.resolve<CreateCertificateDTO>(null as any);
-    }
+      }
+  
 
     /**
      * @return Success
@@ -171,7 +196,7 @@ export class Client {
      * @param body (optional) 
      * @return No Content
      */
-    updateCertificate(id: number, body: UpdateCertficateDTO | undefined): Promise<void> {
+    updateCertificate(id: number, body: UpdateCertificateDTO | undefined): Promise<void> {
         let url_ = this.baseUrl + "/api/certificates/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -219,45 +244,60 @@ export class Client {
      * @return No Content
      */
     deleteCertificate(id: number): Promise<void> {
-        let url_ = this.baseUrl + "/api/certificates/{id}";
+        let url_ = this.baseUrl + '/api/certificates/{id}';
         if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
+          throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace('{id}', encodeURIComponent('' + id));
+        url_ = url_.replace(/[?&]$/, '');
+  
         let options_: RequestInit = {
-            method: "DELETE",
-            headers: {
-            }
+          method: 'DELETE',
+          headers: {},
         };
-
+  
         return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processDeleteCertificate(_response);
+          return this.processDeleteCertificate(_response);
         });
-    }
-
-    protected processDeleteCertificate(response: Response): Promise<void> {
+      }
+  
+      protected processDeleteCertificate(response: Response): Promise<void> {
         const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        let _headers: any = {};
+        if (response.headers && response.headers.forEach) {
+          response.headers.forEach((v: any, k: any) => (_headers[k] = v));
+        }
         if (status === 400) {
-            return response.text().then((_responseText) => {
+          return response.text().then((_responseText) => {
             let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            let resultData400 =
+              _responseText === ''
+                ? null
+                : JSON.parse(_responseText, this.jsonParseReviver);
             result400 = ProblemDetails.fromJS(resultData400);
-            return throwException("Bad Request", status, _responseText, _headers, result400);
-            });
+            return throwException(
+              'Bad Request',
+              status,
+              _responseText,
+              _headers,
+              result400,
+            );
+          });
         } else if (status === 204) {
-            return response.text().then((_responseText) => {
+          return response.text().then((_responseText) => {
             return;
-            });
+          });
         } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
+          return response.text().then((_responseText) => {
+            return throwException(
+              'An unexpected server error occurred.',
+              status,
+              _responseText,
+              _headers,
+            );
+          });
         }
         return Promise.resolve<void>(null as any);
-    }
-
+      }
     /**
      * @param body (optional) 
      * @return No Content
@@ -287,7 +327,7 @@ export class Client {
     protected processAddCommentToCertificate(response: Response): Promise<void> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 204 || status == 201) {
+        if (status === 204) {
             return response.text().then((_responseText) => {
             return;
             });
@@ -334,37 +374,32 @@ export class Client {
 
     protected processAddParticipantsToCertificate(response: Response): Promise<void> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && response.headers.forEach) {
-            response.headers.forEach((v: any, k: any) => _headers[k] = v);
-        }
-    
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 204) {
             return response.text().then((_responseText) => {
-                return;
+            return;
             });
         } else if (status === 201) {
             return response.text().then((_responseText) => {
-                // Parse the response if needed, but don't throw an exception for 201
-                let result201: any = null;
-                let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                if (Array.isArray(resultData201)) {
-                    result201 = [] as any;
-                    for (let item of resultData201) result201!.push(CertificateParticipantDTO.fromJS(item));
-                }
-                
-                // Return the parsed result or simply resolve without throwing an exception
-                return Promise.resolve(result201);
+            let result201: any = null;
+            let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData201)) {
+                result201 = [] as any;
+                for (let item of resultData201)
+                    result201!.push(CertificateParticipantDTO.fromJS(item));
+            }
+            else {
+                result201 = <any>null;
+            }
+            return throwException("Created", status, _responseText, _headers, result201);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
-                return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        
         return Promise.resolve<void>(null as any);
     }
-    
 
     /**
      * @return No Content
@@ -781,6 +816,7 @@ export interface ICertificateTypeDTO {
 
 export class CommentDTO implements ICommentDTO {
     commentId?: number;
+    userId?: number;
     username?: string | undefined;
     commentText?: string | undefined;
 
@@ -796,6 +832,7 @@ export class CommentDTO implements ICommentDTO {
     init(_data?: any) {
         if (_data) {
             this.commentId = _data["commentId"];
+            this.userId = _data["userId"];
             this.username = _data["username"];
             this.commentText = _data["commentText"];
         }
@@ -811,6 +848,7 @@ export class CommentDTO implements ICommentDTO {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["commentId"] = this.commentId;
+        data["userId"] = this.userId;
         data["username"] = this.username;
         data["commentText"] = this.commentText;
         return data;
@@ -819,6 +857,7 @@ export class CommentDTO implements ICommentDTO {
 
 export interface ICommentDTO {
     commentId?: number;
+    userId?: number;
     username?: string | undefined;
     commentText?: string | undefined;
 }
@@ -881,7 +920,7 @@ export interface ICreateCertificateDTO {
 
 export class GetCertificateDTO implements IGetCertificateDTO {
     certificateId?: number;
-    name?: string | undefined;
+    supplier?: SupplierDTO;
     certificateTypeName?: string | undefined;
     validFrom?: string | undefined;
     validTo?: string | undefined;
@@ -901,7 +940,7 @@ export class GetCertificateDTO implements IGetCertificateDTO {
     init(_data?: any) {
         if (_data) {
             this.certificateId = _data["certificateId"];
-            this.name = _data["name"];
+            this.supplier = _data["supplier"] ? SupplierDTO.fromJS(_data["supplier"]) : <any>undefined;
             this.certificateTypeName = _data["certificateTypeName"];
             this.validFrom = _data["validFrom"];
             this.validTo = _data["validTo"];
@@ -929,7 +968,7 @@ export class GetCertificateDTO implements IGetCertificateDTO {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["certificateId"] = this.certificateId;
-        data["name"] = this.name;
+        data["supplier"] = this.supplier ? this.supplier.toJSON() : <any>undefined;
         data["certificateTypeName"] = this.certificateTypeName;
         data["validFrom"] = this.validFrom;
         data["validTo"] = this.validTo;
@@ -950,7 +989,7 @@ export class GetCertificateDTO implements IGetCertificateDTO {
 
 export interface IGetCertificateDTO {
     certificateId?: number;
-    name?: string | undefined;
+    supplier?: SupplierDTO;
     certificateTypeName?: string | undefined;
     validFrom?: string | undefined;
     validTo?: string | undefined;
@@ -1123,14 +1162,16 @@ export interface ISupplierDTO {
     city?: string | undefined;
 }
 
-export class UpdateCertficateDTO implements IUpdateCertficateDTO {
+export class UpdateCertificateDTO implements IUpdateCertificateDTO {
     supplierId!: number;
     certificateTypeId!: number;
     validFrom!: string;
     validTo!: string;
     pdfDocumentData!: string;
+    participantIds?: number[] | undefined;
+    commentsToAdd?: CommentDTO[] | undefined;
 
-    constructor(data?: IUpdateCertficateDTO) {
+    constructor(data?: IUpdateCertificateDTO) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -1146,12 +1187,22 @@ export class UpdateCertficateDTO implements IUpdateCertficateDTO {
             this.validFrom = _data["validFrom"];
             this.validTo = _data["validTo"];
             this.pdfDocumentData = _data["pdfDocumentData"];
+            if (Array.isArray(_data["participantIds"])) {
+                this.participantIds = [] as any;
+                for (let item of _data["participantIds"])
+                    this.participantIds!.push(item);
+            }
+            if (Array.isArray(_data["commentsToAdd"])) {
+                this.commentsToAdd = [] as any;
+                for (let item of _data["commentsToAdd"])
+                    this.commentsToAdd!.push(CommentDTO.fromJS(item));
+            }
         }
     }
 
-    static fromJS(data: any): UpdateCertficateDTO {
+    static fromJS(data: any): UpdateCertificateDTO {
         data = typeof data === 'object' ? data : {};
-        let result = new UpdateCertficateDTO();
+        let result = new UpdateCertificateDTO();
         result.init(data);
         return result;
     }
@@ -1163,19 +1214,32 @@ export class UpdateCertficateDTO implements IUpdateCertficateDTO {
         data["validFrom"] = this.validFrom;
         data["validTo"] = this.validTo;
         data["pdfDocumentData"] = this.pdfDocumentData;
+        if (Array.isArray(this.participantIds)) {
+            data["participantIds"] = [];
+            for (let item of this.participantIds)
+                data["participantIds"].push(item);
+        }
+        if (Array.isArray(this.commentsToAdd)) {
+            data["commentsToAdd"] = [];
+            for (let item of this.commentsToAdd)
+                data["commentsToAdd"].push(item.toJSON());
+        }
         return data;
     }
 }
 
-export interface IUpdateCertficateDTO {
+export interface IUpdateCertificateDTO {
     supplierId: number;
     certificateTypeId: number;
     validFrom: string;
     validTo: string;
     pdfDocumentData: string;
+    participantIds?: number[] | undefined;
+    commentsToAdd?: CommentDTO[] | undefined;
 }
 
 export class UserDTO implements IUserDTO {
+    userId?: number;
     username?: string | undefined;
 
     constructor(data?: IUserDTO) {
@@ -1189,6 +1253,7 @@ export class UserDTO implements IUserDTO {
 
     init(_data?: any) {
         if (_data) {
+            this.userId = _data["userId"];
             this.username = _data["username"];
         }
     }
@@ -1202,12 +1267,14 @@ export class UserDTO implements IUserDTO {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["userId"] = this.userId;
         data["username"] = this.username;
         return data;
     }
 }
 
 export interface IUserDTO {
+    userId?: number;
     username?: string | undefined;
 }
 
