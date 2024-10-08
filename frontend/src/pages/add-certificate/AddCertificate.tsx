@@ -24,6 +24,7 @@ import {
   formatDateToYYYYMMDD,
   parseUTCDate,
 } from '../../utils/convertDate';
+import Notification from '../../components/notification/Notification';
 
 type FormError = {
   name: string;
@@ -55,6 +56,10 @@ initialCertificateData.comments = [];
 initialCertificateData.participants = [];
 
 const AddCertificate: React.FC = () => {
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: 'success' | 'error';
+  } | null>(null);
   const { translations } = useLanguage();
   const { certificateTypes } = useCertificateTypes();
   const navigate = useNavigate();
@@ -310,7 +315,13 @@ const AddCertificate: React.FC = () => {
         });
 
         await updateCertificate(parseInt(id), updateDto);
-        navigate(AppRoutes.Example1);
+        setNotification({
+          message: '✅ Certificate updated successfully!',
+          type: 'success',
+        });
+        setTimeout(() => {
+          navigate(AppRoutes.Example1);
+        }, 1000);
       } else {
         const createDto = new ApiClient.CreateCertificateDTO();
         createDto.supplierId = selectedSupplier.supplierId;
@@ -327,12 +338,13 @@ const AddCertificate: React.FC = () => {
             : pdfBase64 || '';
 
         await addCertificate(createDto);
-
-        if (selectedParticipants.length > 0) {
-          selectedParticipants;
-        }
-
-        navigate(AppRoutes.Example1);
+        setNotification({
+          message: '✅ Certificate Created successfully!',
+          type: 'success',
+        });
+        setTimeout(() => {
+          navigate(AppRoutes.Example1);
+        }, 1000);
       }
 
       setErrors(initialErrorData);
@@ -412,9 +424,20 @@ const AddCertificate: React.FC = () => {
     },
   ];
 
+  const handleCloseNotification = () => {
+    setNotification(null);
+  };
+
   return (
     <div className="certificate-form-container">
       <div className="left-side">
+        {notification && (
+          <Notification
+            message={notification.message}
+            type={notification.type}
+            onClose={handleCloseNotification}
+          />
+        )}
         <SupplierLookup
           value={selectedSupplier?.name || ''}
           onChange={handleInput}
