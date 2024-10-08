@@ -38,5 +38,10 @@ namespace CertificateManagerAPI.Services.CertificateService
         {
             await _certificateRepository.DeleteCertificateAsync(certificateId);
         }
+
+        public async Task<IEnumerable<CertificateTypeDTO>> GetAllCertificateTypesAsync()
+        {
+            return await _certificateRepository.GetAllCertificateTypesAsync();
+        }
     }
 }

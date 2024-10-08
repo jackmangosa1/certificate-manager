@@ -17,7 +17,7 @@ export const useParticipants = () => {
     plant: string | undefined,
   ) => {
     try {
-      const response = await client.participantsAll(
+      const response = await client.participants(
         participantId,
         name,
         firstName,

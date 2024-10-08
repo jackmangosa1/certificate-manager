@@ -9,6 +9,7 @@ namespace CertificateManagerAPI.Repositories.CertificateRepoitory
         Task<IEnumerable<CertificateSummaryDTO>> GetAllCertificatesAsync();
         Task DeleteCertificateAsync(int certificateId);
         Task UpdateCertificateAsync(int certificateId, UpdateCertificateDTO certificateDTO);
+        Task<IEnumerable<CertificateTypeDTO>> GetAllCertificateTypesAsync();
 
     }
 }

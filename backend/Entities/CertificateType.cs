@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace CertificateManagerAPI.Entities;
+﻿namespace CertificateManagerAPI.Entities;
 
 public partial class CertificateType
 {

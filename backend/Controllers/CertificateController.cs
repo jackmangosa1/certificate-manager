@@ -108,5 +108,13 @@ namespace CertificateMangerAPI.Controllers
             await _certificateService.DeleteCertificateAsync(id);
             return NoContent();
         }
+
+        [HttpGet("types")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<CertificateTypeDTO>>> GetAllCertificateTypes()
+        {
+            var certificateTypes = await _certificateService.GetAllCertificateTypesAsync();
+            return Ok(certificateTypes);
+        }
     }
 }

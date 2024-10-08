@@ -32,7 +32,10 @@ const CommentSection: React.FC<CommentSectionProps> = ({
   }, [initialComments]);
 
   const handleNewCommentClick = () => {
-    setShowCommentInput(true);
+    if (showCommentInput) {
+      setNewCommentText('');
+    }
+    setShowCommentInput(!showCommentInput);
   };
 
   const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -61,7 +64,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
           className="comment-btn"
           onClick={handleNewCommentClick}
         >
-          {translations.newComment}
+          {showCommentInput ? translations.cancel : translations.newComment}
         </button>
       </div>
 
@@ -91,7 +94,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({
             disabled={!newCommentText.trim()}
             className={!newCommentText.trim() ? 'disabled' : ''}
           >
-            {translations.send}
+            {translations.add}
           </button>
         </div>
       )}

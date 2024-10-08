@@ -17,6 +17,7 @@ namespace CertificateManagerAPI.Repositories.CertificateRepoitory
             _context = context;
             _mapper = mapper;
         }
+
         public async Task<CreateCertificateDTO> CreateCertificateAsync(CreateCertificateDTO certificateDTO)
         {
             var certificate = _mapper.Map<Certificate>(certificateDTO);
@@ -141,5 +142,11 @@ namespace CertificateManagerAPI.Repositories.CertificateRepoitory
             await _context.SaveChangesAsync();
         }
 
+
+        public async Task<IEnumerable<CertificateTypeDTO>> GetAllCertificateTypesAsync()
+        {
+            var certificateTypes = await _context.CertificateTypes.ToListAsync();
+            return _mapper.Map<IEnumerable<CertificateTypeDTO>>(certificateTypes);
+        }
     }
 }
