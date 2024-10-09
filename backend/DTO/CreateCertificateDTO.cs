@@ -14,10 +14,10 @@ namespace CertificateManagerAPI.DTO
         public int CertificateTypeId { get; set; }
 
         [Required]
-        public string ValidFrom { get; set; } = null!;
+        public DateTime ValidFrom { get; set; }
 
         [Required]
-        public string ValidTo { get; set; } = null!;
+        public DateTime ValidTo { get; set; }
 
         [Required]
         public byte[] PdfDocumentData { get; set; } = null!;

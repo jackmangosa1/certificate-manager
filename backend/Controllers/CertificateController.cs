@@ -59,23 +59,7 @@ namespace CertificateMangerAPI.Controllers
                 return BadRequest("Certficate ID must not be set when creating a new certificate.");
             }
 
-            if (!DateOnly.TryParse(certificateDto.ValidFrom, out var validFrom))
-            {
-                ModelState.AddModelError("ValidFrom", "Invalid date format for ValidFrom.");
-                return BadRequest(ModelState);
-            }
 
-            if (!DateOnly.TryParse(certificateDto.ValidTo, out var validTo))
-            {
-                ModelState.AddModelError("ValidTo", "Invalid date format for ValidTo.");
-                return BadRequest(ModelState);
-            }
-
-            if (validFrom > validTo)
-            {
-                ModelState.AddModelError("ValidDateRange", "ValidFrom must be before ValidTo.");
-                return BadRequest(ModelState);
-            }
 
             var certificate = await _certificateService.CreateCertificateAsync(certificateDto);
             return CreatedAtRoute("GetCertificate", new { id = certificate.CertificateId }, certificate);

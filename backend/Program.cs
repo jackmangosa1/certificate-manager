@@ -2,9 +2,7 @@
 using BookAPI.Utilities;
 using CertificateManagerAPI.Data;
 using CertificateManagerAPI.Extensions;
-using CertificateManagerAPI.Utilities;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
 
 namespace CertificateManagerAPI
 {
@@ -16,12 +14,7 @@ namespace CertificateManagerAPI
 
             // Add services to the container.
 
-            builder.Services.AddControllers()
-                .AddJsonOptions(options =>
-                 {
-                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                     options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
-                 });
+            builder.Services.AddControllers();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddDbContext<CertificateManagerDbContext>(options =>

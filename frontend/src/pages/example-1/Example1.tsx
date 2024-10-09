@@ -7,9 +7,9 @@ import { useCertificates } from '../../hooks/useCertificates';
 import ActionMenu from '../../components/action-menu/ActionMenu';
 import GearIcon from '../../icons/GearIcon';
 import ConfirmationModal from '../../components/confirmation-modal/ConfirmationModal';
-
 import { useLanguage } from '../../hooks/useLanguage';
 import { ApiClient } from '../../api/apiClient';
+import { formatDate } from '../../utils/convertDate';
 
 const Example1: React.FC = () => {
   const { translations } = useLanguage();
@@ -18,6 +18,7 @@ const Example1: React.FC = () => {
   const [activeMenu, setActiveMenu] = useState<number | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
+
 
   const columns: ColumnConfig<ApiClient.CertificateSummaryDTO>[] = [
     {
@@ -30,11 +31,11 @@ const Example1: React.FC = () => {
     },
     {
       header: translations.validFrom,
-      accessor: (row) => row.validTo,
+      accessor: (row) => formatDate(row.validFrom!),
     },
     {
       header: translations.validTo,
-      accessor: (row) => row.validFrom,
+      accessor: (row) => formatDate(row.validFrom!),
     },
   ];
 

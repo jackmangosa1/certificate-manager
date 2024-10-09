@@ -68,8 +68,8 @@ namespace CertificateManagerAPI.Repositories.CertificateRepoitory
 
             certificate.SupplierId = certificateDTO.SupplierId;
             certificate.CertificateTypeId = certificateDTO.CertificateTypeId;
-            certificate.ValidFrom = DateOnly.Parse(certificateDTO.ValidFrom);
-            certificate.ValidTo = DateOnly.Parse(certificateDTO.ValidTo);
+            certificate.ValidFrom = DateOnly.FromDateTime(certificateDTO.ValidFrom);
+            certificate.ValidTo = DateOnly.FromDateTime(certificateDTO.ValidTo);
             certificate.PdfDocumentData = certificateDTO.PdfDocumentData;
             certificate.UpdatedAt = DateTime.UtcNow;
 
