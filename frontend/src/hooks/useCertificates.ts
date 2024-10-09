@@ -35,7 +35,7 @@ export const useCertificates = () => {
   };
 
   const addCertificate = async (
-    certificate: ApiClient.CreateCertificateDTO,
+    certificate: ApiClient.CertificateDTO,
   ) => {
     try {
       const response = await client.certificates(certificate);
@@ -48,7 +48,7 @@ export const useCertificates = () => {
 
   const updateCertificate = async (
     id: number,
-    updatedCertificate: ApiClient.UpdateCertificateDTO,
+    updatedCertificate: ApiClient.CertificateDTO,
   ) => {
     try {
       await client.updateCertificate(id, updatedCertificate);

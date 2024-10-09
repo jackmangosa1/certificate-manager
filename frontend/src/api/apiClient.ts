@@ -9,665 +9,567 @@
 // ReSharper disable InconsistentNaming
 
 export namespace ApiClient {
-  export class Client {
-    private http: {
-      fetch(url: RequestInfo, init?: RequestInit): Promise<Response>;
-    };
-    private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined =
-      undefined;
 
-    constructor(
-      baseUrl?: string,
-      http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> },
-    ) {
-      this.http = http ? http : (window as any);
-      this.baseUrl = baseUrl ?? '';
+export class Client {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
     }
 
     /**
      * @return Success
      */
     certificatesAll(): Promise<CertificateSummaryDTO[]> {
-      let url_ = this.baseUrl + '/api/certificates';
-      url_ = url_.replace(/[?&]$/, '');
+        let url_ = this.baseUrl + "/api/certificates";
+        url_ = url_.replace(/[?&]$/, "");
 
-      let options_: RequestInit = {
-        method: 'GET',
-        headers: {
-          Accept: 'text/plain',
-        },
-      };
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "text/plain"
+            }
+        };
 
-      return this.http.fetch(url_, options_).then((_response: Response) => {
-        return this.processCertificatesAll(_response);
-      });
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCertificatesAll(_response);
+        });
     }
 
-    protected processCertificatesAll(
-      response: Response,
-    ): Promise<CertificateSummaryDTO[]> {
-      const status = response.status;
-      let _headers: any = {};
-      if (response.headers && response.headers.forEach) {
-        response.headers.forEach((v: any, k: any) => (_headers[k] = v));
-      }
-      if (status === 200) {
-        return response.text().then((_responseText) => {
-          let result200: any = null;
-          let resultData200 =
-            _responseText === ''
-              ? null
-              : JSON.parse(_responseText, this.jsonParseReviver);
-          if (Array.isArray(resultData200)) {
-            result200 = [] as any;
-            for (let item of resultData200)
-              result200!.push(CertificateSummaryDTO.fromJS(item));
-          } else {
-            result200 = <any>null;
-          }
-          return result200;
-        });
-      } else if (status !== 200 && status !== 204) {
-        return response.text().then((_responseText) => {
-          return throwException(
-            'An unexpected server error occurred.',
-            status,
-            _responseText,
-            _headers,
-          );
-        });
-      }
-      return Promise.resolve<CertificateSummaryDTO[]>(null as any);
+    protected processCertificatesAll(response: Response): Promise<CertificateSummaryDTO[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(CertificateSummaryDTO.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<CertificateSummaryDTO[]>(null as any);
     }
 
     /**
-     * @param body (optional)
+     * @param body (optional) 
      * @return Success
      */
-    certificates(
-      body: CreateCertificateDTO | undefined,
-    ): Promise<CreateCertificateDTO> {
-      let url_ = this.baseUrl + '/api/certificates';
-      url_ = url_.replace(/[?&]$/, '');
+    certificates(body: CertificateDTO | undefined): Promise<CertificateDTO> {
+        let url_ = this.baseUrl + "/api/certificates";
+        url_ = url_.replace(/[?&]$/, "");
 
-      const content_ = JSON.stringify(body);
+        const content_ = JSON.stringify(body);
 
-      let options_: RequestInit = {
-        body: content_,
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'text/plain',
-        },
-      };
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            }
+        };
 
-      return this.http.fetch(url_, options_).then((_response: Response) => {
-        return this.processCertificates(_response);
-      });
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCertificates(_response);
+        });
     }
 
-    protected processCertificates(
-      response: Response,
-    ): Promise<CreateCertificateDTO> {
-      const status = response.status;
-      let _headers: any = {};
-      if (response.headers && response.headers.forEach) {
-        response.headers.forEach((v: any, k: any) => (_headers[k] = v));
-      }
-      if (status === 200 || 201) {
-        return response.text().then((_responseText) => {
-          let result200: any = null;
-          let resultData200 =
-            _responseText === ''
-              ? null
-              : JSON.parse(_responseText, this.jsonParseReviver);
-          result200 = CreateCertificateDTO.fromJS(resultData200);
-          return result200;
-        });
-      } else if (status === 400) {
-        return response.text().then((_responseText) => {
-          let result400: any = null;
-          let resultData400 =
-            _responseText === ''
-              ? null
-              : JSON.parse(_responseText, this.jsonParseReviver);
-          result400 = ProblemDetails.fromJS(resultData400);
-          return throwException(
-            'Bad Request',
-            status,
-            _responseText,
-            _headers,
-            result400,
-          );
-        });
-      } else if (status !== 200 && status !== 204) {
-        return response.text().then((_responseText) => {
-          return throwException(
-            'An unexpected server error occurred.',
-            status,
-            _responseText,
-            _headers,
-          );
-        });
-      }
-      return Promise.resolve<CreateCertificateDTO>(null as any);
+    protected processCertificates(response: Response): Promise<CertificateDTO> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200 || 201) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = CertificateDTO.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<CertificateDTO>(null as any);
     }
 
     /**
      * @return Success
      */
     getCertificate(id: number): Promise<GetCertificateDTO> {
-      let url_ = this.baseUrl + '/api/certificates/{id}';
-      if (id === undefined || id === null)
-        throw new Error("The parameter 'id' must be defined.");
-      url_ = url_.replace('{id}', encodeURIComponent('' + id));
-      url_ = url_.replace(/[?&]$/, '');
+        let url_ = this.baseUrl + "/api/certificates/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
 
-      let options_: RequestInit = {
-        method: 'GET',
-        headers: {
-          Accept: 'text/plain',
-        },
-      };
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "text/plain"
+            }
+        };
 
-      return this.http.fetch(url_, options_).then((_response: Response) => {
-        return this.processGetCertificate(_response);
-      });
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetCertificate(_response);
+        });
     }
 
-    protected processGetCertificate(
-      response: Response,
-    ): Promise<GetCertificateDTO> {
-      const status = response.status;
-      let _headers: any = {};
-      if (response.headers && response.headers.forEach) {
-        response.headers.forEach((v: any, k: any) => (_headers[k] = v));
-      }
-      if (status === 200) {
-        return response.text().then((_responseText) => {
-          let result200: any = null;
-          let resultData200 =
-            _responseText === ''
-              ? null
-              : JSON.parse(_responseText, this.jsonParseReviver);
-          result200 = GetCertificateDTO.fromJS(resultData200);
-          return result200;
-        });
-      } else if (status === 400) {
-        return response.text().then((_responseText) => {
-          let result400: any = null;
-          let resultData400 =
-            _responseText === ''
-              ? null
-              : JSON.parse(_responseText, this.jsonParseReviver);
-          result400 = ProblemDetails.fromJS(resultData400);
-          return throwException(
-            'Bad Request',
-            status,
-            _responseText,
-            _headers,
-            result400,
-          );
-        });
-      } else if (status === 404) {
-        return response.text().then((_responseText) => {
-          let result404: any = null;
-          let resultData404 =
-            _responseText === ''
-              ? null
-              : JSON.parse(_responseText, this.jsonParseReviver);
-          result404 = ProblemDetails.fromJS(resultData404);
-          return throwException(
-            'Not Found',
-            status,
-            _responseText,
-            _headers,
-            result404,
-          );
-        });
-      } else if (status !== 200 && status !== 204) {
-        return response.text().then((_responseText) => {
-          return throwException(
-            'An unexpected server error occurred.',
-            status,
-            _responseText,
-            _headers,
-          );
-        });
-      }
-      return Promise.resolve<GetCertificateDTO>(null as any);
+    protected processGetCertificate(response: Response): Promise<GetCertificateDTO> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetCertificateDTO.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("Not Found", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<GetCertificateDTO>(null as any);
     }
 
     /**
-     * @param body (optional)
+     * @param body (optional) 
      * @return No Content
      */
-    updateCertificate(
-      id: number,
-      body: UpdateCertificateDTO | undefined,
-    ): Promise<void> {
-      let url_ = this.baseUrl + '/api/certificates/{id}';
-      if (id === undefined || id === null)
-        throw new Error("The parameter 'id' must be defined.");
-      url_ = url_.replace('{id}', encodeURIComponent('' + id));
-      url_ = url_.replace(/[?&]$/, '');
+    updateCertificate(id: number, body: CertificateDTO | undefined): Promise<void> {
+        let url_ = this.baseUrl + "/api/certificates/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
 
-      const content_ = JSON.stringify(body);
+        const content_ = JSON.stringify(body);
 
-      let options_: RequestInit = {
-        body: content_,
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      };
+        let options_: RequestInit = {
+            body: content_,
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            }
+        };
 
-      return this.http.fetch(url_, options_).then((_response: Response) => {
-        return this.processUpdateCertificate(_response);
-      });
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdateCertificate(_response);
+        });
     }
 
     protected processUpdateCertificate(response: Response): Promise<void> {
-      const status = response.status;
-      let _headers: any = {};
-      if (response.headers && response.headers.forEach) {
-        response.headers.forEach((v: any, k: any) => (_headers[k] = v));
-      }
-      if (status === 400) {
-        return response.text().then((_responseText) => {
-          let result400: any = null;
-          let resultData400 =
-            _responseText === ''
-              ? null
-              : JSON.parse(_responseText, this.jsonParseReviver);
-          result400 = ProblemDetails.fromJS(resultData400);
-          return throwException(
-            'Bad Request',
-            status,
-            _responseText,
-            _headers,
-            result400,
-          );
-        });
-      } else if (status === 204) {
-        return response.text().then((_responseText) => {
-          return;
-        });
-      } else if (status !== 200 && status !== 204) {
-        return response.text().then((_responseText) => {
-          return throwException(
-            'An unexpected server error occurred.',
-            status,
-            _responseText,
-            _headers,
-          );
-        });
-      }
-      return Promise.resolve<void>(null as any);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+            });
+        } else if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
     }
 
     /**
      * @return No Content
      */
     deleteCertificate(id: number): Promise<void> {
-      let url_ = this.baseUrl + '/api/certificates/{id}';
-      if (id === undefined || id === null)
-        throw new Error("The parameter 'id' must be defined.");
-      url_ = url_.replace('{id}', encodeURIComponent('' + id));
-      url_ = url_.replace(/[?&]$/, '');
+        let url_ = this.baseUrl + "/api/certificates/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
 
-      let options_: RequestInit = {
-        method: 'DELETE',
-        headers: {},
-      };
+        let options_: RequestInit = {
+            method: "DELETE",
+            headers: {
+            }
+        };
 
-      return this.http.fetch(url_, options_).then((_response: Response) => {
-        return this.processDeleteCertificate(_response);
-      });
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDeleteCertificate(_response);
+        });
     }
 
     protected processDeleteCertificate(response: Response): Promise<void> {
-      const status = response.status;
-      let _headers: any = {};
-      if (response.headers && response.headers.forEach) {
-        response.headers.forEach((v: any, k: any) => (_headers[k] = v));
-      }
-      if (status === 400) {
-        return response.text().then((_responseText) => {
-          let result400: any = null;
-          let resultData400 =
-            _responseText === ''
-              ? null
-              : JSON.parse(_responseText, this.jsonParseReviver);
-          result400 = ProblemDetails.fromJS(resultData400);
-          return throwException(
-            'Bad Request',
-            status,
-            _responseText,
-            _headers,
-            result400,
-          );
-        });
-      } else if (status === 204) {
-        return response.text().then((_responseText) => {
-          return;
-        });
-      } else if (status !== 200 && status !== 204) {
-        return response.text().then((_responseText) => {
-          return throwException(
-            'An unexpected server error occurred.',
-            status,
-            _responseText,
-            _headers,
-          );
-        });
-      }
-      return Promise.resolve<void>(null as any);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 400) {
+            return response.text().then((_responseText) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("Bad Request", status, _responseText, _headers, result400);
+            });
+        } else if (status === 204) {
+            return response.text().then((_responseText) => {
+            return;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<void>(null as any);
     }
 
     /**
      * @return Success
      */
     types(): Promise<CertificateTypeDTO[]> {
-      let url_ = this.baseUrl + '/api/certificates/types';
-      url_ = url_.replace(/[?&]$/, '');
+        let url_ = this.baseUrl + "/api/certificates/types";
+        url_ = url_.replace(/[?&]$/, "");
 
-      let options_: RequestInit = {
-        method: 'GET',
-        headers: {
-          Accept: 'text/plain',
-        },
-      };
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "text/plain"
+            }
+        };
 
-      return this.http.fetch(url_, options_).then((_response: Response) => {
-        return this.processTypes(_response);
-      });
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processTypes(_response);
+        });
     }
 
     protected processTypes(response: Response): Promise<CertificateTypeDTO[]> {
-      const status = response.status;
-      let _headers: any = {};
-      if (response.headers && response.headers.forEach) {
-        response.headers.forEach((v: any, k: any) => (_headers[k] = v));
-      }
-      if (status === 200) {
-        return response.text().then((_responseText) => {
-          let result200: any = null;
-          let resultData200 =
-            _responseText === ''
-              ? null
-              : JSON.parse(_responseText, this.jsonParseReviver);
-          if (Array.isArray(resultData200)) {
-            result200 = [] as any;
-            for (let item of resultData200)
-              result200!.push(CertificateTypeDTO.fromJS(item));
-          } else {
-            result200 = <any>null;
-          }
-          return result200;
-        });
-      } else if (status !== 200 && status !== 204) {
-        return response.text().then((_responseText) => {
-          return throwException(
-            'An unexpected server error occurred.',
-            status,
-            _responseText,
-            _headers,
-          );
-        });
-      }
-      return Promise.resolve<CertificateTypeDTO[]>(null as any);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(CertificateTypeDTO.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<CertificateTypeDTO[]>(null as any);
     }
 
     /**
-     * @param participantId (optional)
-     * @param name (optional)
-     * @param firstName (optional)
-     * @param department (optional)
-     * @param plant (optional)
+     * @param participantId (optional) 
+     * @param name (optional) 
+     * @param firstName (optional) 
+     * @param department (optional) 
+     * @param plant (optional) 
      * @return Success
      */
-    participants(
-      participantId: number | undefined,
-      name: string | undefined,
-      firstName: string | undefined,
-      department: string | undefined,
-      plant: string | undefined,
-    ): Promise<ParticipantDTO[]> {
-      let url_ = this.baseUrl + '/api/participants?';
-      if (participantId === null)
-        throw new Error("The parameter 'participantId' cannot be null.");
-      else if (participantId !== undefined)
-        url_ += 'ParticipantId=' + encodeURIComponent('' + participantId) + '&';
-      if (name === null)
-        throw new Error("The parameter 'name' cannot be null.");
-      else if (name !== undefined)
-        url_ += 'Name=' + encodeURIComponent('' + name) + '&';
-      if (firstName === null)
-        throw new Error("The parameter 'firstName' cannot be null.");
-      else if (firstName !== undefined)
-        url_ += 'FirstName=' + encodeURIComponent('' + firstName) + '&';
-      if (department === null)
-        throw new Error("The parameter 'department' cannot be null.");
-      else if (department !== undefined)
-        url_ += 'Department=' + encodeURIComponent('' + department) + '&';
-      if (plant === null)
-        throw new Error("The parameter 'plant' cannot be null.");
-      else if (plant !== undefined)
-        url_ += 'Plant=' + encodeURIComponent('' + plant) + '&';
-      url_ = url_.replace(/[?&]$/, '');
+    participants(participantId: number | undefined, name: string | undefined, firstName: string | undefined, department: string | undefined, plant: string | undefined): Promise<ParticipantDTO[]> {
+        let url_ = this.baseUrl + "/api/participants?";
+        if (participantId === null)
+            throw new Error("The parameter 'participantId' cannot be null.");
+        else if (participantId !== undefined)
+            url_ += "ParticipantId=" + encodeURIComponent("" + participantId) + "&";
+        if (name === null)
+            throw new Error("The parameter 'name' cannot be null.");
+        else if (name !== undefined)
+            url_ += "Name=" + encodeURIComponent("" + name) + "&";
+        if (firstName === null)
+            throw new Error("The parameter 'firstName' cannot be null.");
+        else if (firstName !== undefined)
+            url_ += "FirstName=" + encodeURIComponent("" + firstName) + "&";
+        if (department === null)
+            throw new Error("The parameter 'department' cannot be null.");
+        else if (department !== undefined)
+            url_ += "Department=" + encodeURIComponent("" + department) + "&";
+        if (plant === null)
+            throw new Error("The parameter 'plant' cannot be null.");
+        else if (plant !== undefined)
+            url_ += "Plant=" + encodeURIComponent("" + plant) + "&";
+        url_ = url_.replace(/[?&]$/, "");
 
-      let options_: RequestInit = {
-        method: 'GET',
-        headers: {
-          Accept: 'text/plain',
-        },
-      };
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "text/plain"
+            }
+        };
 
-      return this.http.fetch(url_, options_).then((_response: Response) => {
-        return this.processParticipants(_response);
-      });
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processParticipants(_response);
+        });
     }
 
-    protected processParticipants(
-      response: Response,
-    ): Promise<ParticipantDTO[]> {
-      const status = response.status;
-      let _headers: any = {};
-      if (response.headers && response.headers.forEach) {
-        response.headers.forEach((v: any, k: any) => (_headers[k] = v));
-      }
-      if (status === 200) {
-        return response.text().then((_responseText) => {
-          let result200: any = null;
-          let resultData200 =
-            _responseText === ''
-              ? null
-              : JSON.parse(_responseText, this.jsonParseReviver);
-          if (Array.isArray(resultData200)) {
-            result200 = [] as any;
-            for (let item of resultData200)
-              result200!.push(ParticipantDTO.fromJS(item));
-          } else {
-            result200 = <any>null;
-          }
-          return result200;
-        });
-      } else if (status === 404) {
-        return response.text().then((_responseText) => {
-          let result404: any = null;
-          let resultData404 =
-            _responseText === ''
-              ? null
-              : JSON.parse(_responseText, this.jsonParseReviver);
-          result404 = ProblemDetails.fromJS(resultData404);
-          return throwException(
-            'Not Found',
-            status,
-            _responseText,
-            _headers,
-            result404,
-          );
-        });
-      } else if (status !== 200 && status !== 204) {
-        return response.text().then((_responseText) => {
-          return throwException(
-            'An unexpected server error occurred.',
-            status,
-            _responseText,
-            _headers,
-          );
-        });
-      }
-      return Promise.resolve<ParticipantDTO[]>(null as any);
+    protected processParticipants(response: Response): Promise<ParticipantDTO[]> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(ParticipantDTO.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("Not Found", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<ParticipantDTO[]>(null as any);
     }
 
     /**
-     * @param name (optional)
-     * @param supplierIndex (optional)
-     * @param city (optional)
+     * @param name (optional) 
+     * @param supplierIndex (optional) 
+     * @param city (optional) 
      * @return Success
      */
-    suppliers(
-      name: string | undefined,
-      supplierIndex: number | undefined,
-      city: string | undefined,
-    ): Promise<SupplierDTO[]> {
-      let url_ = this.baseUrl + '/api/suppliers?';
-      if (name === null)
-        throw new Error("The parameter 'name' cannot be null.");
-      else if (name !== undefined)
-        url_ += 'Name=' + encodeURIComponent('' + name) + '&';
-      if (supplierIndex === null)
-        throw new Error("The parameter 'supplierIndex' cannot be null.");
-      else if (supplierIndex !== undefined)
-        url_ += 'SupplierIndex=' + encodeURIComponent('' + supplierIndex) + '&';
-      if (city === null)
-        throw new Error("The parameter 'city' cannot be null.");
-      else if (city !== undefined)
-        url_ += 'City=' + encodeURIComponent('' + city) + '&';
-      url_ = url_.replace(/[?&]$/, '');
+    suppliers(name: string | undefined, supplierIndex: number | undefined, city: string | undefined): Promise<SupplierDTO[]> {
+        let url_ = this.baseUrl + "/api/suppliers?";
+        if (name === null)
+            throw new Error("The parameter 'name' cannot be null.");
+        else if (name !== undefined)
+            url_ += "Name=" + encodeURIComponent("" + name) + "&";
+        if (supplierIndex === null)
+            throw new Error("The parameter 'supplierIndex' cannot be null.");
+        else if (supplierIndex !== undefined)
+            url_ += "SupplierIndex=" + encodeURIComponent("" + supplierIndex) + "&";
+        if (city === null)
+            throw new Error("The parameter 'city' cannot be null.");
+        else if (city !== undefined)
+            url_ += "City=" + encodeURIComponent("" + city) + "&";
+        url_ = url_.replace(/[?&]$/, "");
 
-      let options_: RequestInit = {
-        method: 'GET',
-        headers: {
-          Accept: 'text/plain',
-        },
-      };
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "text/plain"
+            }
+        };
 
-      return this.http.fetch(url_, options_).then((_response: Response) => {
-        return this.processSuppliers(_response);
-      });
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processSuppliers(_response);
+        });
     }
 
     protected processSuppliers(response: Response): Promise<SupplierDTO[]> {
-      const status = response.status;
-      let _headers: any = {};
-      if (response.headers && response.headers.forEach) {
-        response.headers.forEach((v: any, k: any) => (_headers[k] = v));
-      }
-      if (status === 200) {
-        return response.text().then((_responseText) => {
-          let result200: any = null;
-          let resultData200 =
-            _responseText === ''
-              ? null
-              : JSON.parse(_responseText, this.jsonParseReviver);
-          if (Array.isArray(resultData200)) {
-            result200 = [] as any;
-            for (let item of resultData200)
-              result200!.push(SupplierDTO.fromJS(item));
-          } else {
-            result200 = <any>null;
-          }
-          return result200;
-        });
-      } else if (status === 404) {
-        return response.text().then((_responseText) => {
-          let result404: any = null;
-          let resultData404 =
-            _responseText === ''
-              ? null
-              : JSON.parse(_responseText, this.jsonParseReviver);
-          result404 = ProblemDetails.fromJS(resultData404);
-          return throwException(
-            'Not Found',
-            status,
-            _responseText,
-            _headers,
-            result404,
-          );
-        });
-      } else if (status !== 200 && status !== 204) {
-        return response.text().then((_responseText) => {
-          return throwException(
-            'An unexpected server error occurred.',
-            status,
-            _responseText,
-            _headers,
-          );
-        });
-      }
-      return Promise.resolve<SupplierDTO[]>(null as any);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(SupplierDTO.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return result200;
+            });
+        } else if (status === 404) {
+            return response.text().then((_responseText) => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("Not Found", status, _responseText, _headers, result404);
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<SupplierDTO[]>(null as any);
     }
 
     /**
      * @return Success
      */
     users(): Promise<UserDTO[]> {
-      let url_ = this.baseUrl + '/api/users';
-      url_ = url_.replace(/[?&]$/, '');
+        let url_ = this.baseUrl + "/api/users";
+        url_ = url_.replace(/[?&]$/, "");
 
-      let options_: RequestInit = {
-        method: 'GET',
-        headers: {
-          Accept: 'text/plain',
-        },
-      };
+        let options_: RequestInit = {
+            method: "GET",
+            headers: {
+                "Accept": "text/plain"
+            }
+        };
 
-      return this.http.fetch(url_, options_).then((_response: Response) => {
-        return this.processUsers(_response);
-      });
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUsers(_response);
+        });
     }
 
     protected processUsers(response: Response): Promise<UserDTO[]> {
-      const status = response.status;
-      let _headers: any = {};
-      if (response.headers && response.headers.forEach) {
-        response.headers.forEach((v: any, k: any) => (_headers[k] = v));
-      }
-      if (status === 200) {
-        return response.text().then((_responseText) => {
-          let result200: any = null;
-          let resultData200 =
-            _responseText === ''
-              ? null
-              : JSON.parse(_responseText, this.jsonParseReviver);
-          if (Array.isArray(resultData200)) {
-            result200 = [] as any;
-            for (let item of resultData200)
-              result200!.push(UserDTO.fromJS(item));
-          } else {
-            result200 = <any>null;
-          }
-          return result200;
-        });
-      } else if (status !== 200 && status !== 204) {
-        return response.text().then((_responseText) => {
-          return throwException(
-            'An unexpected server error occurred.',
-            status,
-            _responseText,
-            _headers,
-          );
-        });
-      }
-      return Promise.resolve<UserDTO[]>(null as any);
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(UserDTO.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<UserDTO[]>(null as any);
     }
-  }
+}
 
-  export class CertificateSummaryDTO implements ICertificateSummaryDTO {
+export class CertificateDTO implements ICertificateDTO {
+    certificateId?: number | undefined;
+    supplierId!: number;
+    certificateTypeId!: number;
+    validFrom!: Date;
+    validTo!: Date;
+    pdfDocumentData!: string;
+    participantIds?: number[] | undefined;
+    commentsToAdd?: CommentDTO[] | undefined;
+
+    constructor(data?: ICertificateDTO) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.certificateId = _data["certificateId"];
+            this.supplierId = _data["supplierId"];
+            this.certificateTypeId = _data["certificateTypeId"];
+            this.validFrom = _data["validFrom"] ? new Date(_data["validFrom"].toString()) : <any>undefined;
+            this.validTo = _data["validTo"] ? new Date(_data["validTo"].toString()) : <any>undefined;
+            this.pdfDocumentData = _data["pdfDocumentData"];
+            if (Array.isArray(_data["participantIds"])) {
+                this.participantIds = [] as any;
+                for (let item of _data["participantIds"])
+                    this.participantIds!.push(item);
+            }
+            if (Array.isArray(_data["commentsToAdd"])) {
+                this.commentsToAdd = [] as any;
+                for (let item of _data["commentsToAdd"])
+                    this.commentsToAdd!.push(CommentDTO.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): CertificateDTO {
+        data = typeof data === 'object' ? data : {};
+        let result = new CertificateDTO();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["certificateId"] = this.certificateId;
+        data["supplierId"] = this.supplierId;
+        data["certificateTypeId"] = this.certificateTypeId;
+        data["validFrom"] = this.validFrom ? this.validFrom.toISOString() : <any>undefined;
+        data["validTo"] = this.validTo ? this.validTo.toISOString() : <any>undefined;
+        data["pdfDocumentData"] = this.pdfDocumentData;
+        if (Array.isArray(this.participantIds)) {
+            data["participantIds"] = [];
+            for (let item of this.participantIds)
+                data["participantIds"].push(item);
+        }
+        if (Array.isArray(this.commentsToAdd)) {
+            data["commentsToAdd"] = [];
+            for (let item of this.commentsToAdd)
+                data["commentsToAdd"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface ICertificateDTO {
+    certificateId?: number | undefined;
+    supplierId: number;
+    certificateTypeId: number;
+    validFrom: Date;
+    validTo: Date;
+    pdfDocumentData: string;
+    participantIds?: number[] | undefined;
+    commentsToAdd?: CommentDTO[] | undefined;
+}
+
+export class CertificateSummaryDTO implements ICertificateSummaryDTO {
     certificateId?: number;
     supplierDetails?: string | undefined;
     certificateTypeName?: string | undefined;
@@ -675,211 +577,139 @@ export namespace ApiClient {
     validTo?: Date;
 
     constructor(data?: ICertificateSummaryDTO) {
-      if (data) {
-        for (var property in data) {
-          if (data.hasOwnProperty(property))
-            (<any>this)[property] = (<any>data)[property];
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
         }
-      }
     }
 
     init(_data?: any) {
-      if (_data) {
-        this.certificateId = _data['certificateId'];
-        this.supplierDetails = _data['supplierDetails'];
-        this.certificateTypeName = _data['certificateTypeName'];
-        this.validFrom = _data['validFrom']
-          ? new Date(_data['validFrom'].toString())
-          : <any>undefined;
-        this.validTo = _data['validTo']
-          ? new Date(_data['validTo'].toString())
-          : <any>undefined;
-      }
+        if (_data) {
+            this.certificateId = _data["certificateId"];
+            this.supplierDetails = _data["supplierDetails"];
+            this.certificateTypeName = _data["certificateTypeName"];
+            this.validFrom = _data["validFrom"] ? new Date(_data["validFrom"].toString()) : <any>undefined;
+            this.validTo = _data["validTo"] ? new Date(_data["validTo"].toString()) : <any>undefined;
+        }
     }
 
     static fromJS(data: any): CertificateSummaryDTO {
-      data = typeof data === 'object' ? data : {};
-      let result = new CertificateSummaryDTO();
-      result.init(data);
-      return result;
+        data = typeof data === 'object' ? data : {};
+        let result = new CertificateSummaryDTO();
+        result.init(data);
+        return result;
     }
 
     toJSON(data?: any) {
-      data = typeof data === 'object' ? data : {};
-      data['certificateId'] = this.certificateId;
-      data['supplierDetails'] = this.supplierDetails;
-      data['certificateTypeName'] = this.certificateTypeName;
-      data['validFrom'] = this.validFrom
-        ? this.validFrom.toISOString()
-        : <any>undefined;
-      data['validTo'] = this.validTo
-        ? this.validTo.toISOString()
-        : <any>undefined;
-      return data;
+        data = typeof data === 'object' ? data : {};
+        data["certificateId"] = this.certificateId;
+        data["supplierDetails"] = this.supplierDetails;
+        data["certificateTypeName"] = this.certificateTypeName;
+        data["validFrom"] = this.validFrom ? this.validFrom.toISOString() : <any>undefined;
+        data["validTo"] = this.validTo ? this.validTo.toISOString() : <any>undefined;
+        return data;
     }
-  }
+}
 
-  export interface ICertificateSummaryDTO {
+export interface ICertificateSummaryDTO {
     certificateId?: number;
     supplierDetails?: string | undefined;
     certificateTypeName?: string | undefined;
     validFrom?: Date;
     validTo?: Date;
-  }
+}
 
-  export class CertificateTypeDTO implements ICertificateTypeDTO {
+export class CertificateTypeDTO implements ICertificateTypeDTO {
     certificateTypeId?: number;
     certificateTypeName?: string | undefined;
 
     constructor(data?: ICertificateTypeDTO) {
-      if (data) {
-        for (var property in data) {
-          if (data.hasOwnProperty(property))
-            (<any>this)[property] = (<any>data)[property];
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
         }
-      }
     }
 
     init(_data?: any) {
-      if (_data) {
-        this.certificateTypeId = _data['certificateTypeId'];
-        this.certificateTypeName = _data['certificateTypeName'];
-      }
+        if (_data) {
+            this.certificateTypeId = _data["certificateTypeId"];
+            this.certificateTypeName = _data["certificateTypeName"];
+        }
     }
 
     static fromJS(data: any): CertificateTypeDTO {
-      data = typeof data === 'object' ? data : {};
-      let result = new CertificateTypeDTO();
-      result.init(data);
-      return result;
+        data = typeof data === 'object' ? data : {};
+        let result = new CertificateTypeDTO();
+        result.init(data);
+        return result;
     }
 
     toJSON(data?: any) {
-      data = typeof data === 'object' ? data : {};
-      data['certificateTypeId'] = this.certificateTypeId;
-      data['certificateTypeName'] = this.certificateTypeName;
-      return data;
+        data = typeof data === 'object' ? data : {};
+        data["certificateTypeId"] = this.certificateTypeId;
+        data["certificateTypeName"] = this.certificateTypeName;
+        return data;
     }
-  }
+}
 
-  export interface ICertificateTypeDTO {
+export interface ICertificateTypeDTO {
     certificateTypeId?: number;
     certificateTypeName?: string | undefined;
-  }
+}
 
-  export class CommentDTO implements ICommentDTO {
+export class CommentDTO implements ICommentDTO {
     commentId?: number;
     userId?: number;
     username?: string | undefined;
     commentText?: string | undefined;
 
     constructor(data?: ICommentDTO) {
-      if (data) {
-        for (var property in data) {
-          if (data.hasOwnProperty(property))
-            (<any>this)[property] = (<any>data)[property];
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
         }
-      }
     }
 
     init(_data?: any) {
-      if (_data) {
-        this.commentId = _data['commentId'];
-        this.userId = _data['userId'];
-        this.username = _data['username'];
-        this.commentText = _data['commentText'];
-      }
+        if (_data) {
+            this.commentId = _data["commentId"];
+            this.userId = _data["userId"];
+            this.username = _data["username"];
+            this.commentText = _data["commentText"];
+        }
     }
 
     static fromJS(data: any): CommentDTO {
-      data = typeof data === 'object' ? data : {};
-      let result = new CommentDTO();
-      result.init(data);
-      return result;
+        data = typeof data === 'object' ? data : {};
+        let result = new CommentDTO();
+        result.init(data);
+        return result;
     }
 
     toJSON(data?: any) {
-      data = typeof data === 'object' ? data : {};
-      data['commentId'] = this.commentId;
-      data['userId'] = this.userId;
-      data['username'] = this.username;
-      data['commentText'] = this.commentText;
-      return data;
+        data = typeof data === 'object' ? data : {};
+        data["commentId"] = this.commentId;
+        data["userId"] = this.userId;
+        data["username"] = this.username;
+        data["commentText"] = this.commentText;
+        return data;
     }
-  }
+}
 
-  export interface ICommentDTO {
+export interface ICommentDTO {
     commentId?: number;
     userId?: number;
     username?: string | undefined;
     commentText?: string | undefined;
-  }
+}
 
-  export class CreateCertificateDTO implements ICreateCertificateDTO {
-    certificateId!: number;
-    supplierId!: number;
-    certificateTypeId!: number;
-    validFrom!: Date;
-    validTo!: Date;
-    pdfDocumentData!: string;
-
-    constructor(data?: ICreateCertificateDTO) {
-      if (data) {
-        for (var property in data) {
-          if (data.hasOwnProperty(property))
-            (<any>this)[property] = (<any>data)[property];
-        }
-      }
-    }
-
-    init(_data?: any) {
-      if (_data) {
-        this.certificateId = _data['certificateId'];
-        this.supplierId = _data['supplierId'];
-        this.certificateTypeId = _data['certificateTypeId'];
-        this.validFrom = _data['validFrom']
-          ? new Date(_data['validFrom'].toString())
-          : <any>undefined;
-        this.validTo = _data['validTo']
-          ? new Date(_data['validTo'].toString())
-          : <any>undefined;
-        this.pdfDocumentData = _data['pdfDocumentData'];
-      }
-    }
-
-    static fromJS(data: any): CreateCertificateDTO {
-      data = typeof data === 'object' ? data : {};
-      let result = new CreateCertificateDTO();
-      result.init(data);
-      return result;
-    }
-
-    toJSON(data?: any) {
-      data = typeof data === 'object' ? data : {};
-      data['certificateId'] = this.certificateId;
-      data['supplierId'] = this.supplierId;
-      data['certificateTypeId'] = this.certificateTypeId;
-      data['validFrom'] = this.validFrom
-        ? this.validFrom.toISOString()
-        : <any>undefined;
-      data['validTo'] = this.validTo
-        ? this.validTo.toISOString()
-        : <any>undefined;
-      data['pdfDocumentData'] = this.pdfDocumentData;
-      return data;
-    }
-  }
-
-  export interface ICreateCertificateDTO {
-    certificateId: number;
-    supplierId: number;
-    certificateTypeId: number;
-    validFrom: Date;
-    validTo: Date;
-    pdfDocumentData: string;
-  }
-
-  export class GetCertificateDTO implements IGetCertificateDTO {
+export class GetCertificateDTO implements IGetCertificateDTO {
     certificateId?: number;
     supplier?: SupplierDTO;
     certificateTypeName?: string | undefined;
@@ -890,76 +720,65 @@ export namespace ApiClient {
     participants?: ParticipantDTO[] | undefined;
 
     constructor(data?: IGetCertificateDTO) {
-      if (data) {
-        for (var property in data) {
-          if (data.hasOwnProperty(property))
-            (<any>this)[property] = (<any>data)[property];
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
         }
-      }
     }
 
     init(_data?: any) {
-      if (_data) {
-        this.certificateId = _data['certificateId'];
-        this.supplier = _data['supplier']
-          ? SupplierDTO.fromJS(_data['supplier'])
-          : <any>undefined;
-        this.certificateTypeName = _data['certificateTypeName'];
-        this.validFrom = _data['validFrom']
-          ? new Date(_data['validFrom'].toString())
-          : <any>undefined;
-        this.validTo = _data['validTo']
-          ? new Date(_data['validTo'].toString())
-          : <any>undefined;
-        this.pdfDocumentData = _data['pdfDocumentData'];
-        if (Array.isArray(_data['comments'])) {
-          this.comments = [] as any;
-          for (let item of _data['comments'])
-            this.comments!.push(CommentDTO.fromJS(item));
+        if (_data) {
+            this.certificateId = _data["certificateId"];
+            this.supplier = _data["supplier"] ? SupplierDTO.fromJS(_data["supplier"]) : <any>undefined;
+            this.certificateTypeName = _data["certificateTypeName"];
+            this.validFrom = _data["validFrom"] ? new Date(_data["validFrom"].toString()) : <any>undefined;
+            this.validTo = _data["validTo"] ? new Date(_data["validTo"].toString()) : <any>undefined;
+            this.pdfDocumentData = _data["pdfDocumentData"];
+            if (Array.isArray(_data["comments"])) {
+                this.comments = [] as any;
+                for (let item of _data["comments"])
+                    this.comments!.push(CommentDTO.fromJS(item));
+            }
+            if (Array.isArray(_data["participants"])) {
+                this.participants = [] as any;
+                for (let item of _data["participants"])
+                    this.participants!.push(ParticipantDTO.fromJS(item));
+            }
         }
-        if (Array.isArray(_data['participants'])) {
-          this.participants = [] as any;
-          for (let item of _data['participants'])
-            this.participants!.push(ParticipantDTO.fromJS(item));
-        }
-      }
     }
 
     static fromJS(data: any): GetCertificateDTO {
-      data = typeof data === 'object' ? data : {};
-      let result = new GetCertificateDTO();
-      result.init(data);
-      return result;
+        data = typeof data === 'object' ? data : {};
+        let result = new GetCertificateDTO();
+        result.init(data);
+        return result;
     }
 
     toJSON(data?: any) {
-      data = typeof data === 'object' ? data : {};
-      data['certificateId'] = this.certificateId;
-      data['supplier'] = this.supplier
-        ? this.supplier.toJSON()
-        : <any>undefined;
-      data['certificateTypeName'] = this.certificateTypeName;
-      data['validFrom'] = this.validFrom
-        ? this.validFrom.toISOString()
-        : <any>undefined;
-      data['validTo'] = this.validTo
-        ? this.validTo.toISOString()
-        : <any>undefined;
-      data['pdfDocumentData'] = this.pdfDocumentData;
-      if (Array.isArray(this.comments)) {
-        data['comments'] = [];
-        for (let item of this.comments) data['comments'].push(item.toJSON());
-      }
-      if (Array.isArray(this.participants)) {
-        data['participants'] = [];
-        for (let item of this.participants)
-          data['participants'].push(item.toJSON());
-      }
-      return data;
+        data = typeof data === 'object' ? data : {};
+        data["certificateId"] = this.certificateId;
+        data["supplier"] = this.supplier ? this.supplier.toJSON() : <any>undefined;
+        data["certificateTypeName"] = this.certificateTypeName;
+        data["validFrom"] = this.validFrom ? this.validFrom.toISOString() : <any>undefined;
+        data["validTo"] = this.validTo ? this.validTo.toISOString() : <any>undefined;
+        data["pdfDocumentData"] = this.pdfDocumentData;
+        if (Array.isArray(this.comments)) {
+            data["comments"] = [];
+            for (let item of this.comments)
+                data["comments"].push(item.toJSON());
+        }
+        if (Array.isArray(this.participants)) {
+            data["participants"] = [];
+            for (let item of this.participants)
+                data["participants"].push(item.toJSON());
+        }
+        return data;
     }
-  }
+}
 
-  export interface IGetCertificateDTO {
+export interface IGetCertificateDTO {
     certificateId?: number;
     supplier?: SupplierDTO;
     certificateTypeName?: string | undefined;
@@ -968,9 +787,9 @@ export namespace ApiClient {
     pdfDocumentData?: string | undefined;
     comments?: CommentDTO[] | undefined;
     participants?: ParticipantDTO[] | undefined;
-  }
+}
 
-  export class ParticipantDTO implements IParticipantDTO {
+export class ParticipantDTO implements IParticipantDTO {
     participantId?: number;
     name?: string | undefined;
     firstName?: string | undefined;
@@ -978,51 +797,51 @@ export namespace ApiClient {
     plant?: string | undefined;
 
     constructor(data?: IParticipantDTO) {
-      if (data) {
-        for (var property in data) {
-          if (data.hasOwnProperty(property))
-            (<any>this)[property] = (<any>data)[property];
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
         }
-      }
     }
 
     init(_data?: any) {
-      if (_data) {
-        this.participantId = _data['participantId'];
-        this.name = _data['name'];
-        this.firstName = _data['firstName'];
-        this.department = _data['department'];
-        this.plant = _data['plant'];
-      }
+        if (_data) {
+            this.participantId = _data["participantId"];
+            this.name = _data["name"];
+            this.firstName = _data["firstName"];
+            this.department = _data["department"];
+            this.plant = _data["plant"];
+        }
     }
 
     static fromJS(data: any): ParticipantDTO {
-      data = typeof data === 'object' ? data : {};
-      let result = new ParticipantDTO();
-      result.init(data);
-      return result;
+        data = typeof data === 'object' ? data : {};
+        let result = new ParticipantDTO();
+        result.init(data);
+        return result;
     }
 
     toJSON(data?: any) {
-      data = typeof data === 'object' ? data : {};
-      data['participantId'] = this.participantId;
-      data['name'] = this.name;
-      data['firstName'] = this.firstName;
-      data['department'] = this.department;
-      data['plant'] = this.plant;
-      return data;
+        data = typeof data === 'object' ? data : {};
+        data["participantId"] = this.participantId;
+        data["name"] = this.name;
+        data["firstName"] = this.firstName;
+        data["department"] = this.department;
+        data["plant"] = this.plant;
+        return data;
     }
-  }
+}
 
-  export interface IParticipantDTO {
+export interface IParticipantDTO {
     participantId?: number;
     name?: string | undefined;
     firstName?: string | undefined;
     department?: string | undefined;
     plant?: string | undefined;
-  }
+}
 
-  export class ProblemDetails implements IProblemDetails {
+export class ProblemDetails implements IProblemDetails {
     type?: string | undefined;
     title?: string | undefined;
     status?: number | undefined;
@@ -1032,49 +851,51 @@ export namespace ApiClient {
     [key: string]: any;
 
     constructor(data?: IProblemDetails) {
-      if (data) {
-        for (var property in data) {
-          if (data.hasOwnProperty(property))
-            (<any>this)[property] = (<any>data)[property];
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
         }
-      }
     }
 
     init(_data?: any) {
-      if (_data) {
-        for (var property in _data) {
-          if (_data.hasOwnProperty(property)) this[property] = _data[property];
+        if (_data) {
+            for (var property in _data) {
+                if (_data.hasOwnProperty(property))
+                    this[property] = _data[property];
+            }
+            this.type = _data["type"];
+            this.title = _data["title"];
+            this.status = _data["status"];
+            this.detail = _data["detail"];
+            this.instance = _data["instance"];
         }
-        this.type = _data['type'];
-        this.title = _data['title'];
-        this.status = _data['status'];
-        this.detail = _data['detail'];
-        this.instance = _data['instance'];
-      }
     }
 
     static fromJS(data: any): ProblemDetails {
-      data = typeof data === 'object' ? data : {};
-      let result = new ProblemDetails();
-      result.init(data);
-      return result;
+        data = typeof data === 'object' ? data : {};
+        let result = new ProblemDetails();
+        result.init(data);
+        return result;
     }
 
     toJSON(data?: any) {
-      data = typeof data === 'object' ? data : {};
-      for (var property in this) {
-        if (this.hasOwnProperty(property)) data[property] = this[property];
-      }
-      data['type'] = this.type;
-      data['title'] = this.title;
-      data['status'] = this.status;
-      data['detail'] = this.detail;
-      data['instance'] = this.instance;
-      return data;
+        data = typeof data === 'object' ? data : {};
+        for (var property in this) {
+            if (this.hasOwnProperty(property))
+                data[property] = this[property];
+        }
+        data["type"] = this.type;
+        data["title"] = this.title;
+        data["status"] = this.status;
+        data["detail"] = this.detail;
+        data["instance"] = this.instance;
+        return data;
     }
-  }
+}
 
-  export interface IProblemDetails {
+export interface IProblemDetails {
     type?: string | undefined;
     title?: string | undefined;
     status?: number | undefined;
@@ -1082,217 +903,125 @@ export namespace ApiClient {
     instance?: string | undefined;
 
     [key: string]: any;
-  }
+}
 
-  export class SupplierDTO implements ISupplierDTO {
+export class SupplierDTO implements ISupplierDTO {
     supplierId?: number;
     name?: string | undefined;
     supplierIndex?: number;
     city?: string | undefined;
 
     constructor(data?: ISupplierDTO) {
-      if (data) {
-        for (var property in data) {
-          if (data.hasOwnProperty(property))
-            (<any>this)[property] = (<any>data)[property];
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
         }
-      }
     }
 
     init(_data?: any) {
-      if (_data) {
-        this.supplierId = _data['supplierId'];
-        this.name = _data['name'];
-        this.supplierIndex = _data['supplierIndex'];
-        this.city = _data['city'];
-      }
+        if (_data) {
+            this.supplierId = _data["supplierId"];
+            this.name = _data["name"];
+            this.supplierIndex = _data["supplierIndex"];
+            this.city = _data["city"];
+        }
     }
 
     static fromJS(data: any): SupplierDTO {
-      data = typeof data === 'object' ? data : {};
-      let result = new SupplierDTO();
-      result.init(data);
-      return result;
+        data = typeof data === 'object' ? data : {};
+        let result = new SupplierDTO();
+        result.init(data);
+        return result;
     }
 
     toJSON(data?: any) {
-      data = typeof data === 'object' ? data : {};
-      data['supplierId'] = this.supplierId;
-      data['name'] = this.name;
-      data['supplierIndex'] = this.supplierIndex;
-      data['city'] = this.city;
-      return data;
+        data = typeof data === 'object' ? data : {};
+        data["supplierId"] = this.supplierId;
+        data["name"] = this.name;
+        data["supplierIndex"] = this.supplierIndex;
+        data["city"] = this.city;
+        return data;
     }
-  }
+}
 
-  export interface ISupplierDTO {
+export interface ISupplierDTO {
     supplierId?: number;
     name?: string | undefined;
     supplierIndex?: number;
     city?: string | undefined;
-  }
+}
 
-  export class UpdateCertificateDTO implements IUpdateCertificateDTO {
-    supplierId!: number;
-    certificateTypeId!: number;
-    validFrom!: Date;
-    validTo!: Date;
-    pdfDocumentData!: string;
-    participantIds?: number[] | undefined;
-    commentsToAdd?: CommentDTO[] | undefined;
-
-    constructor(data?: IUpdateCertificateDTO) {
-      if (data) {
-        for (var property in data) {
-          if (data.hasOwnProperty(property))
-            (<any>this)[property] = (<any>data)[property];
-        }
-      }
-    }
-
-    init(_data?: any) {
-      if (_data) {
-        this.supplierId = _data['supplierId'];
-        this.certificateTypeId = _data['certificateTypeId'];
-        this.validFrom = _data['validFrom']
-          ? new Date(_data['validFrom'].toString())
-          : <any>undefined;
-        this.validTo = _data['validTo']
-          ? new Date(_data['validTo'].toString())
-          : <any>undefined;
-        this.pdfDocumentData = _data['pdfDocumentData'];
-        if (Array.isArray(_data['participantIds'])) {
-          this.participantIds = [] as any;
-          for (let item of _data['participantIds'])
-            this.participantIds!.push(item);
-        }
-        if (Array.isArray(_data['commentsToAdd'])) {
-          this.commentsToAdd = [] as any;
-          for (let item of _data['commentsToAdd'])
-            this.commentsToAdd!.push(CommentDTO.fromJS(item));
-        }
-      }
-    }
-
-    static fromJS(data: any): UpdateCertificateDTO {
-      data = typeof data === 'object' ? data : {};
-      let result = new UpdateCertificateDTO();
-      result.init(data);
-      return result;
-    }
-
-    toJSON(data?: any) {
-      data = typeof data === 'object' ? data : {};
-      data['supplierId'] = this.supplierId;
-      data['certificateTypeId'] = this.certificateTypeId;
-      data['validFrom'] = this.validFrom
-        ? this.validFrom.toISOString()
-        : <any>undefined;
-      data['validTo'] = this.validTo
-        ? this.validTo.toISOString()
-        : <any>undefined;
-      data['pdfDocumentData'] = this.pdfDocumentData;
-      if (Array.isArray(this.participantIds)) {
-        data['participantIds'] = [];
-        for (let item of this.participantIds) data['participantIds'].push(item);
-      }
-      if (Array.isArray(this.commentsToAdd)) {
-        data['commentsToAdd'] = [];
-        for (let item of this.commentsToAdd)
-          data['commentsToAdd'].push(item.toJSON());
-      }
-      return data;
-    }
-  }
-
-  export interface IUpdateCertificateDTO {
-    supplierId: number;
-    certificateTypeId: number;
-    validFrom: Date;
-    validTo: Date;
-    pdfDocumentData: string;
-    participantIds?: number[] | undefined;
-    commentsToAdd?: CommentDTO[] | undefined;
-  }
-
-  export class UserDTO implements IUserDTO {
+export class UserDTO implements IUserDTO {
     userId?: number;
     username?: string | undefined;
 
     constructor(data?: IUserDTO) {
-      if (data) {
-        for (var property in data) {
-          if (data.hasOwnProperty(property))
-            (<any>this)[property] = (<any>data)[property];
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
         }
-      }
     }
 
     init(_data?: any) {
-      if (_data) {
-        this.userId = _data['userId'];
-        this.username = _data['username'];
-      }
+        if (_data) {
+            this.userId = _data["userId"];
+            this.username = _data["username"];
+        }
     }
 
     static fromJS(data: any): UserDTO {
-      data = typeof data === 'object' ? data : {};
-      let result = new UserDTO();
-      result.init(data);
-      return result;
+        data = typeof data === 'object' ? data : {};
+        let result = new UserDTO();
+        result.init(data);
+        return result;
     }
 
     toJSON(data?: any) {
-      data = typeof data === 'object' ? data : {};
-      data['userId'] = this.userId;
-      data['username'] = this.username;
-      return data;
+        data = typeof data === 'object' ? data : {};
+        data["userId"] = this.userId;
+        data["username"] = this.username;
+        return data;
     }
-  }
+}
 
-  export interface IUserDTO {
+export interface IUserDTO {
     userId?: number;
     username?: string | undefined;
-  }
+}
 
-  export class ApiException extends Error {
+export class ApiException extends Error {
     message: string;
     status: number;
     response: string;
-    headers: { [key: string]: any };
+    headers: { [key: string]: any; };
     result: any;
 
-    constructor(
-      message: string,
-      status: number,
-      response: string,
-      headers: { [key: string]: any },
-      result: any,
-    ) {
-      super();
+    constructor(message: string, status: number, response: string, headers: { [key: string]: any; }, result: any) {
+        super();
 
-      this.message = message;
-      this.status = status;
-      this.response = response;
-      this.headers = headers;
-      this.result = result;
+        this.message = message;
+        this.status = status;
+        this.response = response;
+        this.headers = headers;
+        this.result = result;
     }
 
     protected isApiException = true;
 
     static isApiException(obj: any): obj is ApiException {
-      return obj.isApiException === true;
+        return obj.isApiException === true;
     }
-  }
+}
 
-  function throwException(
-    message: string,
-    status: number,
-    response: string,
-    headers: { [key: string]: any },
-    result?: any,
-  ): any {
-    if (result !== null && result !== undefined) throw result;
-    else throw new ApiException(message, status, response, headers, null);
-  }
+function throwException(message: string, status: number, response: string, headers: { [key: string]: any; }, result?: any): any {
+    if (result !== null && result !== undefined)
+        throw result;
+    else
+        throw new ApiException(message, status, response, headers, null);
+}
+
 }

@@ -18,15 +18,57 @@ namespace CertificateManagerAPI.Repositories.CertificateRepoitory
             _mapper = mapper;
         }
 
-        public async Task<CreateCertificateDTO> CreateCertificateAsync(CreateCertificateDTO certificateDTO)
+        public async Task<CertificateDTO> CreateCertificateAsync(CertificateDTO dto)
         {
-            var certificate = _mapper.Map<Certificate>(certificateDTO);
+
+            var certificate = _mapper.Map<Certificate>(dto);
+            certificate.CreatedAt = DateTime.UtcNow;
+            certificate.UpdatedAt = DateTime.UtcNow;
+
+            if (dto.CommentsToAdd != null)
+            {
+                certificate.Comments = new List<Comment>();
+                foreach (var commentDto in dto.CommentsToAdd)
+                {
+                    var comment = new Comment
+                    {
+                        UserId = commentDto.UserId,
+                        CommentText = commentDto.CommentText,
+                        CreatedAt = DateTime.UtcNow,
+                        UpdatedAt = DateTime.UtcNow,
+                        Certificate = certificate
+                    };
+                    certificate.Comments.Add(comment);
+                }
+            }
+
+            if (dto.ParticipantIds != null)
+            {
+                certificate.CertificateAssignments = new List<CertificateAssignment>();
+                foreach (var participantId in dto.ParticipantIds)
+                {
+                    var participant = await _context.Participants
+                        .FirstOrDefaultAsync(p => p.ParticipantId == participantId);
+
+                    if (participant != null)
+                    {
+                        var certificateAssignment = new CertificateAssignment
+                        {
+                            ParticipantId = participant.ParticipantId,
+                            Certificate = certificate,
+                            CreatedAt = DateTime.UtcNow,
+                            UpdatedAt = DateTime.UtcNow
+                        };
+                        certificate.CertificateAssignments.Add(certificateAssignment);
+                    }
+                }
+            }
+
             await _context.Certificates.AddAsync(certificate);
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<CreateCertificateDTO>(certificate);
+            return _mapper.Map<CertificateDTO>(certificate);
         }
-
 
         public async Task<GetCertificateDTO> GetCertificateByIdAsync(int certificateId)
         {
@@ -53,8 +95,7 @@ namespace CertificateManagerAPI.Repositories.CertificateRepoitory
             return _mapper.Map<IEnumerable<CertificateSummaryDTO>>(certificates);
         }
 
-
-        public async Task UpdateCertificateAsync(int certificateId, UpdateCertificateDTO certificateDTO)
+        public async Task UpdateCertificateAsync(int certificateId, CertificateDTO certificateDTO)
         {
             var certificate = await _context.Certificates
                 .Include(c => c.CertificateAssignments)
@@ -114,7 +155,6 @@ namespace CertificateManagerAPI.Repositories.CertificateRepoitory
             await _context.SaveChangesAsync();
         }
 
-
         public async Task DeleteCertificateAsync(int certificateId)
         {
             var certificate = await _context.Certificates
@@ -141,7 +181,6 @@ namespace CertificateManagerAPI.Repositories.CertificateRepoitory
 
             await _context.SaveChangesAsync();
         }
-
 
         public async Task<IEnumerable<CertificateTypeDTO>> GetAllCertificateTypesAsync()
         {

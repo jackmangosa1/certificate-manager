@@ -35,7 +35,7 @@ const Example1: React.FC = () => {
     },
     {
       header: translations.validTo,
-      accessor: (row) => formatDate(row.validFrom!),
+      accessor: (row) => formatDate(row.validTo!),
     },
   ];
 

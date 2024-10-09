@@ -8,7 +8,7 @@ namespace CertificateManagerAPI.Mappers
     {
         public CreateCertificateProfile()
         {
-            CreateMap<Certificate, CreateCertificateDTO>()
+            CreateMap<Certificate, CertificateDTO>()
                .ForMember(dest => dest.ValidFrom,
                    opt => opt.MapFrom(src => src.ValidFrom.ToDateTime(TimeOnly.MinValue)))
                .ForMember(dest => dest.ValidTo,

@@ -81,13 +81,15 @@ const AddCertificate: React.FC = () => {
 
   const handleSupplierSelect = (supplier: ApiClient.SupplierDTO) => {
     setSelectedSupplier(supplier);
-    setCertificateData(prev => new ApiClient.GetCertificateDTO({
-      ...prev,
-      supplier: supplier
-    }));
+    setCertificateData(
+      (prev) =>
+        new ApiClient.GetCertificateDTO({
+          ...prev,
+          supplier: supplier,
+        }),
+    );
     closeModal();
   };
-
 
   useEffect(() => {
     const fetchCertificate = async () => {
@@ -95,7 +97,9 @@ const AddCertificate: React.FC = () => {
         try {
           const fetchedCertificate = await getCertificateById(parseInt(id));
           if (fetchedCertificate) {
-            const newCertificate = new ApiClient.GetCertificateDTO(fetchedCertificate);
+            const newCertificate = new ApiClient.GetCertificateDTO(
+              fetchedCertificate,
+            );
             setCertificateData(newCertificate);
             setSelectedParticipants(newCertificate.participants || []);
             setComments(newCertificate.comments || []);
@@ -119,19 +123,30 @@ const AddCertificate: React.FC = () => {
     fetchCertificate();
   }, [id]);
 
-  const handleInput = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInput = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
-    setCertificateData(prev => new ApiClient.GetCertificateDTO({
-      ...prev,
-      [name]: value
-    }));
+    setCertificateData(
+      (prev) =>
+        new ApiClient.GetCertificateDTO({
+          ...prev,
+          [name]: value,
+        }),
+    );
   };
 
-  const handleDateChange = (name: 'validFrom' | 'validTo', date: Date | null) => {
-    setCertificateData(prev => new ApiClient.GetCertificateDTO({
-      ...prev,
-      [name]: date ? date.toISOString() : undefined
-    }));
+  const handleDateChange = (
+    name: 'validFrom' | 'validTo',
+    date: Date | null,
+  ) => {
+    setCertificateData(
+      (prev) =>
+        new ApiClient.GetCertificateDTO({
+          ...prev,
+          [name]: date ? date.toISOString() : undefined,
+        }),
+    );
   };
 
   const handlePdfChange = (pdfFile: File | null) => {
@@ -176,6 +191,14 @@ const AddCertificate: React.FC = () => {
       newErrors.validRange = translations.errors.validRange;
       isValid = false;
     }
+    if (
+      certificateData.validFrom &&
+      certificateData.validTo &&
+      new Date(certificateData.validFrom) == new Date(certificateData.validTo)
+    ) {
+      newErrors.validRange = translations.errors.validRange;
+      isValid = false;
+    }
     if (!pdfBase64) {
       newErrors.pdfDocumentURL = translations.errors.required.pdfData;
       isValid = false;
@@ -184,44 +207,59 @@ const AddCertificate: React.FC = () => {
     setErrors(newErrors);
     return isValid;
   };
+  const commentsToAdd = comments.map(
+    (comment) =>
+      new ApiClient.CommentDTO({
+        commentText: comment.commentText,
+        userId: selectedUser?.userId,
+        username: selectedUser?.username,
+      }),
+  );
 
   const handleSave = async () => {
     if (!validateForm()) return;
 
     try {
       const certificateType = certificateTypes.find(
-        type => type.certificateTypeName === certificateData.certificateTypeName
+        (type) =>
+          type.certificateTypeName === certificateData.certificateTypeName,
       );
 
-      if (!certificateType?.certificateTypeId || !selectedSupplier?.supplierId) {
+      if (
+        !certificateType?.certificateTypeId ||
+        !selectedSupplier?.supplierId
+      ) {
         throw new Error('Invalid certificate type or supplier');
       }
 
-      const processedPdfData = pdfBase64?.includes(',') 
-        ? pdfBase64.split(',')[1] 
+      const processedPdfData = pdfBase64?.includes(',')
+        ? pdfBase64.split(',')[1]
         : pdfBase64 || '';
 
       if (editMode && id) {
-        const newComments = comments.filter(comment => {
+        const newComments = comments.filter((comment) => {
           return !certificateData.comments?.some(
-            initialComment => initialComment.commentId === comment.commentId
+            (initialComment) => initialComment.commentId === comment.commentId,
           );
         });
 
-        const updateDto = new ApiClient.UpdateCertificateDTO({
+        const updateDto = new ApiClient.CertificateDTO({
           supplierId: selectedSupplier.supplierId,
           certificateTypeId: certificateType.certificateTypeId,
           validFrom: new Date(certificateData.validFrom!),
           validTo: new Date(certificateData.validTo!),
           pdfDocumentData: processedPdfData,
           participantIds: selectedParticipants
-            .filter(p => p.participantId !== undefined)
-            .map(p => p.participantId!),
-          commentsToAdd: newComments.map(comment => new ApiClient.CommentDTO({
-            commentText: comment.commentText,
-            userId: selectedUser?.userId,
-            username: selectedUser?.username,
-          }))
+            .filter((p) => p.participantId !== undefined)
+            .map((p) => p.participantId!),
+          commentsToAdd: newComments.map(
+            (comment) =>
+              new ApiClient.CommentDTO({
+                commentText: comment.commentText,
+                userId: selectedUser?.userId,
+                username: selectedUser?.username,
+              }),
+          ),
         });
 
         await updateCertificate(parseInt(id), updateDto);
@@ -232,15 +270,18 @@ const AddCertificate: React.FC = () => {
         setTimeout(() => {
           navigate(AppRoutes.Example1);
         }, 1000);
-
       } else {
-        const createDto = new ApiClient.CreateCertificateDTO({
-          certificateId: 0, 
+        const createDto = new ApiClient.CertificateDTO({
+          certificateId: 0,
           supplierId: selectedSupplier.supplierId,
           certificateTypeId: certificateType.certificateTypeId,
           validFrom: new Date(certificateData.validFrom!),
           validTo: new Date(certificateData.validTo!),
-          pdfDocumentData: processedPdfData
+          pdfDocumentData: processedPdfData,
+          participantIds: selectedParticipants
+            .filter((p) => p.participantId !== undefined)
+            .map((p) => p.participantId!),
+          commentsToAdd: commentsToAdd,
         });
 
         await addCertificate(createDto);
@@ -255,9 +296,10 @@ const AddCertificate: React.FC = () => {
       }, 1000);
     } catch (error) {
       console.error('Error saving certificate:', error);
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        general: error instanceof Error ? error.message : 'Failed to save certificate'
+        general:
+          error instanceof Error ? error.message : 'Failed to save certificate',
       }));
     }
   };
@@ -327,7 +369,7 @@ const AddCertificate: React.FC = () => {
   return (
     <div className="certificate-form-container">
       <div className="left-side">
-      {notification && (
+        {notification && (
           <Notification
             message={notification.message}
             type={notification.type}

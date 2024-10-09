@@ -47,7 +47,7 @@ namespace CertificateMangerAPI.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<CreateCertificateDTO>> CreateCertificate(CreateCertificateDTO certificateDto)
+        public async Task<ActionResult<CertificateDTO>> CreateCertificate(CertificateDTO certificateDto)
         {
             if (!ModelState.IsValid)
             {
@@ -68,7 +68,7 @@ namespace CertificateMangerAPI.Controllers
         [HttpPut("{id:int}", Name = "UpdateCertificate")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<ActionResult> UpdateCertificate(int id, UpdateCertificateDTO certificateDTO)
+        public async Task<ActionResult> UpdateCertificate(int id, CertificateDTO certificateDTO)
         {
             if (id <= 0)
             {
