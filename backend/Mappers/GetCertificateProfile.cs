@@ -9,24 +9,14 @@ namespace CertificateManagerAPI.Mappers
         public GetCertificateProfile()
         {
             CreateMap<Certificate, GetCertificateDTO>()
-               .ForMember(dest => dest.Comments,
-                   opt => opt.MapFrom(src => src.Comments))
-               .ForMember(dest => dest.Participants,
-                   opt => opt.MapFrom(src => src.CertificateAssignments.Select(ca => ca.Participant)))
-
-               .ForMember(dest => dest.Supplier,
-                   opt => opt.MapFrom(src => src.Supplier))
-
-               .ForMember(dest => dest.CertificateTypeName,
-                   opt => opt.MapFrom(src => src.CertificateType.CertificateTypeName));
-
-            CreateMap<Comment, CommentDTO>()
-                .ForMember(dest => dest.Username,
-                    opt => opt.MapFrom(src => src.User.Username));
-
-            CreateMap<Participant, ParticipantDTO>()
-                .ForMember(dest => dest.Department,
-                    opt => opt.MapFrom(src => src.Department.DepartmentName));
+                .ForMember(dest => dest.ValidFrom,
+                    opt => opt.MapFrom(src => src.ValidFrom.ToDateTime(TimeOnly.MinValue)))
+                .ForMember(dest => dest.ValidTo,
+                    opt => opt.MapFrom(src => src.ValidTo.ToDateTime(TimeOnly.MinValue)))
+                .ForMember(dest => dest.Comments, opt => opt.MapFrom(src => src.Comments))
+                .ForMember(dest => dest.Participants, opt => opt.MapFrom(src => src.CertificateAssignments.Select(ca => ca.Participant)))
+                .ForMember(dest => dest.Supplier, opt => opt.MapFrom(src => src.Supplier))
+                .ForMember(dest => dest.CertificateTypeName, opt => opt.MapFrom(src => src.CertificateType.CertificateTypeName));
         }
     }
 }

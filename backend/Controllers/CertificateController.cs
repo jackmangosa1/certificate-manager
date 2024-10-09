@@ -47,7 +47,7 @@ namespace CertificateMangerAPI.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<CreateCertificateDTO>> CreateCertificate(CreateCertificateDTO certificateDto)
+        public async Task<ActionResult<CertificateDTO>> CreateCertificate(CertificateDTO certificateDto)
         {
             if (!ModelState.IsValid)
             {
@@ -59,23 +59,7 @@ namespace CertificateMangerAPI.Controllers
                 return BadRequest("Certficate ID must not be set when creating a new certificate.");
             }
 
-            if (!DateOnly.TryParse(certificateDto.ValidFrom, out var validFrom))
-            {
-                ModelState.AddModelError("ValidFrom", "Invalid date format for ValidFrom.");
-                return BadRequest(ModelState);
-            }
 
-            if (!DateOnly.TryParse(certificateDto.ValidTo, out var validTo))
-            {
-                ModelState.AddModelError("ValidTo", "Invalid date format for ValidTo.");
-                return BadRequest(ModelState);
-            }
-
-            if (validFrom > validTo)
-            {
-                ModelState.AddModelError("ValidDateRange", "ValidFrom must be before ValidTo.");
-                return BadRequest(ModelState);
-            }
 
             var certificate = await _certificateService.CreateCertificateAsync(certificateDto);
             return CreatedAtRoute("GetCertificate", new { id = certificate.CertificateId }, certificate);
@@ -84,7 +68,7 @@ namespace CertificateMangerAPI.Controllers
         [HttpPut("{id:int}", Name = "UpdateCertificate")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<ActionResult> UpdateCertificate(int id, UpdateCertificateDTO certificateDTO)
+        public async Task<ActionResult> UpdateCertificate(int id, CertificateDTO certificateDTO)
         {
             if (id <= 0)
             {

@@ -9,17 +9,14 @@ namespace CertificateManagerAPI.Mappers
         public CertificateSummaryProfile()
         {
             CreateMap<Certificate, CertificateSummaryDTO>()
+                .ForMember(dest => dest.ValidFrom,
+                    opt => opt.MapFrom(src => src.ValidFrom.ToDateTime(TimeOnly.MinValue)))
+                .ForMember(dest => dest.ValidTo,
+                    opt => opt.MapFrom(src => src.ValidTo.ToDateTime(TimeOnly.MinValue)))
                 .ForMember(dest => dest.SupplierDetails,
                     opt => opt.MapFrom(src => $"{src.Supplier.Name}, {src.Supplier.SupplierIndex}, {src.Supplier.City}"))
-
                 .ForMember(dest => dest.CertificateTypeName,
-                    opt => opt.MapFrom(src => src.CertificateType.CertificateTypeName))
-
-                .ForMember(dest => dest.ValidFrom,
-                    opt => opt.MapFrom(src => src.ValidFrom.ToString("yyyy-MM-dd")))
-
-                .ForMember(dest => dest.ValidTo,
-                    opt => opt.MapFrom(src => src.ValidTo.ToString("yyyy-MM-dd")));
+                    opt => opt.MapFrom(src => src.CertificateType.CertificateTypeName));
         }
     }
 }

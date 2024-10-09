@@ -2,10 +2,10 @@
 
 namespace CertificateManagerAPI.DTO
 {
-    public class CreateCertificateDTO
+    public class CertificateDTO
     {
-        [Required]
-        public int CertificateId { get; set; }
+
+        public int? CertificateId { get; set; }
 
         [Required]
         public int SupplierId { get; set; }
@@ -14,12 +14,16 @@ namespace CertificateManagerAPI.DTO
         public int CertificateTypeId { get; set; }
 
         [Required]
-        public string ValidFrom { get; set; } = null!;
+        public DateTime ValidFrom { get; set; }
 
         [Required]
-        public string ValidTo { get; set; } = null!;
+        public DateTime ValidTo { get; set; }
 
         [Required]
         public byte[] PdfDocumentData { get; set; } = null!;
+
+        public List<int> ParticipantIds { get; set; } = new List<int>();
+
+        public List<CommentDTO> CommentsToAdd { get; set; } = new List<CommentDTO>();
     }
 }

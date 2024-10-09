@@ -6,9 +6,9 @@
         public SupplierDTO Supplier { get; set; } = null!;
         public string CertificateTypeName { get; set; } = null!;
 
-        public string ValidFrom { get; set; } = null!;
+        public DateTime ValidFrom { get; set; }
 
-        public string ValidTo { get; set; } = null!;
+        public DateTime ValidTo { get; set; }
 
         public byte[] PdfDocumentData { get; set; } = null!;
 
